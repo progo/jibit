@@ -4,7 +4,6 @@
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]))
 
-
 ;;; events and handlers -- update db
 
 ;; OBS: Variations
@@ -17,6 +16,7 @@
    (if (:init-done db)
      db
      {:hello "world"
+      :images-query []
       :init-done true})))
 
 (re-frame/reg-event-db
@@ -24,14 +24,31 @@
  (fn [db _]
    (update db :hello str \s)))
 
-;;; views -- query from db
+;;; queries from db
 
 (re-frame/reg-sub
  :hello
  (fn [db _]
    (-> db :hello)))
 
-;;; view
+(re-frame/reg-sub
+ :everything
+ (fn [db _] db))
+
+;;; views and components
+
+;; Components are simply functions returning reagent hiccup. Calling
+;; other components requires wrapping in an extra vector. But now you
+;; can also pass arguments and shit. Of course you can subscribe to
+;; other sources, and by making real components like this the entirety
+;; of reagent/react power is well utilised.
+(defn db-debug-textarea [message]
+  (let [world (re-frame/subscribe [:everything])]
+    [:textarea {:style {:background-color "#abc"
+                        :color "#def"
+                        :width "67em"
+                        :height "20em"}
+                :value (str message \space @world)}]))
 
 (defn ui []
   (let [value (re-frame/subscribe [:hello])]
@@ -39,8 +56,8 @@
      [:h1
       {:on-click #(re-frame/dispatch [:hello])}
       "Hello "
-      @value]]))
-
+      @value]
+     [db-debug-textarea " xx"]]))
 
 (defn get-app-element []
   (gdom/getElement "app"))
