@@ -8,10 +8,16 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.520"]
+
+                 ;; jibit
                  [reagent "0.8.1"]
                  [re-frame "0.11.0-rc3"]
-                 ]
 
+                 ;; Clurator
+                 [http-kit "2.3.0"]
+                 [compojure "1.6.1"]]
+
+  :main clurator.core
   :source-paths ["src"]
 
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]

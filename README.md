@@ -2,6 +2,11 @@
 
 A personal photograph organizer/gallery tool.
 
+The overall project consists of two components:
+
+- jibit: the SPA frontend, written in CLJS using re-frame 
+- clurator: the backend, acting as a HTTP server.
+
 ## Development
 
 To get an interactive development environment run:

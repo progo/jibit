@@ -17,47 +17,33 @@
      db
      {:hello "world"
       :images-query []
+      :all-negatives (range 10)
       :init-done true})))
-
-(re-frame/reg-event-db
- :hello
- (fn [db _]
-   (update db :hello str \s)))
 
 ;;; queries from db
 
 (re-frame/reg-sub
- :hello
+ :all-negatives
  (fn [db _]
-   (-> db :hello)))
-
-(re-frame/reg-sub
- :everything
- (fn [db _] db))
+   (-> db :all-negatives)))
 
 ;;; views and components
 
-;; Components are simply functions returning reagent hiccup. Calling
-;; other components requires wrapping in an extra vector. But now you
-;; can also pass arguments and shit. Of course you can subscribe to
-;; other sources, and by making real components like this the entirety
-;; of reagent/react power is well utilised.
-(defn db-debug-textarea [message]
-  (let [world (re-frame/subscribe [:everything])]
-    [:textarea {:style {:background-color "#abc"
-                        :color "#def"
-                        :width "67em"
-                        :height "20em"}
-                :value (str message \space @world)}]))
+(defn slide [image-id]
+  [:div.slide
+   (str "œ" image-id)])
+
+(defn lighttable-bare []
+  [:div.lighttable
+   (doall
+    (for [a @(re-frame/subscribe [:all-negatives])]
+      ^{:key a} [slide a]))])
 
 (defn ui []
-  (let [value (re-frame/subscribe [:hello])]
+  (let []
     [:div
-     [:h1
-      {:on-click #(re-frame/dispatch [:hello])}
-      "Hello "
-      @value]
-     [db-debug-textarea " xx"]]))
+     [:h1 "Gallery"]
+     [lighttable-bare]]))
 
 (defn get-app-element []
   (gdom/getElement "app"))
