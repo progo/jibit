@@ -2,13 +2,21 @@
   (:require
    [goog.dom :as gdom]
    [reagent.core :as reagent]
-   [re-frame.core :as re-frame]))
+   [re-frame.core :as re-frame]
+   [day8.re-frame.http-fx]
+   [ajax.core :as ajax]
+   ))
 
 ;;; events and handlers -- update db
 
 ;; OBS: Variations
 ;; reg-event-fx
 ;; reg-event-db
+
+;; This is something we don't need in production. It can be left empty
+;; there. This could also be something we don't need in figwheel
+;; rounds if we can fix things in some end, but I don't know.
+(def server-uri "localhost:8088")
 
 (re-frame/reg-event-db
  :initialize
@@ -17,7 +25,7 @@
      db
      {:hello "world"
       :images-query []
-      :all-negatives (range 10)
+      :all-negatives (range 12)
       :init-done true})))
 
 ;;; queries from db
@@ -31,7 +39,8 @@
 
 (defn slide [image-id]
   [:div.slide
-   (str "œ" image-id)])
+   [:img {:src "http://placekitten.com/200/200"}]
+   (str "=> " image-id)])
 
 (defn lighttable-bare []
   [:div.lighttable

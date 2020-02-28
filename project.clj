@@ -6,14 +6,20 @@
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.520"]
 
                  ;; jibit
                  [reagent "0.8.1"]
                  [re-frame "0.11.0-rc3"]
+                 [day8.re-frame/http-fx "v0.2.0"]
 
-                 ;; Clurator
+                 ;; Clurator, file ops
+                 [me.raynes/fs "1.4.6"]
+                 [com.drewnoakes/metadata-extractor "2.13.0"]
+                 [com.github.mjeanroy/exiftool-lib "2.5.0"]
+
+                 ;; Clurator, server ops
                  [http-kit "2.3.0"]
                  [compojure "1.6.1"]]
 

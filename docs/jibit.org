@@ -1,0 +1,197 @@
+Jibit dev documents. May be bilingual.
+
+* Database solution
+[2020-02-16 Sun]
+
+Let's study database libraries for Clojure. Relational or not. I'm
+gravitating towards a system that would give me basic M2M things but
+of course you don't need RDBMS for that.
+
+** SQL
+*** HugSQL
+https://www.hugsql.org/
+
+Interesting idea about leaving SQL matters for SQL the DSL. Certainly
+intriguing because SQL is arguably the best choice for relational
+databases, and all ORM type of language translations occasionally
+introduce unnecessary complexity.
+
+Very interesting idea but looking into my use cases in my software I'm
+not sure how it will handle dynamically applied filters to a query.
+Should investigate more closely!
+
+Somewhat both expectedly and disappointingly the solution is to use
+HugSQL when it helps the most and drop down to JDBC calls when you
+need maximum dynamism.
+
+*** TODO HoneySQL
+https://github.com/jkk/honeysql
+
+This is a library for building SQL. You'd use =clojure.jdbc= with this.
+
+The big benefit over Korma here is the flexible map-based query
+building. It keeps the ORM at minimum, you're basically talking about
+SQL but in flexible Clojure terms.
+
+Even so, will it beat real SQL in its home town? Secondly this project
+lacks the connection helper utilities (which is proper because other
+projects can so easily build on this one).
+
+*** NOTSURE Korma
+CLOSED: [2020-02-16 Sun 17:07]
+https://github.com/korma/Korma
+
+Korma used to be a big player back in the day. Looking at it now, it
+hasn't seen commits in 2 years.
+
+Korma embraces the Lisp approach of macro-based DSLs. It's all fun and
+games but the truth is that the newer school of keeping data real data
+(as in, maps) has great benefits.
+
+Combine that DSL macro issue with the lack of activity (although
+again, I'm sure it has reached maturity and would work 100% perfectly
+with my needs) let's say this is not going to be the first choice.
+
+*** DONE Yesql
+
+Yesql has been put on freeze about 3-4 years ago. I'm sure it'll work
+perfectly but let's put this bottom of the stack.
+
+But quickly skimming the readme, shows this is actually closely
+resembling HugSQL anyway.
+
+*** NOTSURE Toucan
+CLOSED: [2020-02-16 Sun 17:03]
+https://github.com/metabase/toucan
+
+A high-level SQL engine, so it's more ORM than the rest. Built on
+HoneySQL. This is probably not something that I want to explore at
+this time.
+
+** Others
+
+These solutions are probably super cool and all, but I need a local,
+offline, preferably one-file solution to store everything. This
+gravitates me back to Sqlite and thus, SQL.
+
+*** NOTSURE Datomic
+CLOSED: [2020-02-16 Sun 17:31]
+
+Datomic would be so sweet, but it's a big overkill. I want to run an
+offline, purely local setup.
+
+*** NOTSURE CouchDB + Clutch
+CLOSED: [2020-02-16 Sun 17:31]
+
+** Conclusion
+
+Currently I'm thinking, pure JDBC (Sean Corfield's JDBC.next) + HoneySql.
+
+Let's leverage SQL at the database level, creating suitable views as
+needed.
+
+* Data schema
+
+A simple schema for a simple CRUD.
+
+We will want to import most of the EXIF informations into the database
+for fast and convenient access.
+
+EXIF tags too, but let's leave that for later.
+
+** Structure
+
+- picture
+  - id
+  - filename
+  - original (raw)
+  - rating
+  - taken_ts
+  - developed_ts
+  - import_ts
+  - title 
+  - description
+  - width_pixels
+  - height_pixels
+  - 
+- picture_tag
+  - id
+  - picture_id  (FK)
+  - tag_id      (FK)
+  - orderno     (*1)
+  - rating      (*2)
+- tag
+  - id
+  - title 
+  - tag_type    (*4)
+  - description
+  - parent_tag  (FK)
+  - public    boolean
+  - color       (*3)
+  - style_attrs (*3)
+
+** Notes
+
+- 1: If we choose to implement albums using tags, then orderno is
+  necessary for adjustment of order. Some places choose to implement
+  these two things in separate tables.
+- 2: Picture may stand better within a subcontext so it might warrant
+  a rating that is only relevant within the tag or album.
+- 3: Tag has colors, style (for organisation purposes within Jibit,
+  nowhere else). Nested tags shall inherit the parent tag's styling by
+  default, but if these colors are defined, they override.
+- 4: Not sure if necessary, but flairs and "deletion flags" may
+  warrant this kind of type distinction.
+
+* Trolling the drop box                                              :import:
+
+** About sidecars
+[2020-02-23 Sun]
+
+I am saying not to care about these at this point. Our current scope
+is to manage end results, not the raw files.
+
+** About raw files
+[2020-02-23 Sun]
+
+Good point, then. If we are to ignore sidecars then is it only fair to
+also ignore raw files?
+
+* EXIF parsers
+
+** NOTSURE Drew Noakes: metadata-extractor
+
+This tool looks so promising, is simple and everything. Sadly it
+appears to be very incomplete wrt support and functionality. We'll
+have to turn to the 'industry standard', Phil Harvey's exiftool.
+
+** DONE Phil Harvey: Exiftool and java bindings
+
+- Java integration https://github.com/mjeanroy/exiftool 
+  - Can use exiftool's daemon mode that gives us 25x speedup
+
+* TODO Round up all configuration in one EDN file or something
+
+We have stuff in =clurator.inbox=  for starters.
+
+* TODO We need good logging facilities
+* DONE Prepare real data
+CLOSED: [2020-02-22 Sat 17:00]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-02-22 Sat 17:00]
+:END:
+
+- Collect SOOC jpegs, DT exports, RT exports. A couple of raw files also.
+- Ensure they can be copied back.
+- inbox.backup is always there.
+- 624 megabytes in 55 eligible files.
+
+**  Found
+
+- Canon 5Dm2 SOOC jpegs + a few DT processed ones, plus 1 CR2
+- Olympus EPL5 SOOC file and ORF files, and XMP sidecars as clutter
+- Fuji XT1 SOOCs
+- Pokkari-SOOC
+- Leica Q: DT-processed files (with dupes) + DNG + XMP
+- M240: dt, rt, dng, sidecars xmp + pp3
+

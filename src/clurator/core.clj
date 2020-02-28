@@ -14,8 +14,7 @@
 
 (comp/defroutes app
   (GET "/" [] index)
-  (GET "/foo" [] "foo")
   (route/not-found "not found"))
 
 (defn -main [& args]
-  (run-server app {:port 8088}))
+  (run-server #'app {:port 8088}))
