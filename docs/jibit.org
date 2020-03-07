@@ -24,7 +24,11 @@ Somewhat both expectedly and disappointingly the solution is to use
 HugSQL when it helps the most and drop down to JDBC calls when you
 need maximum dynamism.
 
-*** TODO HoneySQL
+*** DONE HoneySQL
+CLOSED: [2020-02-28 Fri 18:11]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-02-28 Fri 18:11]
+:END:
 https://github.com/jkk/honeysql
 
 This is a library for building SQL. You'd use =clojure.jdbc= with this.
@@ -99,7 +103,7 @@ for fast and convenient access.
 
 EXIF tags too, but let's leave that for later.
 
-** Structure
+** Structure plans 
 
 - picture
   - id
@@ -130,6 +134,64 @@ EXIF tags too, but let's leave that for later.
   - color       (*3)
   - style_attrs (*3)
 
+** Schema annotated
+
+*** Photo
+[2020-03-01 Sun]
+
+This is going to be a fat table to be sure, but there's not much wrong
+here. Camera and lens manufacturer info is in denormalised form here,
+I don't see it being a huge problem. It'll be easy to convert into a
+more normalised form later on. Or it'll be difficult, but if so, it'll
+be difficult to maintain the relations.
+
+- id
+- lens_make :: (String) Lens manufacturer. Not very reliable.
+- lens_model :: (String) Exif info about the lens used. Can be empty
+  for compact cameras but should otherwise always be populated.
+- lens_min_fl :: (Num) zoom lens's widest FL. Prime populated both
+  with same.
+- lens_max_fl :: (Num) zoom lens's narrowest FL. Prime populated both
+  with same.
+- focal_length :: (Num) FL used for this shot.
+- focal_length_35 :: (Num) for convenience reasons normalized FL in
+  35mm equiv.
+- aperture :: (Num) used aperture opening for the shot, or its
+  inverse, meaning that "4" means the aperture of "1/4".
+- exposure_comp :: (Num) exposure compensation value if used camera's
+  metering.
+- camera_make :: (String) manufacturer of the Camera body.
+- camera_model :: (String) model of the Camera body.
+- iso :: (Num) ISO speed used to take this shot.
+- shutter_speed :: (Num) exposure time, or shutter speed in seconds.
+  "0.025" means "1/40" and so on.
+- light_value :: (Num) Exiftools or possibly the camera's measured
+  light value for fun.
+- rating :: (Num) user-given rating in Jibit.
+- orig_rating :: (Num) The rating that was encoded with EXIF, given in
+  camera or in raw editing tool or existing image managing tool.
+- taken_ts :: (datetime) when the shot was taken
+- process_ts :: (datetime) when the file was processed in a raw editor
+  or similar tool.
+- import_ts :: (datetime) when the file was imported to Jibit database.
+- width :: (num) width of the image in pixels
+- height :: (num) height of the image in pixels
+- megapixels :: (num) convenience normalization of the image resolution
+- title :: (String) user-given title for the image
+- subtitle :: (String) user-given secondary title
+- description :: (String) any notes and comments and stories about the
+  image.
+- notes :: (String) personal notes and comments not meant for exported
+- original_file  :: (String) the file name of the original file when
+  it was imported.
+- original_raw :: (String) the location of the raw file the file was
+  developed from.
+- original_dir :: (String) the name of the directory the file was in,
+  when imported.
+- uuid :: (String) very unique id 
+- storage_filename :: (String) the file name under which the file is
+  stored in the file system internally.
+
 ** Notes
 
 - 1: If we choose to implement albums using tags, then orderno is
@@ -143,8 +205,15 @@ EXIF tags too, but let's leave that for later.
 - 4: Not sure if necessary, but flairs and "deletion flags" may
   warrant this kind of type distinction.
 
-* Trolling the drop box                                              :import:
+* File Storage
 
+- Meaningful names are meaningful but we have a problem with changing
+  the names after metadata changes.
+- So maybe just UUIDs for file names. UUID + original extension.
+- We can write "views" over the data using hard or soft links and
+  those files can be named using any available metadata.
+
+* Trolling the drop box                                              :import:
 ** About sidecars
 [2020-02-23 Sun]
 
@@ -157,8 +226,12 @@ is to manage end results, not the raw files.
 Good point, then. If we are to ignore sidecars then is it only fair to
 also ignore raw files?
 
-* EXIF parsers
+** TODO HEIF, GIF, WEBM
 
+These are all valid things to manage but we probably have to leave
+these for later.
+
+* EXIF parsers
 ** NOTSURE Drew Noakes: metadata-extractor
 
 This tool looks so promising, is simple and everything. Sadly it
@@ -170,9 +243,79 @@ have to turn to the 'industry standard', Phil Harvey's exiftool.
 - Java integration https://github.com/mjeanroy/exiftool 
   - Can use exiftool's daemon mode that gives us 25x speedup
 
+* NOTSURE Parse images on import for width/height?
+CLOSED: [2020-03-01 Sun 19:54]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-01 Sun 19:54]
+:END:
+
+Pure exiftool output isn't enough. Raw files have funky resolutions
+sometimes and do we dare to f.ex round up Leica M's 23.85 megapixels
+up to 24?
+
+Probably yes, but also no.
+
+On JPEG files exif tags "ImageWidth" and "ImageHeight" seem to be
+correct. Since we don't want to concern us with raw files (and the
+whole resolution concept is not super clear) let's trust Phil on this
+analysis.
+
+* On accuracy of measurements ISO/Aperture/SS/EC
+
+I would say that if we handle 1/3-stops and 1/2-stops decently from
+floating point numbers it's accurate enough to be also statistically
+useful.
+
+After all, the DOF differences between f/2.76 and f/2.8 aren't going
+to be visible. And movement at 1/28 seconds and 1/30 seconds is
+equally blurry.
+
+Light value is probably something we can just show with rounded to two
+decimal places.
+
+* TODO inbox: fs/expand-home
+
+This thing should really be done once at settings' reading time.
+
+* TODO Fix import inaccuracies
+
+First import looks so good! But some things we should/could fix.
+
+** DONE :import_ts
+CLOSED: [2020-03-03 Tue 19:54]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-03 Tue 19:54]
+:END:
+
+This info comes as string repr. Make it so that it's the same as taken_ts/process_ts.
+
+** TODO :lens_make for Canon, Oly
+
+Surely there's no row on exif info about this?
+
+There's only vague heuristics we could utilise here. A better
+user-driven solution exists.
+
+* TODO Asking user to fill in missing info on import
+
+We can detect missing lens_make, lens_model, ask user to fill in them
+at import. Sigma, Tamron, some russian plastic lens... all is possible
+then.
+
+* TODO Normalize lens/camera info?
+
+Things like Lens_make, lens_model, FL_min, FL_max, aperture info could
+be served well to be in its own table to help with data fill-in.
+
 * TODO Round up all configuration in one EDN file or something
 
 We have stuff in =clurator.inbox=  for starters.
+
+- inbox
+- db
+  
+We'll ideally want to have this stuff specified either via env or an
+edn file. In this case we can skip CLI arguments.
 
 * TODO We need good logging facilities
 * DONE Prepare real data

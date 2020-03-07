@@ -1,8 +1,8 @@
 (ns clurator.exif
   "Exif analysis and related tools."
+  (:require [java-time :as time])
   (:import [com.thebuzzmedia.exiftool ExifToolBuilder Tag]
-           [com.thebuzzmedia.exiftool.core StandardTag]
-           ))
+           [com.thebuzzmedia.exiftool.core StandardTag]))
 
 ;; This thing is also supposed to close the process after 10 minutes
 ;; of inactivity. Currently I'm seeing 48-hour-old processes in my ps...
@@ -22,6 +22,9 @@
                      (.getValue %)))
        (into {})))
 
+(defn get-all-exif-data [image-file]
+  (tag-map->clj (.getImageMeta exiftool image-file)))
+
 (defn get-selected-exif-data*
   "Faster way that use tag enums from exiftool"
   [image-file fields]
@@ -33,9 +36,6 @@
   [image-file fields]
   (select-keys (get-all-exif-data image-file)
                fields))
-
-(defn get-all-exif-data [image-file]
-  (tag-map->clj (.getImageMeta exiftool image-file)))
 
 ;; Phil Harvey's exiftool collects and calculates many interesting
 ;; values for us. FOV, Focus distance, Light value. Many of the
@@ -55,6 +55,9 @@
   #{"Make"
     "Model"
     "ISO"
+    "ImageWidth"
+    "ImageHeight"
+    "Megapixels"
     "LensInfo"
     "LensMake"
     "LensModel"
@@ -63,19 +66,19 @@
     "ExposureTime"
     "CreateDate"
     "FocalLength"
-    "Focallength35efl"
+    "FocalLength35efl"
+    "MinFocalLength"
+    "MaxFocalLength"
     "LightValue"
     "Rating"
     })
 
 (def some-common-exif-keys
   #{;; Static Camera properties
-    "BaseISO"                           ; 5D, Pok
     "CircleOfConfusion"                 ; 5D, Q, Pok, EPL
     "Make"                              ; 5D, M, Q, Pok, EPL
     "Model"                             ; 5D, M, Q, Pok, EPL
     "UniqueCameraModel"                 ; M, Q
-    "CanonImageType"                    ; 5D
     ;; Image properties
     "ISO"                               ; 5D, M, Q, Pok, EPL
     "FNumber"  ,,,                      ; 5D, Q, EPL
@@ -102,3 +105,47 @@
     "MaxAperture"                       ; 5D
     "MaxApertureValue"                  ; M, Q
     })
+
+
+(defn str->int
+  [s]
+  (if s
+    (int (Double. s))
+    nil))
+
+(defn str->double
+  [s]
+  (if s
+    (Double. s)
+    nil))
+
+(defn str->datetime
+  [s]
+  (time/local-date-time "yyyy:MM:dd HH:mm:ss" s))
+
+(defn keywordify
+  "Turn a map of string keys into keywords, with ns prefix."
+  [m ns]
+  (->> m
+       (map (fn [[k v]] [(keyword ns k) v]))
+       (into {})))
+
+(defn get-exif-parsed
+  "Get a collection of exif tags parsed into appropriate types. Map of
+  keywords into strings or numbers."
+  [f]
+  (let [e (get-selected-exif-data f exif-keys)]
+    (-> e
+        (update "ISO" str->int)
+        (update "LightValue" str->double)
+        (update "ExposureCompensation" str->double)
+        (update "FocalLength35efl" str->double)
+        (update "FocalLength" str->double)
+        (update "Rating" str->int)
+        (update "Aperture" str->double)
+        (update "ExposureTime" str->double)
+        (update "CreateDate" str->datetime)
+        (update "ImageWidth" str->int)
+        (update "ImageHeight" str->int)
+        (update "Megapixels" str->double)
+        (keywordify "exif"))))

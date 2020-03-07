@@ -19,6 +19,13 @@
                  [com.drewnoakes/metadata-extractor "2.13.0"]
                  [com.github.mjeanroy/exiftool-lib "2.5.0"]
 
+                 ;; Database things
+                 [seancorfield/next.jdbc "1.0.13"]
+                 [org.xerial/sqlite-jdbc "3.30.1"]
+                 [honeysql "0.9.8"]
+
+                 [clojure.java-time "0.3.2"]
+
                  ;; Clurator, server ops
                  [http-kit "2.3.0"]
                  [compojure "1.6.1"]]
