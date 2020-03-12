@@ -76,6 +76,13 @@
        sql/format)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn query!
+  "Make a RO query. Take a map HoneySQL understands."
+  [query-map]
+  (jdbc/execute! db (sql/format query-map)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (declare schema-sql)
 
 (defn update-schema!

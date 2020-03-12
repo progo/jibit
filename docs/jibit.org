@@ -277,7 +277,13 @@ decimal places.
 
 This thing should really be done once at settings' reading time.
 
-* TODO Fix import inaccuracies
+* TODO Our backend API should be stricter with Access-Control-Allow-Origin
+
+Limit it to localhost? And this is naturally something the production
+shouldn't need... Since the same URI serves the JS and the API.
+
+* NOTSURE Fix import inaccuracies
+CLOSED: [2020-03-07 Sat 17:21]
 
 First import looks so good! But some things we should/could fix.
 
@@ -291,16 +297,33 @@ This info comes as string repr. Make it so that it's the same as taken_ts/proces
 
 ** TODO :lens_make for Canon, Oly
 
+<<ambiglens>>
+
 Surely there's no row on exif info about this?
 
 There's only vague heuristics we could utilise here. A better
 user-driven solution exists.
 
+*** Exif tags that could be stored
+
+- Olympus: "Lens Type" or "Lens ID" has a long human-readable id of
+  the lens and make.
+- Canon 5D: "Lens Type/ID" field is here as well. But Exiftool can't
+  distinguish between Canon 17-35 and a generic Sigma lens here.
+  
+In both cases an unambiguous analysis is not possible, heuristics
+would be needed.
+
 * TODO Asking user to fill in missing info on import
 
 We can detect missing lens_make, lens_model, ask user to fill in them
 at import. Sigma, Tamron, some russian plastic lens... all is possible
-then.
+then. See [[ambiglens]] for more.
+
+Other tools we need or benefit from:
+
+- Shift/correct taken_ts timezones 
+- mass-apply FL, lens info (leica lenses or other dead lenses)
 
 * TODO Normalize lens/camera info?
 
@@ -318,6 +341,25 @@ We'll ideally want to have this stuff specified either via env or an
 edn file. In this case we can skip CLI arguments.
 
 * TODO We need good logging facilities
+* TODO Unit tests
+
+Some material in human.clj ready to be made into tests.
+* TODO Check out if Metosin muuntaja is useful
+* TODO Unify terms in code backend/frontend
+
+- Negatives, photos, images... Just *photo* is good? 
+- What we call the view in jibit?
+  
+We could check out the darkroom/lighttable terminology for a hint of
+nostalgia to get juices going on.
+* Misc CLJS/Figwheel things
+** Inspect App DB
+
+In CLJS / repl
+
+: re-frame.db/app-db
+
+Alternative tool: ~re-frame-10x~
 * DONE Prepare real data
 CLOSED: [2020-02-22 Sat 17:00]
 :LOGBOOK:

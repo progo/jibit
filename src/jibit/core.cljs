@@ -4,7 +4,7 @@
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
-   [ajax.core :as ajax]
+   [ajax.edn :as ajax-edn]
    ))
 
 ;;; events and handlers -- update db
@@ -16,17 +16,49 @@
 ;; This is something we don't need in production. It can be left empty
 ;; there. This could also be something we don't need in figwheel
 ;; rounds if we can fix things in some end, but I don't know.
-(def server-uri "localhost:8088")
 
+;; Aha, remember to specify protocol
+(def server-uri "http://localhost:8088")
+
+;;;; Defining client/server conversations
+
+(re-frame/reg-event-fx
+ :http-get
+ (fn [{:keys [db]} _]
+   {:http-xhrio {:method :get
+                 :uri (str server-uri "/photos")
+                 :timeout 8000
+                 :format (ajax-edn/edn-request-format)
+                 :response-format (ajax-edn/edn-response-format)
+                 :on-success [:good-http-get]
+                 :on-failure [:bad-http-get]}}))
+
+;; Generic success handler for HTTP gets
 (re-frame/reg-event-db
+ :good-http-get
+ (fn [db [_ result]]
+   (assoc db :http-result-good result)))
+
+;; Generic failure handler for HTTP gets
+(re-frame/reg-event-db
+ :bad-http-get
+ (fn [db [_ result]]
+   (assoc db :http-result-fail result)))
+
+;;;;; This is done.
+
+(re-frame/reg-event-fx
  :initialize
- (fn [db _]
-   (if (:init-done db)
-     db
-     {:hello "world"
-      :images-query []
-      :all-negatives (range 12)
-      :init-done true})))
+ (fn [{:keys [db]} _]
+   (let [db' (if (:init-done db)
+               db
+               {:hello "world"
+                :images-query []
+                :all-negatives (range 12)
+                :init-done true})]
+     {:db db'
+      :dispatch [:http-get]
+      })))
 
 ;;; queries from db
 
