@@ -334,16 +334,29 @@ Other tools we need or benefit from:
 Things like Lens_make, lens_model, FL_min, FL_max, aperture info could
 be served well to be in its own table to help with data fill-in.
 
-* TODO Round up all configuration in one EDN file or something
+* DONE Round up all configuration in one EDN file or something
+CLOSED: [2020-03-15 Sun 19:08]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-15 Sun 19:08]
+:END:
 
 We have stuff in =clurator.inbox=  for starters.
 
-- inbox
 - db
-- core 
   
 We'll ideally want to have this stuff specified either via env or an
 edn file. In this case we can skip CLI arguments.
+
+* TODO Configuration rounded up
+
+Keep EDN in considerations though.
+
+* TODO Fix Thumbnails
+
+Do them on import maybe? 
+
+- We want a way to later on adjust the thumbnail size, redo everything
+  in batch
 
 * TODO We need good logging facilities
 * TODO Unit tests

@@ -2,18 +2,8 @@
   (:require [clurator.exif :as exif]
             [clurator.db :as db]
             [java-time :as time]
-            [me.raynes.fs :as fs]))
-
-;; The storage for collected files/jibit
-(def clurator-collection-path "~/pics/clurator")
-
-;; The location we source new material
-(def inbox-path "~/pics/inbox")
-
-;; After importing and processing, inbox should be empty and
-;; everything should be moved here. If this path is not specified,
-;; assume deletion.
-(def inbox-processed-path "~/pics/inbox.processed")
+            [me.raynes.fs :as fs]
+            clurator.settings))
 
 ;; Keep in lower case.
 (def picture-extensions #{".dng"
@@ -32,8 +22,7 @@
    (picture-extensions (.toLowerCase (fs/extension path)))))
 
 (defn eligible-files [inbox-path]
-  (fs/find-files* (fs/expand-home inbox-path)
-                  eligible-file?))
+  (fs/find-files* inbox-path eligible-file?))
 
 (defn remove-common-prefix
   [s prefix]
@@ -44,7 +33,7 @@
 (defn subdirectory-under-inbox
   [path]
   (let [path (remove-common-prefix (str path)
-                                   (str (fs/expand-home inbox-path)))
+                                   (str clurator.settings/inbox-path))
         ;; remove leading /
         path (if (= (first path) \/)
                (subs path 1)
@@ -83,15 +72,15 @@
 
 (defn process-inbox!
   [inbox-path]
-  (fs/mkdir (fs/expand-home clurator-collection-path))
-  (when inbox-processed-path)
-    (fs/mkdir (fs/expand-home inbox-processed-path))
+  (fs/mkdir clurator.settings/storage-directory)
+  (when clurator.settings/inbox-processed-path)
+    (fs/mkdir clurator.settings/inbox-processed-path)
   (doseq [f (eligible-files inbox-path)]
     (let [info (gather-file-info f)]
       (println "gonna process" f "into" (:meta/storage info))
 
       ;; copy/move file
-      (fs/copy f (str (fs/expand-home clurator-collection-path)
+      (fs/copy f (str clurator.settings/storage-directory
                       "/"
                       (:meta/storage info)))
 

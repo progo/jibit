@@ -2,11 +2,10 @@
   "Database interface"
   (:require [next.jdbc :as jdbc]
             [honeysql.core :as sql]
-            [honeysql.helpers :as s]))
+            [honeysql.helpers :as s]
+            clurator.settings))
 
-(def db-file  "/tmp/collection.db")
-
-(def db (jdbc/get-datasource {:dbtype "sqlite" :dbname db-file}))
+(def db (jdbc/get-datasource {:dbtype "sqlite" :dbname clurator.settings/database-file}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

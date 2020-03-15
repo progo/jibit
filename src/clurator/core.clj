@@ -4,7 +4,7 @@
             [compojure.route :as route]
             [clurator.db :as db]
             [honeysql.core :as sql]
-            ))
+            clurator.settings))
 
 ;; We will serve jibit here, and provide an API, with websockets
 ;; probably.
@@ -24,8 +24,7 @@
                                          :limit 10})))})
 
 (defn photo-thumbnail [filename]
-  ;; TODO refactor settings
-  (java.io.File. (str "/home/progo/pics/clurator/" filename)))
+  (java.io.File. (str clurator.settings/storage-directory "/" filename)))
 
 (comp/defroutes app
   (GET "/" [] index)
