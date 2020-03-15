@@ -1,2 +1,28 @@
-/* some style */
+.lighttable .slide-wrapper {
+    display: inline-block;
+}
 
+.lighttable .slide {
+    display: flex;
+    width: 400px;
+    background: red; /* shouldn't see this */
+    margin: 5px;
+}
+
+.lighttable .slide img {
+    width: 200px;
+}
+
+.lighttable .slide .info {
+    display: inline-block;
+    position: relative;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background-color: #abc;
+    width: 200px;
+    height: 200px;
+    font-size: small;
+}

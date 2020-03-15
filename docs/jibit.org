@@ -282,6 +282,10 @@ This thing should really be done once at settings' reading time.
 Limit it to localhost? And this is naturally something the production
 shouldn't need... Since the same URI serves the JS and the API.
 
+Using a wildcard on local dev setup is not a problem. The header
+should not be set in "production" to ensure only local same-host
+queries get through.
+
 * NOTSURE Fix import inaccuracies
 CLOSED: [2020-03-07 Sat 17:21]
 
@@ -348,7 +352,8 @@ Some material in human.clj ready to be made into tests.
 * TODO Unify terms in code backend/frontend
 
 - Negatives, photos, images... Just *photo* is good? 
-- What we call the view in jibit?
+  - Unify into "image"
+- I guess we can go for "slides" on a "lighttable" in jibit.
   
 We could check out the darkroom/lighttable terminology for a hint of
 nostalgia to get juices going on.

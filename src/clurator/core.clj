@@ -29,4 +29,6 @@
   (route/not-found "not found"))
 
 (defn -main [& args]
-  (run-server #'app {:port 8088}))
+  (let [port 8088]
+    (println "Running server at port" port)
+    (run-server #'app {:port port})))

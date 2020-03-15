@@ -17,32 +17,34 @@
 ;; there. This could also be something we don't need in figwheel
 ;; rounds if we can fix things in some end, but I don't know.
 
-;; Aha, remember to specify protocol
+;; Remember to specify protocol. And no trailing slash.
 (def server-uri "http://localhost:8088")
 
 ;;;; Defining client/server conversations
 
 (re-frame/reg-event-fx
  :http-get
- (fn [{:keys [db]} _]
+ (fn [{:keys [db]} [_ uri usecase]]
    {:http-xhrio {:method :get
-                 :uri (str server-uri "/photos")
-                 :timeout 8000
+                 :uri (str server-uri uri)
                  :format (ajax-edn/edn-request-format)
                  :response-format (ajax-edn/edn-response-format)
-                 :on-success [:good-http-get]
-                 :on-failure [:bad-http-get]}}))
+                 :on-success [:good-http-get usecase]
+                 :on-failure [:bad-http-get usecase]}}))
 
 ;; Generic success handler for HTTP gets
 (re-frame/reg-event-db
  :good-http-get
- (fn [db [_ result]]
-   (assoc db :http-result-good result)))
+ (fn [db [_ usecase result]]
+   (assoc db (case usecase
+               :query-images :images
+               :http-result-good)
+          result)))
 
 ;; Generic failure handler for HTTP gets
 (re-frame/reg-event-db
  :bad-http-get
- (fn [db [_ result]]
+ (fn [db [_ usecase result]]
    (assoc db :http-result-fail result)))
 
 ;;;;; This is done.
@@ -52,33 +54,40 @@
  (fn [{:keys [db]} _]
    (let [db' (if (:init-done db)
                db
-               {:hello "world"
-                :images-query []
-                :all-negatives (range 12)
+               {:images-query []
+                :images []
                 :init-done true})]
      {:db db'
-      :dispatch [:http-get]
+      :dispatch [:http-get "/photos" :query-images]
       })))
 
 ;;; queries from db
 
 (re-frame/reg-sub
- :all-negatives
+ :images
  (fn [db _]
-   (-> db :all-negatives)))
+   (-> db :images)))
 
 ;;; views and components
 
-(defn slide [image-id]
-  [:div.slide
-   [:img {:src "http://placekitten.com/200/200"}]
-   (str "=> " image-id)])
+(defn slide [image]
+  [:div.slide-wrapper
+   [:div.slide
+    [:img {:src "http://placekitten.com/200/200"}]
+    [:ul.info
+     [:li (:photo/original_file image)]
+     [:li (:photo/camera_make image)]
+     [:li "f/" (:photo/aperture image)]
+     [:li (:photo/shutter_speed image) " s"]
+     [:li "ISO " (:photo/iso image)]
+     ]]])
 
+;; TODO rename lighttable
 (defn lighttable-bare []
   [:div.lighttable
    (doall
-    (for [a @(re-frame/subscribe [:all-negatives])]
-      ^{:key a} [slide a]))])
+    (for [image @(re-frame/subscribe [:images])]
+      ^{:key (:photo/uuid image)} [slide image]))])
 
 (defn ui []
   (let []
