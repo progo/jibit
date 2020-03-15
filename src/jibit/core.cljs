@@ -73,7 +73,7 @@
 (defn slide [image]
   [:div.slide-wrapper
    [:div.slide
-    [:img {:src "http://placekitten.com/200/200"}]
+    [:img {:src (str server-uri "/thumbnail/" (:photo/storage_filename image))}]
     [:ul.info
      [:li (:photo/original_file image)]
      [:li (:photo/camera_make image)]

@@ -340,6 +340,7 @@ We have stuff in =clurator.inbox=  for starters.
 
 - inbox
 - db
+- core 
   
 We'll ideally want to have this stuff specified either via env or an
 edn file. In this case we can skip CLI arguments.
@@ -348,7 +349,6 @@ edn file. In this case we can skip CLI arguments.
 * TODO Unit tests
 
 Some material in human.clj ready to be made into tests.
-* TODO Check out if Metosin muuntaja is useful
 * TODO Unify terms in code backend/frontend
 
 - Negatives, photos, images... Just *photo* is good? 
@@ -365,6 +365,8 @@ In CLJS / repl
 : re-frame.db/app-db
 
 Alternative tool: ~re-frame-10x~
+* NOTSURE Check out if Metosin muuntaja is useful
+CLOSED: [2020-03-15 Sun 18:45]
 * DONE Prepare real data
 CLOSED: [2020-02-22 Sat 17:00]
 :LOGBOOK:

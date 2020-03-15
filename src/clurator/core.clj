@@ -23,9 +23,14 @@
                                          :order-by :%random
                                          :limit 10})))})
 
+(defn photo-thumbnail [filename]
+  ;; TODO refactor settings
+  (java.io.File. (str "/home/progo/pics/clurator/" filename)))
+
 (comp/defroutes app
   (GET "/" [] index)
   (GET "/photos" [] list-photos)
+  (GET "/thumbnail/:filename" [filename] (photo-thumbnail filename))
   (route/not-found "not found"))
 
 (defn -main [& args]
