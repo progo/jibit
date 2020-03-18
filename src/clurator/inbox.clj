@@ -4,19 +4,11 @@
             [clurator.thumbnails :as thumbnails]
             [java-time :as time]
             [me.raynes.fs :as fs]
+            [clurator.file-utils :as futils]
             clurator.settings))
 
-
-;;;;;;78 chars;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn eligible-file?
-  [path]
-  (and
-   (fs/file? path)
-   (clurator.settings/image-extensions (.toLowerCase (fs/extension path)))))
-
 (defn eligible-files [inbox-path]
-  (fs/find-files* inbox-path eligible-file?))
+  (fs/find-files* inbox-path futils/eligible-file?))
 
 (defn remove-common-prefix
   [s prefix]

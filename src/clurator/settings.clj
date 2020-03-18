@@ -1,7 +1,6 @@
 (ns clurator.settings
   "Shared settings for Clurator the backend."
-  (:require clojure.set
-            [me.raynes.fs :as fs]))
+  (:require [me.raynes.fs :as fs]))
 
 ;; Read these from an edn or environment vars
 
@@ -43,7 +42,3 @@
     ".tif" ".tiff"
     ".png"
     })
-
-(def image-extensions (clojure.set/union
-                       image-raw-extensions
-                       image-bitmap-extensions))
