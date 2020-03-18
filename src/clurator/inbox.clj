@@ -1,17 +1,11 @@
 (ns clurator.inbox
   (:require [clurator.exif :as exif]
             [clurator.db :as db]
+            [clurator.thumbnails :as thumbnails]
             [java-time :as time]
             [me.raynes.fs :as fs]
             clurator.settings))
 
-;; Keep in lower case.
-(def picture-extensions #{".dng"
-                          ".jpg" ".jpeg"
-                          ".png" ".tif" ".tiff"
-                          ".cr2" ".cr3"
-                          ".orf" ".nef"
-                          ".arw" ".rw2"})
 
 ;;;;;;78 chars;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -19,7 +13,7 @@
   [path]
   (and
    (fs/file? path)
-   (picture-extensions (.toLowerCase (fs/extension path)))))
+   (clurator.settings/image-extensions (.toLowerCase (fs/extension path)))))
 
 (defn eligible-files [inbox-path]
   (fs/find-files* inbox-path eligible-file?))
@@ -84,11 +78,13 @@
                       "/"
                       (:meta/storage info)))
 
+      ;; make thumbnail
+
       ;; make a record in db
       (db/add-entry! info)
       )))
 
 ;; Debug stuffs
 (comment
-  (defn randf [] (rand-nth (eligible-files inbox-path)))
+  (defn randf [] (rand-nth (eligible-files clurator.settings/inbox-path)))
   )

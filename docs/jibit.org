@@ -226,6 +226,14 @@ is to manage end results, not the raw files.
 Good point, then. If we are to ignore sidecars then is it only fair to
 also ignore raw files?
 
+** TODO Let's ignore raw files for now.
+
+See [[rawthumbnail]] and this discussion above about XMP and raw file things.
+
+If we need raw image preview, we can do it. But it is certain other
+problems as well. Thumbnail extraction, thumbnails have to be oriented
+properly, so rotation things too.
+
 ** TODO HEIF, GIF, WEBM
 
 These are all valid things to manage but we probably have to leave
@@ -370,6 +378,18 @@ Some material in human.clj ready to be made into tests.
   
 We could check out the darkroom/lighttable terminology for a hint of
 nostalgia to get juices going on.
+
+* Thumbnails from raws
+
+<<rawthumbnail>>
+
+- Canon CR2: full sized JPEG "PreviewImage"
+- Leica Q: full sized JPEG "JpgFromRaw" 
+- Leica Q: 1080p JPEG "PreviewImage"
+- Leica Q: 720p JPEG "PreviewImage"
+- Leica M240: Tiny and medium sized previews "PreviewImage"
+- Olympus EPL5: Tiny and large sized previews "PreviewImage" and "ThumbnailImage"
+
 * Misc CLJS/Figwheel things
 ** Inspect App DB
 
