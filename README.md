@@ -7,6 +7,13 @@ The overall project consists of two components:
 - jibit: the SPA frontend, written in CLJS using re-frame 
 - clurator: the backend, acting as a HTTP server.
 
+## External dependencies
+
+We currently invoke two external tools, and rely on these during import.
+
+- exiftool (newer than 8.36)
+- imagemagick (convert)
+
 ## Development
 
 To get an interactive development environment run:

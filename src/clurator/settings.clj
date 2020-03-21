@@ -18,7 +18,7 @@
 ;; Thumbnail max dimension in pixels
 (def thumbnail-size 400)
 
-(def thumbnail-cache-dir (fs/expand-home "~/pics/clurator/thumbnails"))
+(def thumbnail-dir (fs/expand-home "~/pics/clurator/thumbnails"))
 
 (def database-file (fs/expand-home "~/clurator.db"))
 
