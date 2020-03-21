@@ -71,6 +71,7 @@
                       (:meta/storage info)))
 
       ;; make thumbnail
+      (thumbnails/create-thumbnail! f (:meta/uuid info))
 
       ;; make a record in db
       (db/add-entry! info)

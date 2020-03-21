@@ -43,16 +43,16 @@
 
   Thumbnail size is controlled by settings.
   "
-  [f thumb-name]
+  [f uuid]
   (cond
     (futils/bitmap-file? f) (make-thumbnail-from-bmp
                              f
-                             thumb-name)
+                             uuid)
     (futils/raw-file? f) (when-let [tempdir (fs/temp-dir "jibit-")]
                            (try
                              (make-thumbnail-from-bmp
                               (extract-raw-preview f tempdir)
-                              thumb-name)
+                              uuid)
                              (finally
                                (fs/delete-dir tempdir))))
     :t nil))
