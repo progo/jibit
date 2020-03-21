@@ -59,6 +59,7 @@
 (defn process-inbox!
   [inbox-path]
   (fs/mkdir clurator.settings/storage-directory)
+  (fs/mkdir clurator.settings/thumbnail-dir)
   (when clurator.settings/inbox-processed-path)
     (fs/mkdir clurator.settings/inbox-processed-path)
   (doseq [f (eligible-files inbox-path)]

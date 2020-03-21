@@ -23,13 +23,13 @@
                                          :order-by :%random
                                          :limit 10})))})
 
-(defn photo-thumbnail [filename]
-  (java.io.File. (str clurator.settings/storage-directory "/" filename)))
+(defn photo-thumbnail [uuid]
+  (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
 
 (comp/defroutes app
   (GET "/" [] index)
   (GET "/photos" [] list-photos)
-  (GET "/thumbnail/:filename" [filename] (photo-thumbnail filename))
+  (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
   (route/not-found "not found"))
 
 (defn -main [& args]

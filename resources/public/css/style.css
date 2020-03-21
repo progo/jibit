@@ -1,3 +1,8 @@
+html {
+    color: #ffb000;
+    background-color: #333;
+}
+
 .lighttable .slide-wrapper {
     display: inline-block;
 }
@@ -5,12 +10,15 @@
 .lighttable .slide {
     display: flex;
     width: 400px;
-    background: red; /* shouldn't see this */
-    margin: 5px;
+    margin: 1px;
+    background-color: black;
+    margin-top: 0px;
 }
 
-.lighttable .slide img {
+.slide img {
+    object-fit: contain;
     width: 200px;
+    height: 200px;
 }
 
 .lighttable .slide .info {
@@ -21,8 +29,11 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    background-color: #abc;
     width: 200px;
     height: 200px;
     font-size: small;
+
+    background-color: #1a1a1a;
+    color: #ffb000;
+    font-family: 'Courier';
 }
