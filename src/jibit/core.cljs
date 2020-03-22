@@ -5,6 +5,8 @@
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
    [ajax.edn :as ajax-edn]
+
+   [common.human :as human]
    ))
 
 ;;; events and handlers -- update db
@@ -77,8 +79,10 @@
     [:ul.info
      [:li (:photo/original_file image)]
      [:li (:photo/camera_make image)]
-     [:li "f/" (:photo/aperture image)]
-     [:li (:photo/shutter_speed image) " s"]
+     [:li (human/focal-length (:photo/focal_length_35 image)) " mm"]
+     [:li (human/aperture (:photo/aperture image))]
+     [:li (human/shutter-speed (:photo/shutter_speed image)) " s"]
+     [:li (human/exp-comp (:photo/exposure_comp image)) " EV"]
      [:li "ISO " (:photo/iso image)]
      ]]])
 
