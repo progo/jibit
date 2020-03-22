@@ -419,4 +419,27 @@ CLOSED: [2020-02-22 Sat 17:00]
 - Pokkari-SOOC
 - Leica Q: DT-processed files (with dupes) + DNG + XMP
 - M240: dt, rt, dng, sidecars xmp + pp3
+* Setting up the dev environment                                :emacs:cider:
 
+System:
+
+- Leiningen
+- emacs + cider
+
+Set up the deps and libraries:
+
+: lein deps
+
+Connect both at once as the good RMS intended.
+
+: M-x cider-jack-in-clj&cljs
+
+In the CLJ repl evaluate =clurator.core= and in that namespace run:
+
+: (def SERV (-main))
+
+Now the server starts at port 8088. Stop the server by running the
+bound function =(SERV)=.
+
+And frontend/figwheel things are running in port 9500 so head to
+http://localhost:9500 and see the magic.
