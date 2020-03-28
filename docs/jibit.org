@@ -392,6 +392,13 @@ dialect.
 : (debug "foo" "bar" :fez [2 4 5])
 : (debugf "This octal is wicked %o" 42)
 
+* UI things
+
+Have to say, the current [2020-03-28 Sat] color palette is looking
+nice. Gold + silver on the front against dark grays on the back.
+Bright yellow and red easy to use as warning colors, blue/green easy
+to adapt into tags.
+
 * TODO Unit tests
 
 Some material in human.clj ready to be made into tests.

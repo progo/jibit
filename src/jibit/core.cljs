@@ -63,6 +63,11 @@
       :dispatch [:http-get "/photos" :query-images]
       })))
 
+;;;
+
+(defn filter-photos []
+  (re-frame/dispatch [:http-get "/photos" :query-images]))
+
 ;;; queries from db
 
 (re-frame/reg-sub
@@ -103,9 +108,12 @@
 (defn ui []
   (let []
     [:div
-     [:h1 "Files"
-      [:span.files-count
-       @(re-frame/subscribe [:images-count])]]
+     [:h1 "Photos"
+      [:span.files-count \#
+       @(re-frame/subscribe [:images-count])]
+      [:button
+       {:on-click filter-photos}
+       "Refresh"]]
      [lighttable-bare]]))
 
 (defn get-app-element []

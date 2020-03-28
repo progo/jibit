@@ -3,6 +3,13 @@ html {
     background-color: #333;
 }
 
+
+button {
+    color: black;
+    background-color: #ffb000;
+    float: right;
+}
+
 .files-count {
     color: silver;
     font-size: smaller;
