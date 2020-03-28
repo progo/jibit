@@ -20,8 +20,7 @@
              "Access-Control-Allow-Origin" "*"}
    :body (prn-str (db/query! (sql/build {:select :*
                                          :from :photo
-                                         :order-by :%random
-                                         :limit 10})))})
+                                         :order-by :%random})))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
