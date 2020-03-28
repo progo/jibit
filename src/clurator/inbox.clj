@@ -41,6 +41,7 @@
       time/local-date-time))
 
 (defn gather-file-info
+  "Produce an Emap from file `f'."
   [f]
   (let [exif-tags (exif/get-exif-parsed f)
         extension (.toLowerCase (fs/extension f))
@@ -63,20 +64,19 @@
   (when clurator.settings/inbox-processed-path)
     (fs/mkdir clurator.settings/inbox-processed-path)
   (doseq [f (eligible-files inbox-path)]
-    (let [info (gather-file-info f)]
-      (println "gonna process" f "into" (:meta/storage info))
+    (let [emap (gather-file-info f)]
+      (println "gonna process" f "into" (:meta/storage emap))
 
       ;; copy/move file
       (fs/copy f (str clurator.settings/storage-directory
                       "/"
-                      (:meta/storage info)))
+                      (:meta/storage emap)))
 
       ;; make thumbnail
-      (thumbnails/create-thumbnail! f (:meta/uuid info))
+      (thumbnails/create-thumbnail! f (:meta/uuid emap))
 
       ;; make a record in db
-      (db/add-entry! info)
-      )))
+      (db/add-entry! emap))))
 
 ;; Debug stuffs
 (comment
