@@ -1,7 +1,8 @@
 (ns clurator.core
   (:require [org.httpkit.server :refer [run-server]]
             [compojure.core :as comp :refer [GET POST]]
-            [compojure.route :as route]
+            compojure.route
+            [taoensso.timbre :as timbre :refer [debug spy]]
             [clurator.db :as db]
             [honeysql.core :as sql]
             clurator.settings))
@@ -29,7 +30,7 @@
   (GET "/" [] index)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
-  (route/not-found "not found"))
+  (compojure.route/not-found "not found"))
 
 (defn -main [& args]
   (let [port 8088]

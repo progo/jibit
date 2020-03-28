@@ -1,6 +1,7 @@
 (ns clurator.settings
   "Shared settings for Clurator the backend."
-  (:require [me.raynes.fs :as fs]))
+  (:require [me.raynes.fs :as fs]
+            [taoensso.timbre :as timbre]))
 
 ;; Read these from an edn or environment vars
 
@@ -42,3 +43,10 @@
     ".tif" ".tiff"
     ".png"
     })
+
+
+;; Configure timbre the logging facility
+
+(timbre/merge-config! {:timestamp-opts
+                       {:pattern "yyyy-MM-dd HH:mm:ss"
+                        :timezone (java.util.TimeZone/getTimeZone "Europe/Helsinki")}})

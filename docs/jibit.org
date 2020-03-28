@@ -337,7 +337,11 @@ Other tools we need or benefit from:
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
 
-* TODO Normalize lens/camera info?
+* DONE Normalize lens/camera info?
+CLOSED: [2020-03-28 Sat 17:04]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-28 Sat 17:04]
+:END:
 
 Things like Lens_make, lens_model, FL_min, FL_max, aperture info could
 be served well to be in its own table to help with data fill-in.
@@ -370,7 +374,24 @@ Do them on import maybe?
 - We want a way to later on adjust the thumbnail size, redo everything
   in batch
 
-* TODO We need good logging facilities
+* DONE We need good logging facilities
+CLOSED: [2020-03-28 Sat 17:56]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-28 Sat 17:56]
+:END:
+
+Timbre is an old friend, let's set it up.
+
+It's somewhat unmaintained as of today. It works but it's somewhat
+hard to configure... Well it's figured out.
+
+The docs are a mess but the "f" variants of logging utilities are
+"format" versions. Standard C-style format flags work, with java
+dialect.
+
+: (debug "foo" "bar" :fez [2 4 5])
+: (debugf "This octal is wicked %o" 42)
+
 * TODO Unit tests
 
 Some material in human.clj ready to be made into tests.

@@ -9,6 +9,8 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.10.520"]
 
+                 [com.taoensso/timbre "4.10.0"]
+
                  ;; jibit
                  [reagent "0.8.1"]
                  [re-frame "0.11.0-rc3"]
