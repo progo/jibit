@@ -83,7 +83,8 @@
     [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
     [:ul.info
      [:li (:photo/original_file image)]
-     [:li (:photo/camera_make image)]
+     [:li (:camera/exif_make image)]
+     [:li (:lens/exif_model image)]
      [:li (human/focal-length (:photo/focal_length_35 image)) " mm"]
      [:li (human/aperture (:photo/aperture image))]
      [:li (human/shutter-speed (:photo/shutter_speed image)) " s"]

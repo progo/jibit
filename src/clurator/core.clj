@@ -13,15 +13,13 @@
 (defn index [req]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body "<h1>Hello, world!</h1>"})
+   :body "<h1>Hello, world!</h1><p>Soon serving jibit here...</p>"})
 
 (defn list-photos [req]
   {:status 200
    :headers {"Content-Type" "application/edn"
              "Access-Control-Allow-Origin" "*"}
-   :body (prn-str (db/query! (sql/build {:select :*
-                                         :from :photo
-                                         :order-by :%random})))})
+   :body (prn-str (db/filter-photos {:order-by :%random}))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
@@ -34,5 +32,5 @@
 
 (defn -main [& args]
   (let [port 8088]
-    (println "Running server at port" port)
+    (timbre/info "Running server at port" port)
     (run-server #'app {:port port})))

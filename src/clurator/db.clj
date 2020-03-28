@@ -15,6 +15,24 @@
   [query-map]
   (jdbc/execute! db (sql/format query-map)))
 
+(defn filter-photos
+  ""
+  [{order-by :order-by
+    offset :offset
+    limit :limit
+
+    :or {order-by :taken_ts
+         offset 0
+         limit 10}
+    }]
+  (query! {:select [:photo.* :camera.* :lens.*]
+           :from [:photo]
+           :join [:camera [:= :camera.id :photo.camera_id]
+                  :lens [:= :lens.id :photo.lens_id]]
+           :order-by [order-by]
+           :offset offset
+           :limit limit}))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def photo-clj->db-key
