@@ -70,6 +70,11 @@
  (fn [db _]
    (-> db :images)))
 
+(re-frame/reg-sub
+ :images-count
+ (fn [db _]
+   (count (-> db :images))))
+
 ;;; views and components
 
 (defn slide [image]
@@ -82,7 +87,8 @@
      [:li (human/focal-length (:photo/focal_length_35 image)) " mm"]
      [:li (human/aperture (:photo/aperture image))]
      [:li (human/shutter-speed (:photo/shutter_speed image)) " s"]
-     [:li (human/exp-comp (:photo/exposure_comp image)) " EV"]
+     (when-not (zero? (:photo/exposure_comp image))
+       [:li (human/exp-comp (:photo/exposure_comp image)) " EV"])
      [:li "ISO " (:photo/iso image)]
      ]]])
 
@@ -96,7 +102,9 @@
 (defn ui []
   (let []
     [:div
-     [:h1 "Gallery"]
+     [:h1 "Files"
+      [:span.files-count
+       @(re-frame/subscribe [:images-count])]]
      [lighttable-bare]]))
 
 (defn get-app-element []

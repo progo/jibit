@@ -3,6 +3,11 @@ html {
     background-color: #333;
 }
 
+.files-count {
+    color: silver;
+    font-size: smaller;
+}
+
 .lighttable .slide-wrapper {
     display: inline-block;
 }
