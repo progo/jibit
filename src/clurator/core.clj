@@ -1,6 +1,7 @@
 (ns clurator.core
   (:require [org.httpkit.server :refer [run-server]]
             [compojure.core :as comp :refer [GET POST]]
+            [ring.util.codec :refer [form-decode]]
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
             [clurator.db :as db]
@@ -9,6 +10,16 @@
 
 ;; We will serve jibit here, and provide an API, with websockets
 ;; probably.
+
+(defn handle-filter-criteria
+  [criteria]
+  ;; taken-begin  date
+  ;; taken-end    date
+  (merge {:order-by :%random}
+         (if-let [tb (criteria "taken-begin")]
+           {:taken-begin tb})
+         (if-let [te (criteria "taken-end")]
+           {:taken-end te})))
 
 (defn index [req]
   {:status 200
@@ -19,7 +30,9 @@
   {:status 200
    :headers {"Content-Type" "application/edn"
              "Access-Control-Allow-Origin" "*"}
-   :body (prn-str (db/filter-photos {:order-by :%random}))})
+   :body (prn-str
+          (db/filter-photos (handle-filter-criteria
+                             (form-decode (:query-string req)))))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

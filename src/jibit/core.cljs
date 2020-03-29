@@ -26,9 +26,10 @@
 
 (re-frame/reg-event-fx
  :http-get
- (fn [{:keys [db]} [_ uri usecase]]
+ (fn [{:keys [db]} [_ uri usecase params]]
    {:http-xhrio {:method :get
                  :uri (str server-uri uri)
+                 :params params
                  :format (ajax-edn/edn-request-format)
                  :response-format (ajax-edn/edn-response-format)
                  :on-success [:good-http-get usecase]
@@ -60,7 +61,7 @@
                 :images []
                 :init-done true})]
      {:db db'
-      :dispatch [:http-get "/photos" :query-images]
+      :dispatch [:http-get "/photos" :query-images {}]
       })))
 
 ;;;;; Tools
@@ -87,7 +88,7 @@
   (let [form (query "#filter form")
         filter-criteria (read-form form)]
     (debug "Filtering by" filter-criteria)
-    (re-frame/dispatch [:http-get "/photos" :query-images])))
+    (re-frame/dispatch [:http-get "/photos" :query-images filter-criteria])))
 
 ;;; queries from db
 

@@ -15,23 +15,39 @@
   [query-map]
   (jdbc/execute! db (sql/format query-map)))
 
+(defn nilify
+  "Turn empty strings into nils"
+  [x]
+  (if (empty? x) nil x))
+
+(defn build-taken-criteria
+  [taken-begin taken-end]
+  (cond
+    (and (not taken-begin) (not taken-end)) nil
+    (and (not taken-begin) taken-end)       [:< :photo.taken_ts taken-end]
+    (and taken-begin       (not taken-end)) [:> :photo.taken_ts taken-begin]
+    :else [:between :photo.taken_ts taken-begin taken-end]))
+
 (defn filter-photos
   ""
   [{order-by :order-by
     offset :offset
     limit :limit
+    taken-begin :taken-begin
+    taken-end :taken-end
 
     :or {order-by :taken_ts
          offset 0
-         limit 10}
-    }]
-  (query! {:select [:photo.* :camera.* :lens.*]
-           :from [:photo]
-           :join [:camera [:= :camera.id :photo.camera_id]
-                  :lens [:= :lens.id :photo.lens_id]]
-           :order-by [order-by]
-           :offset offset
-           :limit limit}))
+         limit 10}}]
+  (let [taken-crit (build-taken-criteria (nilify taken-begin) (nilify taken-end))]
+    (query! {:select [:photo.* :camera.* :lens.*]
+             :from [:photo]
+             :join [:camera [:= :camera.id :photo.camera_id]
+                    :lens [:= :lens.id :photo.lens_id]]
+             :where [:and true taken-crit]
+             :order-by [order-by]
+             :offset offset
+             :limit limit})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
