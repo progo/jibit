@@ -226,7 +226,8 @@ is to manage end results, not the raw files.
 Good point, then. If we are to ignore sidecars then is it only fair to
 also ignore raw files?
 
-** TODO Let's ignore raw files for now.
+** NOTSURE Let's ignore raw files for now.
+CLOSED: [2020-03-29 Sun 19:32]
 
 See [[rawthumbnail]] and this discussion above about XMP and raw file things.
 
@@ -281,7 +282,11 @@ equally blurry.
 Light value is probably something we can just show with rounded to two
 decimal places.
 
-* TODO inbox: fs/expand-home
+* DONE inbox: fs/expand-home
+CLOSED: [2020-03-29 Sun 19:32]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-29 Sun 19:32]
+:END:
 
 This thing should really be done once at settings' reading time.
 
@@ -307,7 +312,8 @@ CLOSED: [2020-03-03 Tue 19:54]
 
 This info comes as string repr. Make it so that it's the same as taken_ts/process_ts.
 
-** TODO :lens_make for Canon, Oly
+** NOTSURE :lens_make for Canon, Oly
+CLOSED: [2020-03-29 Sun 19:33]
 
 <<ambiglens>>
 
@@ -326,6 +332,13 @@ user-driven solution exists.
 In both cases an unambiguous analysis is not possible, heuristics
 would be needed.
 
+*** Real solution that will work 100 % of the time
+
+We don't make up anything; instead we ask the user to fill in the info.
+
+We have now Cameras and Lenses in their own tables and user should be
+able to mass-edit those photos to reflect what he was using at the
+time. Or just leave empty.
 * TODO Asking user to fill in missing info on import
 
 We can detect missing lens_make, lens_model, ask user to fill in them
