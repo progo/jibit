@@ -5,7 +5,7 @@
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
    [ajax.edn :as ajax-edn]
-
+   [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
    ))
 
@@ -63,10 +63,31 @@
       :dispatch [:http-get "/photos" :query-images]
       })))
 
+;;;;; Tools
+
+(defn query [q]
+  (js/document.querySelector q))
+
+;;; Form utils
+
+(defn read-form [form-elt]
+  (into {}
+        (for [x (array-seq (.-elements form-elt))]
+          [(.-name x)
+           (.-value x)])))
+
+(defn read-form-id [form-id]
+  (let [f (js/document.getElementById form-id)]
+    (read-form f)))
+
 ;;;
 
-(defn filter-photos []
-  (re-frame/dispatch [:http-get "/photos" :query-images]))
+(defn filter-photos
+  []
+  (let [form (query "#filter form")
+        filter-criteria (read-form form)]
+    (debug "Filtering by" filter-criteria)
+    (re-frame/dispatch [:http-get "/photos" :query-images])))
 
 ;;; queries from db
 
@@ -80,7 +101,7 @@
  (fn [db _]
    (count (-> db :images))))
 
-;;; views and components
+;;; Views and components
 
 (defn slide [image]
   [:div.slide-wrapper
@@ -98,7 +119,19 @@
      [:li "ISO " (:photo/iso image)]
      ]]])
 
-;; TODO rename lighttable
+(defn filter-panel []
+  [:div#filter
+   [:form
+    [:h1 "Filter photos"]
+    [:div
+     "Taken"
+     [:input {:type "date" :name "taken-begin"}]
+     [:input {:type "date" :name "taken-end"}]]
+    [:a#filter-btn.button
+     {:on-click filter-photos}
+     "Filter"]
+    ]])
+
 (defn lighttable-bare []
   [:div.lighttable
    (doall
@@ -110,10 +143,8 @@
     [:div
      [:h1 "Photos"
       [:span.files-count \#
-       @(re-frame/subscribe [:images-count])]
-      [:button
-       {:on-click filter-photos}
-       "Refresh"]]
+       @(re-frame/subscribe [:images-count])]]
+     [filter-panel]
      [lighttable-bare]]))
 
 (defn get-app-element []
