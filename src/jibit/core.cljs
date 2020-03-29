@@ -125,6 +125,11 @@
    [:form
     [:h1 "Filter photos"]
     [:div
+     "Make"
+     [:input {:type "text" :name "camera-make"}]
+     "Model"
+     [:input {:type "text" :name "camera-model"}]]
+    [:div
      "Taken"
      [:input {:type "date" :name "taken-begin"}]
      [:input {:type "date" :name "taken-end"}]]

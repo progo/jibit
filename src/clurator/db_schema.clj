@@ -86,8 +86,8 @@
       "create index ix_photo_original_dir on photo(original_dir);"
 
       "CREATE VIEW vw_photo AS SELECT
-      c.exif_make || ' ' || c.exif_model AS Camera,
-      l.exif_make || ' ' || l.exif_model AS Lens,
+      ifnull(c.exif_make, 'N/A') || ' ' || ifnull(c.exif_model, 'N/A') AS Camera,
+      ifnull(l.exif_make, 'N/A') || ' ' || ifnull(l.exif_model, 'N/A') AS Lens,
       p.focal_length_35 AS FL,
       p.aperture,
       p.iso,
@@ -100,8 +100,8 @@
       p.megapixels,
       p.storage_filename
       FROM photo p
-      JOIN camera c ON p.camera_id = c.id
-      JOIN lens l ON p.lens_id = l.id;"
+      LEFT JOIN camera c ON p.camera_id = c.id
+      LEFT JOIN lens l ON p.lens_id = l.id;"
       ]
    })
 

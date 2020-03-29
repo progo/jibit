@@ -15,7 +15,14 @@
   [criteria]
   ;; taken-begin  date
   ;; taken-end    date
+  ;; camera-make  text
+  ;; camera-model text
+  ;; TODO handle empty strings at this point, nilify
   (merge {:order-by :%random}
+         (if-let [x (criteria "camera-make")]
+           {:camera-make x})
+         (if-let [x (criteria "camera-model")]
+           {:camera-model x})
          (if-let [tb (criteria "taken-begin")]
            {:taken-begin tb})
          (if-let [te (criteria "taken-end")]
