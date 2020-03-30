@@ -39,11 +39,12 @@
   ;; taken-end    date
   ;; camera-make  text
   ;; camera-model text
-  (merge {:order-by :taken_ts}
+  (merge {}
          (clean-input :order-by
               (case input
                 "random" :%random
-                "taken" :taken_ts))
+                "taken" :taken_ts
+                :taken_ts))
          (clean-input :camera-make)
          (clean-input :camera-model)
          (clean-input :taken-begin)
