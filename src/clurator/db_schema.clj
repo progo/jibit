@@ -85,6 +85,36 @@
       "create index ix_photo_original_raw on photo(original_raw);"
       "create index ix_photo_original_dir on photo(original_dir);"
 
+      "create table tag
+      ( id                      integer primary key autoincrement
+      , name                    text
+      , type                    text
+      , description             text
+      , parent_id               integer
+      , style_color             text
+      , style_attrs             text
+      , public                  integer
+      , foreign key (parent_id) references tag(id) on delete restrict on update cascade
+      , unique (name)
+      );"
+      "create index ix_tag_name on tag(name);"
+      "create index ix_tag_type on tag(type);"
+      "create index ix_tag_parent_id on tag(parent_id);"
+
+      "create table photo_tag
+      ( id                      integer primary key autoincrement
+      , photo_id                integer not null
+      , tag_id                  integer not null
+      , orderno                 integer
+      , rating                  integer
+      , description             text
+      , foreign key (photo_id) references photo(id) on delete cascade  on update cascade
+      , foreign key (tag_id)   references tag(id)   on delete set null on update cascade
+      , unique (photo_id, tag_id)
+      );"
+      "create index ix_phototag_photo_id on photo_tag (photo_id);"
+      "create index ix_phototag_tag_id on photo_tag (tag_id);"
+
       "CREATE VIEW vw_photo AS SELECT
       ifnull(c.exif_make, 'N/A') || ' ' || ifnull(c.exif_model, 'N/A') AS Camera,
       ifnull(l.exif_make, 'N/A') || ' ' || ifnull(l.exif_model, 'N/A') AS Lens,

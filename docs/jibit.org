@@ -135,7 +135,6 @@ EXIF tags too, but let's leave that for later.
   - style_attrs (*3)
 
 ** Schema annotated
-
 *** Photo
 [2020-03-01 Sun]
 
@@ -205,6 +204,64 @@ be difficult to maintain the relations.
 - 4: Not sure if necessary, but flairs and "deletion flags" may
   warrant this kind of type distinction.
 
+** Tag traps
+
+Tagged photos
+
+: select id from photo
+: where id in (select photo_id from photo_tag)
+
+Untagged photos
+
+: select id from photo
+: where id not in (select photo_id from photo_tag)
+
+Photos tagged with tag id 3
+
+: select photo.*
+: from photo
+: where id in (select photo_id from photo_tag where tag_id = 3)
+
+Photos tagged with tag named 'Cars' (id 3)
+
+: select photo.*
+: from photo
+: where id in (select photo_id from photo_tag where tag_id = (select id from tag where name ='Cars'))
+
+Photos tagged with (UNION) tag 1 or 2
+
+: select id from photo
+: where id in (select photo_id from photo_tag where tag_id in (1, 2));
+
+Photos tagged with (INTERSECT) tags 2 and 3. Here's the trick is to have count(id) equal to the amount of tags selected. 
+
+#+BEGIN_EXAMPLE
+  SELECT p.*
+  FROM photo p
+  WHERE EXISTS (
+    SELECT NULL 
+    FROM photo_tag pt 
+    JOIN tag        t ON pt.tag_id = t.id
+    WHERE t.id IN (2, 3) 
+    AND pt.photo_id = p.id 
+    GROUP BY pt.photo_id 
+    HAVING count(t.id) = 2);
+#+END_EXAMPLE
+
+Can also search by other tag properties easily.
+
+#+BEGIN_EXAMPLE
+  SELECT p.*
+  FROM photo p
+  WHERE EXISTS (
+    SELECT NULL 
+    FROM photo_tag pt 
+    JOIN tag        t ON pt.tag_id = t.id
+    WHERE t.name IN ('Red', 'Cars') 
+    AND pt.photo_id = p.id 
+    GROUP BY pt.photo_id 
+    HAVING count(t.id) = 2);
+#+END_EXAMPLE
 * File Storage
 
 - Meaningful names are meaningful but we have a problem with changing
