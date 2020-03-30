@@ -11,21 +11,30 @@
 ;; We will serve jibit here, and provide an API, with websockets
 ;; probably.
 
+(defn nilify
+  "Turn empty strings into nils"
+  [x]
+  (if (empty? x) nil x))
+
 (defn handle-filter-criteria
   [criteria]
+  ;; order-by
   ;; taken-begin  date
   ;; taken-end    date
   ;; camera-make  text
   ;; camera-model text
-  ;; TODO handle empty strings at this point, nilify
-  (merge {:order-by :%random}
-         (if-let [x (criteria "camera-make")]
+  (merge {:order-by :taken_ts}
+         (if-let [x (nilify (criteria "order-by"))]
+           {:order-by (case x
+                        "random" :%random
+                        "taken" :taken_ts)})
+         (if-let [x (nilify (criteria "camera-make"))]
            {:camera-make x})
-         (if-let [x (criteria "camera-model")]
+         (if-let [x (nilify (criteria "camera-model"))]
            {:camera-model x})
-         (if-let [tb (criteria "taken-begin")]
+         (if-let [tb (nilify (criteria "taken-begin"))]
            {:taken-begin tb})
-         (if-let [te (criteria "taken-end")]
+         (if-let [te (nilify (criteria "taken-end"))]
            {:taken-end te})))
 
 (defn index [req]

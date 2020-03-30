@@ -133,6 +133,12 @@
      "Taken"
      [:input {:type "date" :name "taken-begin"}]
      [:input {:type "date" :name "taken-end"}]]
+    [:h1 "Order"]
+    [:div
+     "Order by"
+     [:select {:name "order-by"}
+      [:option {:value "taken"} "Taken"]
+      [:option {:value "random"} "Random"]]]
     [:a#filter-btn.button
      {:on-click filter-photos}
      "Filter"]

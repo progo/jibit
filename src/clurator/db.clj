@@ -16,11 +16,6 @@
   [query-map]
   (jdbc/execute! db (spy (sql/format query-map))))
 
-(defn nilify
-  "Turn empty strings into nils"
-  [x]
-  (if (empty? x) nil x))
-
 (defn build-taken-criteria
   [taken-begin taken-end]
   (cond
@@ -54,9 +49,9 @@
 
     :or {order-by :taken_ts
          offset 0
-         limit 10}}]
-  (let [taken-crit (build-taken-criteria (nilify taken-begin) (nilify taken-end))
-        make-model-crit (build-make-model-criteria (nilify camera-make) (nilify camera-model))]
+         limit 1234}}]
+  (let [taken-crit (build-taken-criteria taken-begin taken-end)
+        make-model-crit (build-make-model-criteria camera-make camera-model)]
     (query! {:select [:photo.* :camera.* :lens.*]
              :from [:photo]
              :left-join [:camera [:= :camera.id :photo.camera_id]
