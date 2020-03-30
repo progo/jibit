@@ -10,6 +10,7 @@
                  [org.clojure/clojurescript "1.10.520"]
 
                  [com.taoensso/timbre "4.10.0"]
+                 [org.clojure/tools.macro "0.1.2"]
 
                  ;; jibit
                  [reagent "0.8.1"]

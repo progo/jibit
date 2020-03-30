@@ -16,6 +16,22 @@
   [x]
   (if (empty? x) nil x))
 
+(defmacro clean-input
+  "Check if `kw' as a string is found in a scoped map called `criteria'
+  and if so, produce a map of {kw (criteria (name kw))} for merge.
+
+  Use in `handle-filter-criteria' and not much elsewhere.
+
+  Optionally supply a body of code that will deal with captured `input'.
+  "
+  ([kw]
+   `(if-let [val# (nilify (get ~'criteria ~(name kw)))]
+      {~kw val#}))
+  ([kw & body]
+   `(if-let [~'input (nilify (get ~'criteria ~(name kw)))]
+      {~kw ~@body}
+      )))
+
 (defn handle-filter-criteria
   [criteria]
   ;; order-by
@@ -24,18 +40,14 @@
   ;; camera-make  text
   ;; camera-model text
   (merge {:order-by :taken_ts}
-         (if-let [x (nilify (criteria "order-by"))]
-           {:order-by (case x
-                        "random" :%random
-                        "taken" :taken_ts)})
-         (if-let [x (nilify (criteria "camera-make"))]
-           {:camera-make x})
-         (if-let [x (nilify (criteria "camera-model"))]
-           {:camera-model x})
-         (if-let [tb (nilify (criteria "taken-begin"))]
-           {:taken-begin tb})
-         (if-let [te (nilify (criteria "taken-end"))]
-           {:taken-end te})))
+         (clean-input :order-by
+              (case input
+                "random" :%random
+                "taken" :taken_ts))
+         (clean-input :camera-make)
+         (clean-input :camera-model)
+         (clean-input :taken-begin)
+         (clean-input :taken-end)))
 
 (defn index [req]
   {:status 200
