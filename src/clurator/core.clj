@@ -5,6 +5,7 @@
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
             [clurator.model.photo :as model.photo]
+            [clurator.model.tag :as model.tag]
             [clurator.view.filtering :as view.filtering]
             clurator.settings))
 
@@ -25,11 +26,18 @@
            (view.filtering/handle-filter-criteria
             (form-decode (:query-string req)))))})
 
+(defn list-tags [req]
+  {:status 200
+   :headers {"Content-Type" "application/edn"
+             "Access-Control-Allow-Origin" "*"}
+   :body (prn-str (model.tag/filter-tags))})
+
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
 
 (comp/defroutes app
   (GET "/" [] index)
+  (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
   (compojure.route/not-found "not found"))

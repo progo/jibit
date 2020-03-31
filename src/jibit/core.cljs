@@ -4,7 +4,7 @@
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
-   [ajax.edn :as ajax-edn]
+   ajax.edn
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
    ))
@@ -30,17 +30,19 @@
    {:http-xhrio {:method :get
                  :uri (str server-uri uri)
                  :params params
-                 :format (ajax-edn/edn-request-format)
-                 :response-format (ajax-edn/edn-response-format)
+                 :format (ajax.edn/edn-request-format)
+                 :response-format (ajax.edn/edn-response-format)
                  :on-success [:good-http-get usecase]
                  :on-failure [:bad-http-get usecase]}}))
 
 ;; Generic success handler for HTTP gets
+;; probably a multimethod can handle this?
 (re-frame/reg-event-db
  :good-http-get
  (fn [db [_ usecase result]]
    (assoc db (case usecase
-               :query-images :images
+               :query-photos :photos
+               :query-tags   :tags
                :http-result-good)
           result)))
 
@@ -57,11 +59,11 @@
  (fn [{:keys [db]} _]
    (let [db' (if (:init-done db)
                db
-               {:images-query []
-                :images []
+               {:photos []
+                :tags []
                 :init-done true})]
      {:db db'
-      :dispatch [:http-get "/photos" :query-images {}]
+      :dispatch [:http-get "/photos" :query-photos {}]
       })))
 
 ;;;;; Tools
@@ -88,19 +90,19 @@
   (let [form (query "#filter form")
         filter-criteria (read-form form)]
     (debug "Filtering by" filter-criteria)
-    (re-frame/dispatch [:http-get "/photos" :query-images filter-criteria])))
+    (re-frame/dispatch [:http-get "/photos" :query-photos filter-criteria])))
 
 ;;; queries from db
 
 (re-frame/reg-sub
- :images
+ :photos
  (fn [db _]
-   (-> db :images)))
+   (-> db :photos)))
 
 (re-frame/reg-sub
- :images-count
+ :photos-count
  (fn [db _]
-   (count (-> db :images))))
+   (count (-> db :photos))))
 
 ;;; Views and components
 
@@ -147,15 +149,15 @@
 (defn lighttable-bare []
   [:div.lighttable
    (doall
-    (for [image @(re-frame/subscribe [:images])]
+    (for [image @(re-frame/subscribe [:photos])]
       ^{:key (:photo/uuid image)} [slide image]))])
 
 (defn ui []
   (let []
     [:div
      [:h1 "Photos"
-      [:span.files-count \#
-       @(re-frame/subscribe [:images-count])]]
+      [:span.photos-count \#
+       @(re-frame/subscribe [:photos-count])]]
      [filter-panel]
      [lighttable-bare]]))
 
