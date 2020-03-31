@@ -1,6 +1,5 @@
 (ns ^:figwheel-hooks jibit.core
   (:require
-   [goog.dom :as gdom]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
@@ -56,8 +55,7 @@
 
 (re-frame/reg-event-db
  :initialize
- (fn [{:keys [db]} _]
-   (debug "Init")
+ (fn [db _]
    (let [db' (if (:init-done db)
                db
                {:photos []
@@ -160,23 +158,22 @@
     (for [image @(re-frame/subscribe [:photos])]
       ^{:key (:photo/uuid image)} [slide image])])
 
-(defn ui []
-  (let []
-    [:div
-     [:h1 "Photos"
-      [:span.photos-count \#
-       @(re-frame/subscribe [:photos-count])]]
-     [filter-panel]
-     [tags-view]
-     [lighttable-bare]]))
+(defn user-interface []
+  [:div
+   [:h1 "Photos"
+    [:span.photos-count \#
+     @(re-frame/subscribe [:photos-count])]]
+   [filter-panel]
+   [tags-view]
+   [lighttable-bare]])
 
 ;;; re-frame boilerplate below
 
 (defn get-app-element []
-  (gdom/getElement "app"))
+  (js/document.getElementById "app"))
 
 (defn mount [el]
-  (reagent/render-component [ui] el))
+  (reagent/render-component [user-interface] el))
 
 (defn mount-app-element []
   (when-let [el (get-app-element)]
@@ -187,7 +184,10 @@
 
 ;; conditionally start your application based on the presence of an "app" element
 ;; this is particularly helpful for testing this ns without launching the app
-(mount-app-element)
+(defonce startup
+  (do
+    (mount-app-element)
+    true))
 
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []

@@ -480,6 +480,10 @@ Some material in human.clj ready to be made into tests.
   
 We could check out the darkroom/lighttable terminology for a hint of
 nostalgia to get juices going on.
+* TODO re-pressed
+
+something to do with keys?
+
 * UI: show total exp time                                              :idea:
 
 For example user has selected 5 images that have all been exposed
