@@ -54,17 +54,16 @@
 
 ;;;;; This is done.
 
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
  :initialize
  (fn [{:keys [db]} _]
+   (debug "Init")
    (let [db' (if (:init-done db)
                db
                {:photos []
                 :tags []
                 :init-done true})]
-     {:db db'
-      :dispatch [:http-get "/photos" :query-photos {}]
-      })))
+     db')))
 
 ;;;;; Tools
 
@@ -85,7 +84,7 @@
 
 ;;;
 
-(defn filter-photos
+(defn get-photos
   []
   (let [form (query "#filter form")
         filter-criteria (read-form form)]
@@ -93,6 +92,11 @@
     (re-frame/dispatch [:http-get "/photos" :query-photos filter-criteria])))
 
 ;;; queries from db
+
+(re-frame/reg-sub
+ :tags
+ (fn [db _]
+   (-> db :tags)))
 
 (re-frame/reg-sub
  :photos
@@ -142,15 +146,19 @@
       [:option {:value "taken"} "Taken"]
       [:option {:value "random"} "Random"]]]
     [:a#filter-btn.button
-     {:on-click filter-photos}
+     {:on-click get-photos}
      "Filter"]
     ]])
 
+(defn tags-view []
+  [:ul#tags
+   (for [t @(re-frame/subscribe [:tags])]
+     ^{:key t} [:li t])])
+
 (defn lighttable-bare []
   [:div.lighttable
-   (doall
     (for [image @(re-frame/subscribe [:photos])]
-      ^{:key (:photo/uuid image)} [slide image]))])
+      ^{:key (:photo/uuid image)} [slide image])])
 
 (defn ui []
   (let []
@@ -159,7 +167,10 @@
       [:span.photos-count \#
        @(re-frame/subscribe [:photos-count])]]
      [filter-panel]
+     [tags-view]
      [lighttable-bare]]))
+
+;;; re-frame boilerplate below
 
 (defn get-app-element []
   (gdom/getElement "app"))
@@ -170,6 +181,8 @@
 (defn mount-app-element []
   (when-let [el (get-app-element)]
     (re-frame/dispatch-sync [:initialize])
+    ;; (get-photos)
+    (re-frame/dispatch [:http-get "/tags" :query-tags {}])
     (mount el)))
 
 ;; conditionally start your application based on the presence of an "app" element
@@ -178,7 +191,6 @@
 
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []
-  ;; (re-frame/clear-subscription-cache!)
   (mount-app-element)
   ;; optionally touch your app-state to force rerendering depending on
   ;; your application
