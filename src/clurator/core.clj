@@ -4,8 +4,7 @@
             [ring.util.codec :refer [form-decode]]
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
-            [clurator.db :as db]
-            [honeysql.core :as sql]
+            [clurator.model.photo :as model.photo]
             clurator.settings))
 
 ;; We will serve jibit here, and provide an API, with websockets
@@ -60,8 +59,8 @@
    :headers {"Content-Type" "application/edn"
              "Access-Control-Allow-Origin" "*"}
    :body (prn-str
-          (db/filter-photos (handle-filter-criteria
-                             (form-decode (:query-string req)))))})
+          (model.photo/filter-photos (handle-filter-criteria
+                                      (form-decode (:query-string req)))))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
