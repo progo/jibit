@@ -309,6 +309,16 @@ have to turn to the 'industry standard', Phil Harvey's exiftool.
 - Java integration https://github.com/mjeanroy/exiftool 
   - Can use exiftool's daemon mode that gives us 25x speedup
 
+** NOTSURE What would libexiv2 do for us?
+CLOSED: [2020-04-03 Fri 13:56]
+
+- Darktable and company uses this thing instead of exiftool.
+- This has an alternative understanding to lens id's among other things.
+- (This also explains why aperture readings are different in darktable
+  and in some online forums; different exif libraries used.)
+- Exiv2 is a C++ tool and quickly googling around it seems there are
+  no hugely popular java bindings available.
+
 * NOTSURE Parse images on import for width/height?
 CLOSED: [2020-03-01 Sun 19:54]
 :LOGBOOK:

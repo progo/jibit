@@ -60,8 +60,20 @@
                db
                {:photos []
                 :tags []
+                :selected-tags #{}
                 :init-done true})]
      db')))
+
+;; Toggle tag from query
+
+(re-frame/reg-event-db
+ :toggle-tag
+ (fn [db [_ tag-id]]
+   (let [tags-selection (:selected-tags db)
+         tags-selection' (if (tags-selection tag-id)
+                           (clojure.set/difference tags-selection #{tag-id})
+                           (clojure.set/union      tags-selection #{tag-id}))]
+     (assoc-in db [:selected-tags] tags-selection'))))
 
 ;;;;; Tools
 
@@ -96,6 +108,12 @@
  (fn [db _]
    (-> db :tags)))
 
+;; TODO we can parametrize to particular tag-id as well
+(re-frame/reg-sub
+ :selected-tags
+ (fn [db _]
+   (-> db :selected-tags)))
+
 (re-frame/reg-sub
  :photos
  (fn [db _]
@@ -105,6 +123,18 @@
  :photos-count
  (fn [db _]
    (count (-> db :photos))))
+
+
+;;; Tags
+
+(defn toggle-tag
+  [tag-id]
+  (re-frame/dispatch [:toggle-tag tag-id]))
+
+(defn tag-menu
+  [evt tag]
+  (. evt preventDefault)
+  (debug "tagmenu" evt tag))
 
 ;;; Views and components
 
@@ -148,15 +178,29 @@
      "Filter"]
     ]])
 
+(defn tag-view
+  "Render a small element that visually represents a clickable tag."
+  [tag]
+  (let [tag-id (:tag/id tag)
+        selections (re-frame/subscribe [:selected-tags])
+        selected? (@selections tag-id)]
+    ^{:key tag-id}
+    [:li {:on-click #(toggle-tag tag-id)
+          :on-context-menu #(tag-menu % tag-id)
+          :class (when selected? "selected")
+          :title (or (:tag/description tag) "")}
+     (:tag/name tag)]))
+
 (defn tags-view []
   [:ul#tags
-   (for [t @(re-frame/subscribe [:tags])]
-     ^{:key t} [:li t])])
+   (doall
+    (for [t @(re-frame/subscribe [:tags])]
+      (tag-view t)))])
 
 (defn lighttable-bare []
   [:div.lighttable
-    (for [image @(re-frame/subscribe [:photos])]
-      ^{:key (:photo/uuid image)} [slide image])])
+   (for [photo @(re-frame/subscribe [:photos])]
+     ^{:key (:photo/uuid photo)} [slide photo])])
 
 (defn user-interface []
   [:div

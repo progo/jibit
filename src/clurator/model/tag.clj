@@ -5,5 +5,5 @@
 
 (defn filter-tags
   []
-  (mapv :tag/name (db/query! {:select [:name]
-                              :from [:tag]})))
+  (db/query! {:select [:*]
+              :from [:tag]}))

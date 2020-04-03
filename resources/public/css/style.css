@@ -99,3 +99,32 @@ button {
 #filter-btn {
     /* float: right; */
 }
+
+/* Tags */
+
+#tags {
+}
+
+#tags li {
+    display: inline-block;
+    padding: 4px 8px 4px 8px;
+    margin: 0;
+    margin-right: 2px;
+
+    font-weight: bolder;
+
+    border-radius: 6px;
+    border: 2px orange solid;
+
+    cursor: pointer;
+}
+
+#tags li.selected {
+    color: #333;
+    background-color: yellow;
+}
+
+#tags li:hover {
+    color: #333;
+    background-color: #ffec64;
+}
