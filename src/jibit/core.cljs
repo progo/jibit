@@ -25,7 +25,7 @@
 
 (re-frame/reg-event-fx
  :http-get
- (fn [{:keys [db]} [_ uri usecase params]]
+ (fn [{db :db} [_ uri usecase params]]
    {:http-xhrio {:method :get
                  :uri (str server-uri uri)
                  :params params
@@ -66,14 +66,16 @@
 
 ;; Toggle tag from query
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  :toggle-tag
- (fn [db [_ tag-id]]
+ (fn [{db :db} [_ tag-id]]
    (let [tags-selection (:selected-tags db)
          tags-selection' (if (tags-selection tag-id)
                            (clojure.set/difference tags-selection #{tag-id})
                            (clojure.set/union      tags-selection #{tag-id}))]
-     (assoc-in db [:selected-tags] tags-selection'))))
+     {:db (assoc-in db [:selected-tags] tags-selection')
+      :dispatch [:get-photos]
+      })))
 
 ;;;;; Tools
 
@@ -94,12 +96,14 @@
 
 ;;;
 
-(defn get-photos
-  []
-  (let [form (query "#filter form")
-        filter-criteria (read-form form)]
-    (debug "Filtering by" filter-criteria)
-    (re-frame/dispatch [:http-get "/photos" :query-photos filter-criteria])))
+(re-frame/reg-event-fx
+ :get-photos
+ (fn [{db :db} _]
+   ;; TODO forms probably should be maintained in `db'
+   (let [form (query "#filter form")
+         filter-criteria (read-form form)]
+     (debug "Filtering by" filter-criteria)
+     {:dispatch [:http-get "/photos" :query-photos filter-criteria]})))
 
 ;;; queries from db
 
@@ -126,10 +130,6 @@
 
 
 ;;; Tags
-
-(defn toggle-tag
-  [tag-id]
-  (re-frame/dispatch [:toggle-tag tag-id]))
 
 (defn tag-menu
   [evt tag]
@@ -174,7 +174,7 @@
       [:option {:value "taken"} "Taken"]
       [:option {:value "random"} "Random"]]]
     [:a#filter-btn.button
-     {:on-click get-photos}
+     {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]
     ]])
 
@@ -185,7 +185,7 @@
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
     ^{:key tag-id}
-    [:li {:on-click #(toggle-tag tag-id)
+    [:li {:on-click #(re-frame/dispatch [:toggle-tag tag-id])
           :on-context-menu #(tag-menu % tag-id)
           :class (when selected? "selected")
           :title (or (:tag/description tag) "")}
