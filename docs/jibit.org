@@ -480,21 +480,39 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-
-Some material in human.clj ready to be made into tests.
-* TODO Unify terms in code backend/frontend
+* DONE Unify terms in code backend/frontend
+CLOSED: [2020-04-04 Sat 13:17]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-04 Sat 13:17]
+:END:
 
 - Negatives, photos, images... Just *photo* is good? 
-  - Unify into "image"
 - I guess we can go for "slides" on a "lighttable" in jibit.
   
 We could check out the darkroom/lighttable terminology for a hint of
 nostalgia to get juices going on.
+
+Let's try to keep "photo" as the common term across the board. Use
+"slide" and "lighttable" when talking about the representation.
+
+* DONE [#B] Order-by doesn't update repr if data changes
+CLOSED: [2020-04-04 Sat 14:06]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-04 Sat 14:06]
+:END:
+
+Never mind, ~<select value="foo">~ does this for us.
+
+* TODO Round up Tags in a rounded div
 * TODO re-pressed
 
 something to do with keys?
 
-* UI: show total exp time                                              :idea:
+* TODO tags-union into predicate form 
+
+Add =?=
+
+* TODO UI: show total exp time                                         :idea:
 
 For example user has selected 5 images that have all been exposed
 1/250 sec, the total is 1.25 sec.

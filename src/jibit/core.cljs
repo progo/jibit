@@ -65,6 +65,11 @@
                 :init-done true})]
      db')))
 
+(re-frame/reg-event-db
+ :change-input
+ (fn [db [_ data-id new-value]]
+   (assoc-in db [:input data-id] new-value)))
+
 (re-frame/reg-event-fx
  :toggle
  (fn [{db :db} [_ item]]
@@ -84,34 +89,13 @@
       :dispatch [:get-photos]
       })))
 
-;;;;; Tools
-
-(defn query [q]
-  (js/document.querySelector q))
-
-;;; Form utils
-
-(defn read-form [form-elt]
-  (into {}
-        (for [x (array-seq (.-elements form-elt))]
-          [(.-name x)
-           (.-value x)])))
-
-(defn read-form-id [form-id]
-  (let [f (js/document.getElementById form-id)]
-    (read-form f)))
-
-;;;
-
 (re-frame/reg-event-fx
  :get-photos
  (fn [{db :db} _]
-   ;; TODO forms probably should be maintained in `db'
-   (let [form (query "#filter form")
-         filter-criteria (read-form form)
+   (let [filter-criteria (:input db)
          filter-criteria (assoc filter-criteria :tags (:selected-tags db))
          filter-criteria (assoc filter-criteria :tags-union (:tags-union db))]
-     (debug "Filtering by" filter-criteria)
+     (debug "Retrieving photos using criteria" filter-criteria)
      {:dispatch [:http-get "/photos" :query-photos filter-criteria]})))
 
 ;;; queries from db
@@ -125,6 +109,11 @@
  :tags-union
  (fn [db _]
    (or false (-> db :tags-union))))
+
+(re-frame/reg-sub
+ :input
+ (fn [db [_ data-id]]
+   (-> db :input data-id)))
 
 ;; TODO we can parametrize to particular tag-id as well
 (re-frame/reg-sub
@@ -141,7 +130,6 @@
  :photos-count
  (fn [db _]
    (count (-> db :photos))))
-
 
 ;;; Tags
 
@@ -181,25 +169,56 @@
      [:li "ISO " (:photo/iso image)]
      ]]])
 
+
+(defn data-bound-input
+  "Build an input element that binds into `data-id`. Props is a map that
+  goes into creating the element."
+  [data-id props]
+  (let [bound @(re-frame/subscribe [:input data-id])
+        change-fn #(re-frame/dispatch [:change-input
+                                       data-id
+                                       (-> % .-target .-value)])
+        props (assoc props :on-change change-fn)
+        props (assoc props :value bound)
+        ]
+    [:input props]))
+
+(defn data-bound-select
+  "Build a select element that binds into `data-id`. Options is a seq of
+  maps with keys [:name, :value]."
+  [data-id options]
+  (let [bound @(re-frame/subscribe [:input data-id])
+        change-fn #(re-frame/dispatch [:change-input
+                                       data-id
+                                       (-> % .-target .-value)])
+        props {:on-change change-fn
+               :value (or bound "")}]
+    [:select props
+     (doall
+      (for [{name :name value :value} options]
+        ^{:key value} [:option {:value value} name]))]))
+
 (defn filter-panel []
   [:div#filter
    [:form
     [:h1 "Filter photos"]
     [:div
-     "Make"
-     [:input {:type "text" :name "camera-make"}]
-     "Model"
-     [:input {:type "text" :name "camera-model"}]]
+     [data-bound-input :camera-make
+      {:type "text" :placeholder "Camera make"}]
+     [data-bound-input :camera-model
+      {:type "text" :placeholder "Camera model"}]]
     [:div
-     "Taken"
-     [:input {:type "date" :name "taken-begin"}]
-     [:input {:type "date" :name "taken-end"}]]
+     "Taken between "
+     [data-bound-input :taken-begin
+      {:type "date"}]
+     [data-bound-input :taken-end
+      {:type "date"}]]
     [:h1 "Order"]
     [:div
-     "Order by"
-     [:select {:name "order-by"}
-      [:option {:value "taken"} "Taken"]
-      [:option {:value "random"} "Random"]]]
+     "Order by "
+     [data-bound-select :order-by
+      [{:name "Taken" :value "taken_ts"}
+       {:name "Random" :value "random"}]]]
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]
@@ -250,7 +269,6 @@
 (defn mount-app-element []
   (when-let [el (get-app-element)]
     (re-frame/dispatch-sync [:initialize])
-    ;; (get-photos)
     (re-frame/dispatch [:http-get "/tags" :query-tags {}])
     (mount el)))
 
