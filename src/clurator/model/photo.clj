@@ -36,7 +36,14 @@
 
       ;; Intersection
       (and tags (not union?))
-      'tbd)))
+      [:exists {:select [nil]
+                :from [:photo_tag]
+                :join [:tag [:= :photo_tag.tag_id :tag.id]]
+                :where [:and
+                        [:in :tag.id tags]
+                        [:= :photo_tag.photo_id :photo.id]]
+                :group-by [:photo_tag.photo_id]
+                :having [:= (count tags) [:count :tag.id]]}])))
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
