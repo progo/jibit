@@ -65,6 +65,11 @@
                 :init-done true})]
      db')))
 
+(re-frame/reg-event-db
+ :toggle
+ (fn [db [_ item]]
+   (update db item not)))
+
 ;; Toggle tag from query
 
 (re-frame/reg-event-fx
@@ -115,6 +120,11 @@
  (fn [db _]
    (-> db :tags)))
 
+(re-frame/reg-sub
+ :tags-union
+ (fn [db _]
+   (or false (-> db :tags-union))))
+
 ;; TODO we can parametrize to particular tag-id as well
 (re-frame/reg-sub
  :selected-tags
@@ -140,6 +150,19 @@
   (debug "tagmenu" evt tag))
 
 ;;; Views and components
+
+(defn toggle-button
+  [data-id text-on text-off class-on class-off]
+  (let [data-bind @(re-frame/subscribe [data-id])
+        class (if data-bind
+                (or class-on "button-toggle-on")
+                (or class-off "button-toggle-off"))
+        text (if data-bind
+                (or text-on "On")
+                (or text-off "Off"))]
+    [:a.button {:class class
+                :on-click #(re-frame/dispatch [:toggle data-id])}
+     text]))
 
 (defn slide [image]
   [:div.slide-wrapper
@@ -179,6 +202,7 @@
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]
+    [toggle-button :tags-union "Any tag" "All tags" "btn-any-tag" "btn-all-tags"]
     ]])
 
 (defn tag-view

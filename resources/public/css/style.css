@@ -128,3 +128,13 @@ button {
     color: #333;
     background-color: #ffec64;
 }
+
+/*** Toggle tag union/intersect **/
+
+.btn-any-tag {
+    background: linear-gradient(to bottom, yellow 5%, #ffec64 100%);
+}
+
+.btn-all-tags {
+    background: linear-gradient(to bottom, #9a682a 5%, #ffec64 100%);
+}
