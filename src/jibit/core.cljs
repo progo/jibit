@@ -65,10 +65,11 @@
                 :init-done true})]
      db')))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  :toggle
- (fn [db [_ item]]
-   (update db item not)))
+ (fn [{db :db} [_ item]]
+   {:db (update db item not)
+    :dispatch [:get-photos]}))
 
 ;; Toggle tag from query
 
