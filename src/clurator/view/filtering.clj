@@ -1,12 +1,16 @@
 (ns clurator.view.filtering
   "Process user's requests to filter photos, into safer data structures
   that we use."
-  )
+  (:require [clojure.edn :as edn]))
 
 (defn nilify
-  "Turn empty strings into nils"
+  "Empty strings into nils."
   [x]
-  (if (empty? x) nil x))
+  (cond
+    (coll? x) x
+    (boolean? x) x
+    (empty? x) nil
+    :else x))
 
 (defmacro clean-input
   "Check if `kw' as a string is found in a scoped map called `criteria'
@@ -24,6 +28,12 @@
       {~kw ~@body}
       )))
 
+(defmacro clean-edn-input
+  "Parse given `kw' as edn value."
+  [kw]
+  `(if-let [val# (edn/read-string (get ~'criteria ~(name kw)))]
+     {~kw val#}))
+
 (defn handle-filter-criteria
   [criteria]
   ;; order-by
@@ -31,7 +41,11 @@
   ;; taken-end    date
   ;; camera-make  text
   ;; camera-model text
+  ;; tags-union   boolean
+  ;; tags         set of IDs
   (merge {}
+         (clean-edn-input :tags-union)
+         (clean-edn-input :tags)
          (clean-input :order-by
               (case input
                 "random" :%random

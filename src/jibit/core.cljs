@@ -61,6 +61,7 @@
                {:photos []
                 :tags []
                 :selected-tags #{}
+                :tags-union true
                 :init-done true})]
      db')))
 
@@ -101,7 +102,9 @@
  (fn [{db :db} _]
    ;; TODO forms probably should be maintained in `db'
    (let [form (query "#filter form")
-         filter-criteria (read-form form)]
+         filter-criteria (read-form form)
+         filter-criteria (assoc filter-criteria :tags (:selected-tags db))
+         filter-criteria (assoc filter-criteria :tags-union (:tags-union db))]
      (debug "Filtering by" filter-criteria)
      {:dispatch [:http-get "/photos" :query-photos filter-criteria]})))
 

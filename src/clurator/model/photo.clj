@@ -1,6 +1,7 @@
 (ns clurator.model.photo
   "Photo model."
-  (:require [clurator.db :as db]))
+  (:require [clurator.db :as db]
+            [taoensso.timbre :as timbre :refer [spy debug]]))
 
 (defn build-taken-criteria
   [taken-begin taken-end]
@@ -23,8 +24,22 @@
               :else nil)]
     a+b))
 
+(defn build-tags-criteria
+  [tags union?]
+  (let [tags (seq tags)]
+    (cond
+      ;; Union
+      (and tags union?)
+      [:in :photo.id {:select [:photo_id]
+                      :from [:photo_tag]
+                      :where [:in :tag_id tags]}]
+
+      ;; Intersection
+      (and tags (not union?))
+      'tbd)))
+
 (defn filter-photos
-  ""
+  "Take user's input (parsed in some way) and build/execute a SQL query."
   [{order-by :order-by
     offset :offset
     limit :limit
@@ -33,19 +48,23 @@
     camera-make :camera-make
     camera-model :camera-model
 
+    tags :tags
+    tags-union :tags-union
+
     :or {order-by :taken_ts
          offset 0
          limit 1234}}]
   (let [taken-crit (build-taken-criteria taken-begin taken-end)
-        make-model-crit (build-make-model-criteria camera-make camera-model)]
+        make-model-crit (build-make-model-criteria camera-make camera-model)
+        tags-crit (build-tags-criteria tags tags-union)]
     (db/query! {:select [:photo.* :camera.* :lens.*]
                 :from [:photo]
                 :left-join [:camera [:= :camera.id :photo.camera_id]
                             :lens [:= :lens.id :photo.lens_id]]
-                :where [:and
-                        true
+                :where [:and true
                         taken-crit
-                        make-model-crit]
+                        make-model-crit
+                        tags-crit]
                 :order-by [order-by]
                 :offset offset
                 :limit limit})))
