@@ -175,7 +175,6 @@
      [:li "ISO " (:photo/iso image)]
      ]]])
 
-
 (defn data-bound-input
   "Build an input element that binds into `data-id`. Props is a map that
   goes into creating the element."

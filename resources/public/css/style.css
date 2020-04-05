@@ -104,6 +104,13 @@ button {
 /* Tags */
 
 #tags {
+    padding: 5px;
+    margin-left: 25px;
+    margin-right: 25px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: black;
+    border-radius: 10px;
 }
 
 #tags li {
@@ -112,6 +119,8 @@ button {
     margin: 0;
     margin-right: 2px;
 
+    font-family: 'monospace';
+    font-size: 13px;
     font-weight: bolder;
 
     border-radius: 6px;
