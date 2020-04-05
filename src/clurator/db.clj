@@ -15,7 +15,7 @@
   "Make a RO query. Take a map HoneySQL understands."
   [query-map]
   (let [formatted-sql (sql/format query-map)]
-    (timbre/debugf "DB QUERY %s => %s" query-map formatted-sql)
+    ;; (timbre/debugf "DB QUERY %s => %s" query-map formatted-sql)
     (jdbc/execute! db formatted-sql)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
