@@ -78,23 +78,26 @@
 
 ;; Toggle tag from query
 
+(defn toggle-set-membership
+  [x s]
+  (if (s x)
+    (clojure.set/difference s #{x})
+    (clojure.set/union      s #{x})))
+
 (re-frame/reg-event-fx
  :toggle-tag
  (fn [{db :db} [_ tag-id]]
-   (let [tags-selection (:selected-tags db)
-         tags-selection' (if (tags-selection tag-id)
-                           (clojure.set/difference tags-selection #{tag-id})
-                           (clojure.set/union      tags-selection #{tag-id}))]
-     {:db (assoc-in db [:selected-tags] tags-selection')
+   (let [tags-selection (toggle-set-membership tag-id (:selected-tags db))]
+     {:db (assoc-in db [:selected-tags] tags-selection)
       :dispatch [:get-photos]
       })))
 
 (re-frame/reg-event-fx
  :get-photos
  (fn [{db :db} _]
-   (let [filter-criteria (:input db)
-         filter-criteria (assoc filter-criteria :tags (:selected-tags db))
-         filter-criteria (assoc filter-criteria :tags-union (:tags-union db))]
+   (let [filter-criteria (-> (:input db)
+                             (assoc :tags (:selected-tags db))
+                             (assoc :tags-union (:tags-union db)))]
      (debug "Retrieving photos using criteria" filter-criteria)
      {:dispatch [:http-get "/photos" :query-photos filter-criteria]})))
 
