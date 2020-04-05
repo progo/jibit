@@ -1,6 +1,7 @@
 (ns clurator.model.photo
   "Photo model."
   (:require [clurator.db :as db]
+            [clurator.model.tag :as tag]
             [taoensso.timbre :as timbre :refer [spy debug]]))
 
 (defn build-taken-criteria
@@ -45,6 +46,11 @@
                 :group-by [:photo_tag.photo_id]
                 :having [:= (count tags) [:count :tag.id]]}])))
 
+(defn fetch-tags
+  [photos]
+  (for [p photos]
+    (assoc p :tagged/ids (tag/tag-ids-for-photo p))))
+
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
   [{order-by :order-by
@@ -64,14 +70,16 @@
   (let [taken-crit (build-taken-criteria taken-begin taken-end)
         make-model-crit (build-make-model-criteria camera-make camera-model)
         tags-crit (build-tags-criteria tags tags-union)]
-    (db/query! {:select [:photo.* :camera.* :lens.*]
-                :from [:photo]
-                :left-join [:camera [:= :camera.id :photo.camera_id]
-                            :lens [:= :lens.id :photo.lens_id]]
-                :where [:and true
-                        taken-crit
-                        make-model-crit
-                        tags-crit]
-                :order-by [order-by]
-                :offset offset
-                :limit limit})))
+    (-> {:select [:photo.* :camera.* :lens.*]
+         :from [:photo]
+         :left-join [:camera [:= :camera.id :photo.camera_id]
+                     :lens [:= :lens.id :photo.lens_id]]
+         :where [:and true
+                 taken-crit
+                 make-model-crit
+                 tags-crit]
+         :order-by [order-by]
+         :offset offset
+         :limit limit}
+        db/query!
+        fetch-tags)))

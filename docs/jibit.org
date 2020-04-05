@@ -480,6 +480,32 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
+* TODO Tagging photos [0%]
+** TODO Show existing tags on photos
+
+Let's pass the IDs alone and let jibit join the labels using full
+information.
+
+** TODO Selection of photos from lighttable
+** TODO Saving tags
+** TODO Making new tags
+** TODO Modifying tags
+* TODO Streamline photo filtering?
+
+Tags per photo are currently subqueries (and there's that interesting
+bug/condition in there relating debug statements).
+
+To get photos and tags in one query, you join =PHOTO_TAG= and collect
+=PHOTO_TAG.TAG_ID=.
+
+- One approach gets you duplicate photo rows but with differing tag
+  IDs; use clojure to minify
+- Another is to use sqlite's =group_concat= function to produce a
+  string representation of the IDs. This approach is probably going to
+  be a tiny bit faster but there's no flexibility after we want those
+  extra bits of information that we store in the M2M relation
+  =PHOTO_TAG=.
+
 * DONE Unify terms in code backend/frontend
 CLOSED: [2020-04-04 Sat 13:17]
 :LOGBOOK:
