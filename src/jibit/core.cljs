@@ -71,10 +71,13 @@
    (assoc-in db [:input data-id] new-value)))
 
 (re-frame/reg-event-fx
- :toggle
+ :toggle-tags-union
  (fn [{db :db} [_ item]]
-   {:db (update db item not)
-    :dispatch [:get-photos]}))
+   (let [any-tags-selected? (-> db :selected-tags seq)]
+     (merge
+      {:db (update db item not)}
+      (when any-tags-selected?
+        {:dispatch [:get-photos]})))))
 
 ;; Toggle tag from query
 
@@ -153,7 +156,7 @@
                 (or text-on "On")
                 (or text-off "Off"))]
     [:a.button {:class class
-                :on-click #(re-frame/dispatch [:toggle data-id])}
+                :on-click #(re-frame/dispatch [:toggle-tags-union data-id])}
      text]))
 
 (defn slide [image]
