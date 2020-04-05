@@ -480,8 +480,12 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [0%]
-** TODO Show existing tags on photos
+* TODO Tagging photos [20%]
+** DONE Show existing tags on photos
+CLOSED: [2020-04-05 Sun 13:34]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-05 Sun 13:34]
+:END:
 
 Let's pass the IDs alone and let jibit join the labels using full
 information.

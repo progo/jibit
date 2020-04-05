@@ -139,6 +139,21 @@ button {
     background-color: #ffec64;
 }
 
+.inline-tags {
+    display: inline-block;
+}
+
+.inline-tags > span {
+    margin-right: 2px;
+    padding: 1px;
+    font-size: smaller;
+    cursor: pointer;
+    user-select: none;
+    background-color: #ffaa00;
+    color: black;
+    border-radius: 5px;
+}
+
 /*** Toggle tag union/intersect **/
 
 .btn-any-tag {

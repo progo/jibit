@@ -111,6 +111,12 @@
  (fn [db _]
    (-> db :tags)))
 
+;; Tags but in a map of (tag-id -> tag)
+(re-frame/reg-sub
+ :tags-map
+ (fn [db _]
+   (into {} (map (juxt :tag/id identity) (-> db :tags)))))
+
 (re-frame/reg-sub
  :tags-union
  (fn [db _]
@@ -144,6 +150,14 @@
   (. evt preventDefault)
   (debug "tagmenu" evt tag))
 
+(defn render-tags-from-ids
+  [tags-db tags]
+  [:div.inline-tags
+   (for [t tags]
+     ^{:key (str "small-tag-" t)}
+     [:span (-> t tags-db :tag/name)]
+     )])
+
 ;;; Views and components
 
 (defn toggle-button
@@ -164,8 +178,7 @@
    [:div.slide
     [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
     [:ul.info
-     [:li (:photo/original_file image)]
-     [:li (:camera/exif_make image)]
+     [:li (:camera/exif_model image)]
      [:li (:lens/exif_model image)]
      [:li (human/focal-length (:photo/focal_length_35 image)) " mm"]
      [:li (human/aperture (:photo/aperture image))]
@@ -173,6 +186,9 @@
      (when-not (zero? (:photo/exposure_comp image))
        [:li (human/exp-comp (:photo/exposure_comp image)) " EV"])
      [:li "ISO " (:photo/iso image)]
+     (let [tag-db (re-frame/subscribe [:tags-map])]
+       (when-let [tags (seq (:tagged/ids image))]
+         [:li (render-tags-from-ids @tag-db tags)]))
      ]]])
 
 (defn data-bound-input
