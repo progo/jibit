@@ -6,7 +6,7 @@
    ajax.edn
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
-   ))
+   [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;;; events and handlers -- update db
 
@@ -20,6 +20,8 @@
 
 ;; Remember to specify protocol. And no trailing slash.
 (def server-uri "http://localhost:8088")
+
+(def selection-hold-time-msecs 320)
 
 ;;;; Defining client/server conversations
 
@@ -78,6 +80,25 @@
       {:db (update db item not)}
       (when any-tags-selected?
         {:dispatch [:get-photos]})))))
+
+(re-frame/reg-event-fx
+ :slide-mouse-down
+ (fn [{db :db} [_ photo-id ts]]
+   ;; TODO we can launch a timer from here to automatically trigger
+   ;; something after a time
+   {:db (assoc-in db [:mouse-events :down photo-id] ts)}))
+
+(re-frame/reg-event-db
+ :slide-mouse-up
+ (fn [db [_ photo-id ts]]
+   (let [downs (-> db :mouse-events :down)
+         hold-begin (get downs photo-id)
+         held-ms (- (js/Date.) hold-begin)
+         held-enough (> held-ms selection-hold-time-msecs)
+         ]
+     (debug held-ms "ms")
+     ;; Remove the record now that we've done it.
+     (dissoc-in db [:mouse-events :down photo-id]))))
 
 ;; Toggle tag from query
 
@@ -176,6 +197,10 @@
 (defn slide [image]
   [:div.slide-wrapper
    [:div.slide
+    {:on-mouse-down #(re-frame/dispatch [:slide-mouse-down (:photo/id image) (js/Date.)])
+     :on-mouse-up #(re-frame/dispatch [:slide-mouse-up (:photo/id image) (js/Date.)])
+     ;; :on-click #(debug "mousie click" image)
+     }
     [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
     [:ul.info
      [:li (:camera/exif_model image)]
