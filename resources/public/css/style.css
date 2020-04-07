@@ -34,6 +34,10 @@ button {
     margin-top: 0px;
 }
 
+.selected-slide .info {
+    background-color: #523900 !important;
+}
+
 .slide img {
     object-fit: contain;
     width: 200px;

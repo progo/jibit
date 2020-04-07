@@ -63,6 +63,7 @@
                {:photos []
                 :tags []
                 :selected-tags #{}
+                :selected #{}
                 :tags-union true
                 :init-done true})]
      db')))
@@ -84,21 +85,39 @@
 (re-frame/reg-event-fx
  :slide-mouse-down
  (fn [{db :db} [_ photo-id ts]]
-   ;; TODO we can launch a timer from here to automatically trigger
-   ;; something after a time
-   {:db (assoc-in db [:mouse-events :down photo-id] ts)}))
+   ;; TODO wonder if it is useful to wrap this as an effect
+   (js/setTimeout #(re-frame/dispatch [:slide-mouse-up photo-id nil])
+                  selection-hold-time-msecs)
+   {:db (assoc-in db [:mouse-events :down]
+                  {:photo-id photo-id
+                   :timestamp ts})}))
 
 (re-frame/reg-event-db
+ :select-photo
+ (fn [db [_ photo-id mode]]
+   (debug "Selecting " photo-id)
+   (update db :selected conj photo-id)))
+
+(re-frame/reg-event-fx
  :slide-mouse-up
- (fn [db [_ photo-id ts]]
-   (let [downs (-> db :mouse-events :down)
-         hold-begin (get downs photo-id)
-         held-ms (- (js/Date.) hold-begin)
-         held-enough (> held-ms selection-hold-time-msecs)
-         ]
-     (debug held-ms "ms")
-     ;; Remove the record now that we've done it.
-     (dissoc-in db [:mouse-events :down photo-id]))))
+ (fn [{db :db} [_ photo-id ts]]
+   ;; User released M-btn1 at moment `ts`. The timestamp can be nil
+   ;; particularly when we have automatically done something and
+   ;; reacted to the mousehold.
+   (if-let [down (-> db :mouse-events :down)]
+     (let [hold-begin (:timestamp down)
+           held-ms (- (js/Date.) hold-begin)
+           held-long-enough (>= held-ms selection-hold-time-msecs)
+           ;; Remove the record now that we've done it.
+           db' (dissoc-in db [:mouse-events :down])]
+       (if held-long-enough
+         (do
+           ;; (debug "User released button:" held-ms "ms")
+           {:db db'
+            :dispatch [:select-photo photo-id :toggle]})
+         ;; User really just clicked and we handle that elsewhere.
+         {:db db'}))
+     {:db db})))
 
 ;; Toggle tag from query
 
@@ -142,6 +161,11 @@
  :tags-union
  (fn [db _]
    (or false (-> db :tags-union))))
+
+(re-frame/reg-sub
+ :selected
+ (fn [db _]
+   (-> db :selected)))
 
 (re-frame/reg-sub
  :input
@@ -200,6 +224,10 @@
     {:on-mouse-down #(re-frame/dispatch [:slide-mouse-down (:photo/id image) (js/Date.)])
      :on-mouse-up #(re-frame/dispatch [:slide-mouse-up (:photo/id image) (js/Date.)])
      ;; :on-click #(debug "mousie click" image)
+     :class (let [sels @(re-frame/subscribe [:selected])]
+              (if (sels (:photo/id image))
+                "selected-slide"
+                ""))
      }
     [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
     [:ul.info
