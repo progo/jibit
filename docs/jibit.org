@@ -516,6 +516,12 @@ to time how long the user holds.
 These three always occur in this order, on an element. Unless you make
 it into a drag event...
 
+** TODO When already having selections, make it faster to select more
+* TODO Effects and Events
+
+We'll have to check how the difference shows, especially when an
+effect handler doesn't get cofx like that.
+
 * TODO Streamline photo filtering?
 
 Tags per photo are currently subqueries (and there's that interesting

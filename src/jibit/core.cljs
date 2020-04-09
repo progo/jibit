@@ -25,6 +25,23 @@
 
 ;;;; Defining client/server conversations
 
+;; TODO wonder if this is a sensible refactor in contrast to our
+;; current system.
+(defn build-http-request
+  [&{method :method
+     uri :uri
+     params :params
+     usecase :usecase}]
+  {:method method
+   :uri (str server-uri uri)
+   :params params
+   :format (ajax.edn/edn-request-format)
+   :response-format (ajax.edn/edn-response-format)
+   :on-success [:good-http-get usecase]
+   :on-failure [:bad-http-get usecase]
+   })
+
+
 (re-frame/reg-event-fx
  :http-get
  (fn [{db :db} [_ uri usecase params]]
