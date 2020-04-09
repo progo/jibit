@@ -17,8 +17,18 @@ button {
     float: right;
 }
 
+
+h1#head {
+    padding-left: 10px;
+}
+
 .photos-count {
     color: silver;
+    font-size: smaller;
+}
+
+.selection-count {
+    color: gray;
     font-size: smaller;
 }
 
@@ -34,8 +44,13 @@ button {
     margin-top: 0px;
 }
 
+.selected-slide img {
+    outline: 4px red solid;
+    outline-offset: -4px;
+}
+
 .selected-slide .info {
-    background-color: #523900 !important;
+    /* background-color: #523900 !important; */
 }
 
 .slide img {

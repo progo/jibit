@@ -23,6 +23,13 @@
 
 (def selection-hold-time-msecs 320)
 
+(defn toggle-set-membership
+  [x s]
+  (if (s x)
+    (clojure.set/difference s #{x})
+    (clojure.set/union      s #{x})))
+
+
 ;;;; Defining client/server conversations
 
 ;; TODO wonder if this is a sensible refactor in contrast to our
@@ -113,7 +120,7 @@
  :select-photo
  (fn [db [_ photo-id mode]]
    (debug "Selecting " photo-id)
-   (update db :selected conj photo-id)))
+   (update db :selected #(toggle-set-membership photo-id %))))
 
 (re-frame/reg-event-fx
  :slide-mouse-up
@@ -137,12 +144,6 @@
      {:db db})))
 
 ;; Toggle tag from query
-
-(defn toggle-set-membership
-  [x s]
-  (if (s x)
-    (clojure.set/difference s #{x})
-    (clojure.set/union      s #{x})))
 
 (re-frame/reg-event-fx
  :toggle-tag
@@ -178,6 +179,11 @@
  :tags-union
  (fn [db _]
    (or false (-> db :tags-union))))
+
+(re-frame/reg-sub
+ :selected-count
+ (fn [db _]
+   (count (-> db :selected))))
 
 (re-frame/reg-sub
  :selected
@@ -342,9 +348,12 @@
 
 (defn user-interface []
   [:div
-   [:h1 "Photos"
-    [:span.photos-count \#
-     @(re-frame/subscribe [:photos-count])]]
+   (let [pc @(re-frame/subscribe [:photos-count])
+         sc @(re-frame/subscribe [:selected-count])]
+     [:h1#head "Photos"
+      [:span.photos-count \# pc]
+      (when (pos? sc)
+        [:span.selection-count "Selected " sc])])
    [filter-panel]
    [tags-view]
    [lighttable-bare]])
