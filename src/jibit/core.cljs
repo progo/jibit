@@ -117,7 +117,7 @@
    (assoc-in db [:input data-id] new-value)))
 
 (re-frame/reg-event-fx
- :toggle-tags-union
+ :toggle-tags-filter-union
  (fn [{db :db} [_ item]]
    (let [any-tags-selected? (-> db :selected-tags seq)]
      (merge
@@ -172,7 +172,7 @@
 ;; Toggle tag from query
 
 (re-frame/reg-event-fx
- :toggle-tag
+ :toggle-tag-filter
  (fn [{db :db} [_ tag-id]]
    (let [tags-selection (toggle-set-membership tag-id (:selected-tags db))]
      {:db (assoc-in db [:selected-tags] tags-selection)
@@ -260,7 +260,7 @@
                 (or text-on "On")
                 (or text-off "Off"))]
     [:a.button {:class class
-                :on-click #(re-frame/dispatch [:toggle-tags-union data-id])}
+                :on-click #(re-frame/dispatch [:toggle-tags-filter-union data-id])}
      text]))
 
 (defn slide [image]
@@ -351,8 +351,8 @@
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
     ^{:key tag-id}
-    [:li {:on-click #(re-frame/dispatch [:toggle-tag tag-id])
-          :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag tag-id])
+    [:li {:on-click #(re-frame/dispatch [:toggle-tag-filter tag-id])
+          :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
           :class (when selected? "selected")
           :title (or (:tag/description tag) "")}
      (:tag/name tag)]))
