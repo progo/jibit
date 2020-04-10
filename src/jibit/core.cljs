@@ -79,6 +79,13 @@
 
 ;;;;; This is done.
 
+(re-frame/reg-fx
+ :dispatch-after-delay
+ (fn [{event :event timeout :timeout}]
+   (js/setTimeout
+    #(re-frame/dispatch event)
+    timeout)))
+
 (re-frame/reg-event-db
  :initialize
  (fn [db _]
@@ -109,12 +116,12 @@
 (re-frame/reg-event-fx
  :slide-mouse-down
  (fn [{db :db} [_ photo-id ts]]
-   ;; TODO wonder if it is useful to wrap this as an effect
-   (js/setTimeout #(re-frame/dispatch [:slide-mouse-up photo-id nil])
-                  selection-hold-time-msecs)
    {:db (assoc-in db [:mouse-events :down]
                   {:photo-id photo-id
-                   :timestamp ts})}))
+                   :timestamp ts})
+    :dispatch-after-delay {:event [:slide-mouse-up photo-id nil]
+                           :timeout selection-hold-time-msecs}
+    }))
 
 (re-frame/reg-event-db
  :select-photo

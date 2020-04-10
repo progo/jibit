@@ -521,7 +521,6 @@ it into a drag event...
 
 We'll have to check how the difference shows, especially when an
 effect handler doesn't get cofx like that.
-
 * TODO Streamline photo filtering?
 
 Tags per photo are currently subqueries (and there's that interesting
