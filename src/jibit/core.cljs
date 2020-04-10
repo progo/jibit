@@ -29,6 +29,10 @@
     (clojure.set/difference s #{x})
     (clojure.set/union      s #{x})))
 
+(defn dispatch-preventing-default-action
+  [evt event]
+  (. evt preventDefault)
+  (re-frame/dispatch event))
 
 ;;;; Defining client/server conversations
 
@@ -228,11 +232,6 @@
 
 ;;; Tags
 
-(defn tag-menu
-  [evt tag]
-  (. evt preventDefault)
-  (debug "tagmenu" evt tag))
-
 (defn render-tags-from-ids
   [tags-db tags]
   [:div.inline-tags
@@ -345,7 +344,7 @@
         selected? (@selections tag-id)]
     ^{:key tag-id}
     [:li {:on-click #(re-frame/dispatch [:toggle-tag tag-id])
-          :on-context-menu #(tag-menu % tag-id)
+          :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag tag-id])
           :class (when selected? "selected")
           :title (or (:tag/description tag) "")}
      (:tag/name tag)]))

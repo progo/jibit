@@ -490,9 +490,10 @@ CLOSED: [2020-04-05 Sun 13:34]
 Let's pass the IDs alone and let jibit join the labels using full
 information.
 
-** NOTSURE Selection of photos from lighttable
+** DONE Selection of photos from lighttable
 CLOSED: [2020-04-06 Mon 19:06]
 :LOGBOOK:
+- State "DONE"       from "NOTSURE"    [2020-04-10 Fri 11:09]
 - State "DONE"       from "TODO"       [2020-04-06 Mon 19:06]
 :END:
 
