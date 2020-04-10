@@ -23,6 +23,14 @@
 
 (def selection-hold-time-msecs 320)
 
+(defn i
+  "{debug} Inspect DB."
+  [& keys]
+  (let [db @re-frame.db/app-db]
+    (cond
+      (nil? keys) (keys db)
+      :t (get-in db keys))))
+
 (defn toggle-set-membership
   [x s]
   (if (s x)
