@@ -116,12 +116,15 @@
 (re-frame/reg-event-fx
  :slide-mouse-down
  (fn [{db :db} [_ photo-id ts]]
-   {:db (assoc-in db [:mouse-events :down]
-                  {:photo-id photo-id
-                   :timestamp ts})
-    :dispatch-after-delay {:event [:slide-mouse-up photo-id nil]
-                           :timeout selection-hold-time-msecs}
-    }))
+   (let [selections? (-> db :selected seq)
+         delay (if selections?
+                 100
+                 selection-hold-time-msecs)]
+     {:db (assoc-in db [:mouse-events :down]
+                    {:photo-id photo-id
+                     :timestamp ts})
+      :dispatch-after-delay {:event [:slide-mouse-up photo-id nil]
+                             :timeout delay}})))
 
 (re-frame/reg-event-db
  :select-photo
@@ -141,7 +144,7 @@
    ;; reacted to the mousehold.
    (if-let [down (-> db :mouse-events :down)]
      (let [hold-begin (:timestamp down)
-           held-ms (- (js/Date.) hold-begin)
+           held-ms (- hold-begin ts)
            held-long-enough (>= held-ms selection-hold-time-msecs)
            ;; Remove the record now that we've done it.
            db' (dissoc-in db [:mouse-events :down])]
