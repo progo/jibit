@@ -118,9 +118,13 @@
 
 (re-frame/reg-event-db
  :select-photo
- (fn [db [_ photo-id mode]]
-   (debug "Selecting " photo-id)
+ (fn [db [_ photo-id toggle?]]
    (update db :selected #(toggle-set-membership photo-id %))))
+
+(re-frame/reg-event-db
+ :clear-selection
+ (fn [db _]
+   (update db :selected empty)))
 
 (re-frame/reg-event-fx
  :slide-mouse-up
@@ -159,8 +163,9 @@
    (let [filter-criteria (-> (:input db)
                              (assoc :tags (:selected-tags db))
                              (assoc :tags-union (:tags-union db)))]
-     (debug "Retrieving photos using criteria" filter-criteria)
-     {:dispatch [:http-get "/photos" :query-photos filter-criteria]})))
+     (debug "Get photos with:" filter-criteria)
+     {:dispatch-n [[:clear-selection]
+                   [:http-get "/photos" :query-photos filter-criteria]]})))
 
 ;;; queries from db
 
