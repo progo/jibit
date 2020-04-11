@@ -123,7 +123,7 @@
 (re-frame/reg-event-fx
  :toggle-tag-on-selected
  (fn [{db :db} [_ tag-id]]
-   (let [sel (-> db :selected)]
+   (when-let [sel (seq (-> db :selected))]
      (timbre/debugf "Setting tag %d to photos %s" tag-id sel)
      {:http-xhrio (build-edn-request :method :post
                                      :uri "/tag"
