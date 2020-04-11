@@ -116,6 +116,13 @@
  (fn [db [_ data-id new-value]]
    (assoc-in db [:input data-id] new-value)))
 
+;;; Set tags on selected photos!
+(re-frame/reg-event-fx
+ :toggle-tag-on-selected
+ (fn [{db :db} [_ tag-id]]
+   (let [sel (-> db :selected)]
+     (timbre/debugf "Setting tag %d to photos %s" tag-id sel))))
+
 (re-frame/reg-event-fx
  :toggle-tags-filter-union
  (fn [{db :db} [_ item]]
@@ -268,7 +275,6 @@
    [:div.slide
     {:on-mouse-down #(re-frame/dispatch [:slide-mouse-down (:photo/id image) (js/Date.)])
      :on-mouse-up #(re-frame/dispatch [:slide-mouse-up (:photo/id image) (js/Date.)])
-     ;; :on-click #(debug "mousie click" image)
      :class (let [sels @(re-frame/subscribe [:selected])]
               (if (sels (:photo/id image))
                 "selected-slide"
@@ -351,7 +357,7 @@
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
     ^{:key tag-id}
-    [:li {:on-click #(re-frame/dispatch [:toggle-tag-filter tag-id])
+    [:li {:on-click #(re-frame/dispatch [:toggle-tag-on-selected tag-id])
           :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
           :class (when selected? "selected")
           :title (or (:tag/description tag) "")}
