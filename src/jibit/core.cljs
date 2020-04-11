@@ -42,54 +42,35 @@
   (. evt preventDefault)
   (re-frame/dispatch event))
 
-;;;; Defining client/server conversations
+;; Defining client/server conversations
 
-;; TODO wonder if this is a sensible refactor in contrast to our
-;; current system.
-(defn build-http-request
+(defn build-edn-request
+  "Build a request building map that can be passed to :http-xhrio."
   [&{method :method
      uri :uri
      params :params
-     usecase :usecase}]
+     response :response}]
   {:method method
    :uri (str server-uri uri)
    :params params
    :format (ajax.edn/edn-request-format)
    :response-format (ajax.edn/edn-response-format)
-   :on-success [:good-http-get usecase]
-   :on-failure [:bad-http-get usecase]
-   })
+   :on-success [response true]
+   :on-failure [response false]})
 
+;;;; Our ajax responses from server
 
-(re-frame/reg-event-fx
- :http-get
- (fn [{db :db} [_ uri usecase params]]
-   {:http-xhrio {:method :get
-                 :uri (str server-uri uri)
-                 :params params
-                 :format (ajax.edn/edn-request-format)
-                 :response-format (ajax.edn/edn-response-format)
-                 :on-success [:good-http-get usecase]
-                 :on-failure [:bad-http-get usecase]}}))
-
-;; Generic success handler for HTTP gets
-;; probably a multimethod can handle this?
 (re-frame/reg-event-db
- :good-http-get
- (fn [db [_ usecase result]]
-   (assoc db (case usecase
-               :query-photos :photos
-               :query-tags   :tags
-               :http-result-good)
-          result)))
+ :on-get-tags
+ (fn [db [_ success? response]]
+   (assoc db :tags response)))
 
-;; Generic failure handler for HTTP gets
 (re-frame/reg-event-db
- :bad-http-get
- (fn [db [_ usecase result]]
-   (assoc db :http-result-fail result)))
+ :on-get-photos
+ (fn [db [_ success? response]]
+   (assoc db :photos response)))
 
-;;;;; This is done.
+;;;; Ajax end
 
 (re-frame/reg-fx
  :dispatch-after-delay
@@ -98,9 +79,9 @@
     #(re-frame/dispatch event)
     timeout)))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  :initialize
- (fn [db _]
+ (fn [{db :db} _]
    (let [db' (if (:init-done db)
                db
                {:photos []
@@ -109,7 +90,10 @@
                 :selected #{}
                 :tags-union true
                 :init-done true})]
-     db')))
+     {:http-xhrio (build-edn-request :method :get
+                                     :uri "/tags"
+                                     :response :on-get-tags)
+      :db db'})))
 
 (re-frame/reg-event-db
  :change-input
@@ -193,8 +177,11 @@
                              (assoc :tags (:selected-tags db))
                              (assoc :tags-union (:tags-union db)))]
      (debug "Get photos with:" filter-criteria)
-     {:dispatch-n [[:clear-selection]
-                   [:http-get "/photos" :query-photos filter-criteria]]})))
+     {:dispatch [:clear-selection]
+      :http-xhrio (build-edn-request :method :get
+                                     :uri "/photos"
+                                     :params filter-criteria
+                                     :response :on-get-photos)})))
 
 ;;; queries from db
 
@@ -397,7 +384,6 @@
 (defn mount-app-element []
   (when-let [el (get-app-element)]
     (re-frame/dispatch-sync [:initialize])
-    (re-frame/dispatch [:http-get "/tags" :query-tags {}])
     (mount el)))
 
 ;; conditionally start your application based on the presence of an "app" element
