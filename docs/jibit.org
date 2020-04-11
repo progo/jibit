@@ -513,6 +513,18 @@ What's this actually? We go ahead and persist things to DB the moment
 we tag/untag photo(s). That's how it's going to be.
 
 ** TODO Making new tags
+
+We're launching a modal div on top of everything to remind us how
+great all modal windows used to be.
+
+Things 
+- [ ] We'll want to show user the name is required (don't let user
+  click on the Create if empty)
+- [ ] On "Create" keep the dialog open while request runs, only close
+  it once it was successfully saved.
+- [ ] Spinner is probably not necessary at this point, see how slow it
+  is.
+
 ** TODO Modifying tags
 ** DONE Don't launch Post req on an empty selection
 CLOSED: [2020-04-11 Sat 17:43]

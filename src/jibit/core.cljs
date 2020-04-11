@@ -140,6 +140,20 @@
       (when any-tags-selected?
         {:dispatch [:get-photos]})))))
 
+(re-frame/reg-event-db
+ :show-create-tag-dlg
+ (fn [db _]
+   (assoc db
+          :modal? true
+          :show-create-tag-dlg? true)))
+
+(re-frame/reg-event-db
+ :cancel-create-tag
+ (fn [db _]
+   (assoc db
+          :modal? false
+          :show-create-tag-dlg? false)))
+
 (re-frame/reg-event-fx
  :slide-mouse-down
  (fn [{db :db} [_ photo-id ts]]
@@ -207,6 +221,16 @@
                                      :response :on-get-photos)})))
 
 ;;; queries from db
+
+(re-frame/reg-sub
+ :modal?
+ (fn [db _]
+   (-> db :modal?)))
+
+(re-frame/reg-sub
+ :show-create-tag-dlg?
+ (fn [db _]
+   (-> db :show-create-tag-dlg?)))
 
 (re-frame/reg-sub
  :tags
@@ -377,7 +401,32 @@
   [:ul#tags
    (doall
     (for [t @(re-frame/subscribe [:tags])]
-      (tag-view t)))])
+      (tag-view t)))
+   [:div#create-tag.button
+    {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
+    "+"]])
+
+(defn modal-background []
+  (let [enabled? @(re-frame/subscribe [:modal?])]
+    [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
+
+(defn create-tag-dialog []
+  (let [enabled? @(re-frame/subscribe [:show-create-tag-dlg?])]
+    [:div.modal-dialog
+     {:class (if enabled? "modal-shown" "")}
+     [:h1 "Create new tag"]
+     [:input {:type :text
+              :placeholder "Name"
+              :name "tag-name"}]
+     [:br]
+     [:textarea {:type :text
+                 :placeholder "Description"
+                 :name "tag-description"}]
+     [:div.footer
+      [:a.button {:on-click #()}
+       "Create"]
+      [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag])}
+       "Cancel"]]]))
 
 (defn lighttable-bare []
   [:div.lighttable
@@ -395,9 +444,11 @@
          [:a {:class "clear"
               :on-click #(re-frame/dispatch [:clear-selection])
               :href "#"} "Clear"]])])
+   [modal-background]
    [filter-panel]
    [tags-view]
-   [lighttable-bare]])
+   [lighttable-bare]
+   [create-tag-dialog]])
 
 ;;; re-frame boilerplate below
 
