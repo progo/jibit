@@ -41,7 +41,7 @@
    :body (prn-str
           (let [{tag-id :tag
                  photo-ids :photos} (view.filtering/read-edn req)]
-            (model.tag/set-tag-for-photos tag-id photo-ids)))})
+            (model.tag/set-tag-for-photos tag-id photo-ids :add)))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

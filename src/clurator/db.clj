@@ -2,12 +2,24 @@
   "Database interface"
   (:require [next.jdbc :as jdbc]
             [honeysql.core :as sql]
+            [honeysql.format :as sqlf]
             [honeysql.helpers :as s]
             [taoensso.timbre :as timbre :refer [debug spy]]
             [clurator.db-schema :refer [update-schema!]]
             clurator.settings))
 
 (declare db)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod sqlf/format-clause :insert-or-replace [[_ table-name] _]
+  (str "INSERT OR REPLACE INTO " (sqlf/to-sql table-name)))
+
+(defmethod sqlf/format-clause :insert-or-ignore [[_ table-name] _]
+  (str "INSERT OR IGNORE INTO " (sqlf/to-sql table-name)))
+
+(sqlf/register-clause! :insert-or-replace 60)
+(sqlf/register-clause! :insert-or-ignore 60)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
