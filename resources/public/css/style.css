@@ -32,6 +32,22 @@ h1#head {
     font-size: smaller;
 }
 
+.selection-count a.clear {
+    color: inherit;
+    font-size: inherit;
+    text-decoration: none;
+    border-radius: 6px;
+    border: gray 3px solid;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.selection-count a.clear:hover{
+    /* color: red; */
+    border-color: pink;
+    /* background-color: #eee; */
+}
+
 .lighttable .slide-wrapper {
     display: inline-block;
 }

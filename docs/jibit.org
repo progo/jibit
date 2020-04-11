@@ -480,7 +480,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [50%]
+* TODO Tagging photos [66%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -500,8 +500,10 @@ CLOSED: [2020-04-06 Mon 19:06]
 So basically give the ability to tag a photo... we can postpone
 selections for later.
 
-** STARTED Tag a photo from UI
+** DONE Tag a photo from UI
+CLOSED: [2020-04-11 Sat 12:09]
 :LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-04-11 Sat 12:09]
 - State "STARTED"    from "TODO"       [2020-04-10 Fri 11:18]
 :END:
 ** NOTSURE Saving tags

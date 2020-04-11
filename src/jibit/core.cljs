@@ -380,7 +380,10 @@
      [:h1#head "Photos"
       [:span.photos-count \# pc]
       (when (pos? sc)
-        [:span.selection-count "Selected " sc])])
+        [:span.selection-count "Selected " sc \space
+         [:a {:class "clear"
+              :on-click #(re-frame/dispatch [:clear-selection])
+              :href "#"} "Clear"]])])
    [filter-panel]
    [tags-view]
    [lighttable-bare]])
