@@ -24,11 +24,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn query!
-  "Make a RO query. Take a map HoneySQL understands."
+  "Make a query. Take a map HoneySQL understands."
   [query-map]
   (let [formatted-sql (sql/format query-map)]
     ;; (timbre/debugf "DB QUERY %s => %s" query-map formatted-sql)
     (jdbc/execute! db formatted-sql)))
+
+(defn query-count!
+  "Make a counting query and extract the resulting integer"
+  [query-map]
+  (-> (query! query-map)
+      first
+      seq
+      first
+      second))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
