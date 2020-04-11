@@ -25,11 +25,11 @@
 
 (defn i
   "{debug} Inspect DB."
-  [& keys]
+  [& ks]
   (let [db @re-frame.db/app-db]
     (cond
-      (nil? keys) (keys db)
-      :t (get-in db keys))))
+      (nil? ks) (sort (keys db))
+      :t (get-in db ks))))
 
 (defn toggle-set-membership
   [x s]
@@ -58,6 +58,13 @@
    :on-success [response true]
    :on-failure [response false]})
 
+;;;;
+
+(defn photo-ids
+  "Get a set of photo/ids from a collection of photo maps."
+  [p]
+  (set (map :photo/id p)))
+
 ;;;; Our ajax responses from server
 
 (re-frame/reg-event-db
@@ -67,8 +74,13 @@
 
 (re-frame/reg-event-db
  :on-get-photos
- (fn [db [_ success? response]]
-   (assoc db :photos response)))
+ (fn [db [_ success? new-photos]]
+   (when success?
+     (let [ids (clojure.set/intersection (photo-ids new-photos)
+                                         (:selected db))]
+       (assoc db
+              :photos new-photos
+              :selected ids)))))
 
 (re-frame/reg-event-fx
  :on-tag
@@ -189,8 +201,7 @@
                              (assoc :tags (:selected-tags db))
                              (assoc :tags-union (:tags-union db)))]
      (debug "Get photos with:" filter-criteria)
-     {:dispatch [:clear-selection]
-      :http-xhrio (build-edn-request :method :get
+     {:http-xhrio (build-edn-request :method :get
                                      :uri "/photos"
                                      :params filter-criteria
                                      :response :on-get-photos)})))

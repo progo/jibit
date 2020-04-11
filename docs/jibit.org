@@ -514,6 +514,7 @@ we tag/untag photo(s). That's how it's going to be.
 
 ** TODO Making new tags
 ** TODO Modifying tags
+** TODO Don't launch Post req on an empty selection
 * TODO Selections
 
 Mousedown selection with a small hold time to select a photo, and then
@@ -532,7 +533,11 @@ CLOSED: [2020-04-10 Fri 11:07]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-10 Fri 11:07]
 :END:
-** TODO Clear selection only if photo set changes
+** DONE Clear selection only if photo set changes
+CLOSED: [2020-04-11 Sat 17:30]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-11 Sat 17:30]
+:END:
 
 Should we perhaps keep the intersection of photos selected? Yes...
 * TODO Effects and Events
