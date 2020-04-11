@@ -49,7 +49,7 @@
 (defn fetch-tags
   [photos]
   (for [p photos]
-    (assoc p :tagged/ids (tag/tag-ids-for-photo p))))
+    (assoc p :tagged/ids (tag/get-tag-ids-for-photo p))))
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."

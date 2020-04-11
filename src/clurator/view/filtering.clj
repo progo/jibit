@@ -3,6 +3,13 @@
   that we use."
   (:require [clojure.edn :as edn]))
 
+(defn read-edn
+  [req]
+  (-> req
+      :body
+      slurp
+      edn/read-string))
+
 (defn nilify
   "Empty strings into nils."
   [x]
@@ -29,7 +36,7 @@
       )))
 
 (defmacro clean-edn-input
-  "Parse given `kw' as edn value."
+  "Given `kw', parse `(get criteria kw)` as edn value."
   [kw]
   `(if-let [val# (edn/read-string (get ~'criteria ~(name kw)))]
      {~kw val#}))

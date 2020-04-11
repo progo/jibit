@@ -1,6 +1,6 @@
 (ns clurator.core
   (:require [org.httpkit.server :refer [run-server]]
-            [compojure.core :as comp :refer [GET POST]]
+            [compojure.core :as comp :refer [GET POST OPTIONS ANY]]
             [ring.util.codec :refer [form-decode]]
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
@@ -12,6 +12,11 @@
 ;; We will serve jibit here, and provide an API, with websockets
 ;; probably.
 
+(def edn-headers
+  {"Content-Type" "application/edn"
+   "Access-Control-Allow-Headers" "Content-Type"
+   "Access-Control-Allow-Origin" "*"})
+
 (defn index [req]
   {:status 200
    :headers {"Content-Type" "text/html"}
@@ -19,8 +24,7 @@
 
 (defn list-photos [req]
   {:status 200
-   :headers {"Content-Type" "application/edn"
-             "Access-Control-Allow-Origin" "*"}
+   :headers edn-headers
    :body (prn-str
           (model.photo/filter-photos
            (view.filtering/handle-filter-criteria
@@ -28,15 +32,24 @@
 
 (defn list-tags [req]
   {:status 200
-   :headers {"Content-Type" "application/edn"
-             "Access-Control-Allow-Origin" "*"}
+   :headers edn-headers
    :body (prn-str (model.tag/filter-tags))})
+
+(defn tag-photos [req]
+  {:status 200
+   :headers edn-headers
+   :body (prn-str
+          (let [{tag-id :tag
+                 photo-ids :photos} (view.filtering/read-edn req)]
+            (model.tag/set-tag-for-photos tag-id photo-ids)))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
 
 (comp/defroutes app
   (GET "/" [] index)
+  (POST    "/tag" [] tag-photos)
+  (OPTIONS "/tag" [] {:status 200 :headers edn-headers})
   (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))

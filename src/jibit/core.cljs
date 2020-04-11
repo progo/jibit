@@ -70,6 +70,13 @@
  (fn [db [_ success? response]]
    (assoc db :photos response)))
 
+(re-frame/reg-event-fx
+ :on-tag
+ (fn [db [_ success? response]]
+   ;; We've just tagged images
+   (when success?
+     {:dispatch [:get-photos]})))
+
 ;;;; Ajax end
 
 (re-frame/reg-fx
@@ -105,7 +112,12 @@
  :toggle-tag-on-selected
  (fn [{db :db} [_ tag-id]]
    (let [sel (-> db :selected)]
-     (timbre/debugf "Setting tag %d to photos %s" tag-id sel))))
+     (timbre/debugf "Setting tag %d to photos %s" tag-id sel)
+     {:http-xhrio (build-edn-request :method :post
+                                     :uri "/tag"
+                                     :params {:tag tag-id
+                                              :photos sel}
+                                     :response :on-tag)})))
 
 (re-frame/reg-event-fx
  :toggle-tags-filter-union
