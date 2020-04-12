@@ -242,6 +242,7 @@ div#modal-bg {
 
 .modal-dialog .footer {
     margin-top: 20px;
+    margin-bottom: 15px;
 }
 
 .modal-dialog .footer .button {

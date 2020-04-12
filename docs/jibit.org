@@ -518,12 +518,16 @@ We're launching a modal div on top of everything to remind us how
 great all modal windows used to be.
 
 Things 
+
+- [ ] Some refactoring of data-bound-input may be needed.
 - [ ] We'll want to show user the name is required (don't let user
   click on the Create if empty)
 - [ ] On "Create" keep the dialog open while request runs, only close
   it once it was successfully saved.
 - [ ] Spinner is probably not necessary at this point, see how slow it
   is.
+- [ ] Use a singular piece of state to denote what is shown. =:state
+  :new-tag-dlg= and so on.
 
 ** TODO Modifying tags
 ** DONE Don't launch Post req on an empty selection

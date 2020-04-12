@@ -329,6 +329,19 @@
          [:li (render-tags-from-ids @tag-db tags)]))
      ]]])
 
+(defn data-bound-textarea
+  "Build a textarea element that binds into `data-id`. Props is a map that
+  goes into creating the element."
+  [data-id props]
+  (let [bound @(re-frame/subscribe [:input data-id])
+        change-fn #(re-frame/dispatch [:change-input
+                                       data-id
+                                       (-> % .-target .-value)])
+        props (assoc props
+                     :on-change change-fn
+                     :value bound)]
+    [:textarea props]))
+
 (defn data-bound-input
   "Build an input element that binds into `data-id`. Props is a map that
   goes into creating the element."
@@ -415,13 +428,15 @@
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 "Create new tag"]
-     [:input {:type :text
-              :placeholder "Name"
-              :name "tag-name"}]
+     [data-bound-input :new-tag-name
+      {:type :text
+       :placeholder "Name"
+       :name "tag-name"}]
      [:br]
-     [:textarea {:type :text
-                 :placeholder "Description"
-                 :name "tag-description"}]
+     [data-bound-textarea :new-tag-desc
+      {:type :text
+       :placeholder "Description"
+       :name "tag-description"}]
      [:div.footer
       [:a.button {:on-click #()}
        "Create"]
