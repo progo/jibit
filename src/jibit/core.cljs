@@ -84,10 +84,18 @@
 
 (re-frame/reg-event-fx
  :on-tag
- (fn [db [_ success? response]]
+ (fn [cofx [_ success? response]]
    ;; We've just tagged images
    (when success?
      {:dispatch [:get-photos]})))
+
+(re-frame/reg-event-fx
+ :on-create-tag
+ (fn [cofx [_ success? response]]
+   ;; We've made a new tag in the system.
+   (when success?
+     {:dispatch-n [[:reload-tags]
+                   [:cancel-create-tag-dlg]]})))
 
 ;;;; Ajax end
 
@@ -110,10 +118,15 @@
                 :selected #{}
                 :tags-union true
                 :init-done true})]
-     {:http-xhrio (build-edn-request :method :get
-                                     :uri "/tags"
-                                     :response :on-get-tags)
+     {:dispatch [:reload-tags]
       :db db'})))
+
+(re-frame/reg-event-fx
+ :reload-tags
+ (fn [_ _]
+   {:http-xhrio (build-edn-request :method :get
+                                   :uri "/tags"
+                                   :response :on-get-tags)}))
 
 ;; Store changed input value under a chain of keys in db,
 ;; under :input.
@@ -147,6 +160,16 @@
  :show-create-tag-dlg
  (fn [db _]
    (assoc db :state :create-tag)))
+
+(re-frame/reg-event-fx
+ :create-new-tag
+ (fn [{db :db} _]
+   (let [input (spy (-> db :input :new-tag))]
+     {:http-xhrio (build-edn-request :method :post
+                                     :uri "/new-tag"
+                                     :params input
+                                     :response :on-create-tag)}
+     )))
 
 (re-frame/reg-event-db
  :cancel-create-tag-dlg

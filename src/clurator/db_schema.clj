@@ -87,7 +87,7 @@
 
       "create table tag
       ( id                      integer primary key autoincrement
-      , name                    text
+      , name                    text not null
       , type                    text
       , description             text
       , parent_id               integer

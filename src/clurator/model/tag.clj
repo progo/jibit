@@ -3,6 +3,13 @@
   (:require [clurator.db :as db]))
 
 
+(defn create-tag
+  [tag-name tag-desc]
+  (db/query! {:insert-into :tag
+              :columns [:name :description]
+              :values [[tag-name tag-desc]]
+              }))
+
 (defn -add-tags-for-photos
   [tag-id photo-ids]
   (db/query! {:insert-or-replace :photo_tag

@@ -480,7 +480,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [71%]
+* TODO Tagging photos [85%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -512,7 +512,11 @@ CLOSED: [2020-04-10 Fri 11:19]
 What's this actually? We go ahead and persist things to DB the moment
 we tag/untag photo(s). That's how it's going to be.
 
-** TODO Making new tags [50%]
+** DONE Making new tags [100%]
+CLOSED: [2020-04-12 Sun 13:32]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-12 Sun 13:32]
+:END:
 
 We're launching a modal div on top of everything to remind us how
 great all modal windows used to be.
@@ -522,9 +526,9 @@ Things
 - [X] Some refactoring of data-bound-input may be needed.
 - [X] We'll want to show user the name is required (don't let user
   click on the Create if empty)
-- [ ] On "Create" keep the dialog open while request runs, only close
+- [X] On "Create" keep the dialog open while request runs, only close
   it once it was successfully saved.
-- [ ] Spinner is probably not necessary at this point, see how slow it
+- [X] Spinner is probably not necessary at this point, see how slow it
   is.
 - [X] Use a singular piece of state to denote what is shown. =:state
   :new-tag-dlg= and so on.
@@ -541,6 +545,19 @@ CLOSED: [2020-04-11 Sat 17:43]
 - create-tag :: modal, tag creation dialog
 
 * TODO Modal background : dblclick to turn off
+* TODO Check do we need that extra boolean on =data-bound-input=
+* NOTSURE get-photos could be an effect
+CLOSED: [2020-04-12 Sun 13:31]
+
+If we pass all the input to it via arguments. Pure style!
+
+I miscalculated the scope of effects handler. Its result aren't indeed
+handled the same way the effects are, so let's not go that way.
+
+* TODO tags-union into predicate form 
+
+Add =?=
+
 * DONE Selections
 CLOSED: [2020-04-11 Sat 17:40]
 :LOGBOOK:
@@ -586,7 +603,7 @@ re-frame level so it means we use whatever we need to --
 events/handlers even when the behavior is more effect-like. Effects
 when we can.
 
-* TODO Streamline photo filtering?
+* TODO Streamline photo filtering?                                  :backend:
 
 Tags per photo are currently subqueries (and there's that interesting
 bug/condition in there relating debug statements).
@@ -633,10 +650,6 @@ CLOSED: [2020-04-05 Sun 11:31]
 * TODO re-pressed
 
 something to do with keys?
-
-* TODO tags-union into predicate form 
-
-Add =?=
 
 * TODO UI: show total exp time                                         :idea:
 

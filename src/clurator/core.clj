@@ -43,6 +43,13 @@
                  photo-ids :photos} (view.filtering/read-edn req)]
             (model.tag/set-tag-for-photos tag-id photo-ids :toggle)))})
 
+(defn create-new-tag [req]
+  {:status 200
+   :headers edn-headers
+   :body (prn-str (let [{tag-name :new-tag-name
+                         tag-desc :new-tag-desc} (view.filtering/read-edn req)]
+                    (model.tag/create-tag tag-name tag-desc)))})
+
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
 
@@ -50,6 +57,8 @@
   (GET "/" [] index)
   (POST    "/tag" [] tag-photos)
   (OPTIONS "/tag" [] {:status 200 :headers edn-headers})
+  (POST    "/new-tag" [] create-new-tag)
+  (OPTIONS "/new-tag" [] {:status 200 :headers edn-headers})
   (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
