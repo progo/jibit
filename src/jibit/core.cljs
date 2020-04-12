@@ -105,6 +105,7 @@
                db
                {:photos []
                 :tags []
+                :state nil
                 :selected-tags #{}
                 :selected #{}
                 :tags-union true
@@ -145,16 +146,13 @@
 (re-frame/reg-event-db
  :show-create-tag-dlg
  (fn [db _]
-   (assoc db
-          :modal? true
-          :show-create-tag-dlg? true)))
+   (assoc db :state :create-tag)))
 
 (re-frame/reg-event-db
- :cancel-create-tag
+ :cancel-create-tag-dlg
  (fn [db _]
    (-> db
-       (assoc :modal? false
-              :show-create-tag-dlg? false)
+       (assoc :state nil)
        ;; Clear set values, if any
        (assoc-in [:input :new-tag] {}))))
 
@@ -227,14 +225,9 @@
 ;;; queries from db
 
 (re-frame/reg-sub
- :modal?
+ :state
  (fn [db _]
-   (-> db :modal?)))
-
-(re-frame/reg-sub
- :show-create-tag-dlg?
- (fn [db _]
-   (-> db :show-create-tag-dlg?)))
+   (:state db)))
 
 (re-frame/reg-sub
  :tags
@@ -410,12 +403,18 @@
     {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
     "+"]])
 
+(defn modal-state?
+  "Is this state a modal one?"
+  [state]
+  ;; All non-nil states are modal, for now.
+  state)
+
 (defn modal-background []
-  (let [enabled? @(re-frame/subscribe [:modal?])]
+  (let [enabled? (modal-state? @(re-frame/subscribe [:state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
 (defn create-tag-dialog []
-  (let [enabled? @(re-frame/subscribe [:show-create-tag-dlg?])
+  (let [enabled? (= :create-tag @(re-frame/subscribe [:state]))
         tag-name @(re-frame/subscribe [:input [:new-tag :new-tag-name]])
         incomplete-form? (empty? tag-name)]
     [:div.modal-dialog
@@ -438,7 +437,7 @@
                                (re-frame/dispatch [:create-new-tag]))
                   :class (when incomplete-form? "btn-disabled")}
        "Create"]
-      [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag])}
+      [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
        "Cancel"]]]))
 
 (defn lighttable-bare []

@@ -512,7 +512,7 @@ CLOSED: [2020-04-10 Fri 11:19]
 What's this actually? We go ahead and persist things to DB the moment
 we tag/untag photo(s). That's how it's going to be.
 
-** TODO Making new tags [40%]
+** TODO Making new tags [50%]
 
 We're launching a modal div on top of everything to remind us how
 great all modal windows used to be.
@@ -526,7 +526,7 @@ Things
   it once it was successfully saved.
 - [ ] Spinner is probably not necessary at this point, see how slow it
   is.
-- [ ] Use a singular piece of state to denote what is shown. =:state
+- [X] Use a singular piece of state to denote what is shown. =:state
   :new-tag-dlg= and so on.
 
 ** TODO Modifying tags
@@ -535,6 +535,12 @@ CLOSED: [2020-04-11 Sat 17:43]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-11 Sat 17:43]
 :END:
+* Currently held states                                                :info:
+
+- nil :: default
+- create-tag :: modal, tag creation dialog
+
+* TODO Modal background : dblclick to turn off
 * DONE Selections
 CLOSED: [2020-04-11 Sat 17:40]
 :LOGBOOK:
