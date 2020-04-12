@@ -114,10 +114,12 @@
                                      :response :on-get-tags)
       :db db'})))
 
+;; Store changed input value under a chain of keys in db,
+;; under :input.
 (re-frame/reg-event-db
  :change-input
- (fn [db [_ data-id new-value]]
-   (assoc-in db [:input data-id] new-value)))
+ (fn [db [_ data-ids new-value]]
+   (assoc-in db (conj (seq data-ids) :input) new-value)))
 
 ;;; Set tags on selected photos!
 (re-frame/reg-event-fx
@@ -211,7 +213,7 @@
 (re-frame/reg-event-fx
  :get-photos
  (fn [{db :db} _]
-   (let [filter-criteria (-> (:input db)
+   (let [filter-criteria (-> db :input :filter
                              (assoc :tags (:selected-tags db))
                              (assoc :tags-union (:tags-union db)))]
      (debug "Get photos with:" filter-criteria)
@@ -260,8 +262,8 @@
 
 (re-frame/reg-sub
  :input
- (fn [db [_ data-id]]
-   (-> db :input data-id)))
+ (fn [db [_ data-ids]]
+   (get-in db (concat [:input] data-ids))))
 
 ;; TODO we can parametrize to particular tag-id as well
 (re-frame/reg-sub
@@ -329,39 +331,26 @@
          [:li (render-tags-from-ids @tag-db tags)]))
      ]]])
 
-(defn data-bound-textarea
-  "Build a textarea element that binds into `data-id`. Props is a map that
-  goes into creating the element."
-  [data-id props]
-  (let [bound @(re-frame/subscribe [:input data-id])
-        change-fn #(re-frame/dispatch [:change-input
-                                       data-id
-                                       (-> % .-target .-value)])
-        props (assoc props
-                     :on-change change-fn
-                     :value bound)]
-    [:textarea props]))
-
 (defn data-bound-input
-  "Build an input element that binds into `data-id`. Props is a map that
-  goes into creating the element."
-  [data-id props]
-  (let [bound @(re-frame/subscribe [:input data-id])
+  "Build an input element that binds into a chain `data-ids`. Props is a
+  map that goes into creating the element. Optional `textarea?` makes
+  this a textarea."
+  [data-ids props & textarea?]
+  (let [bound @(re-frame/subscribe [:input data-ids])
         change-fn #(re-frame/dispatch [:change-input
-                                       data-id
+                                       data-ids
                                        (-> % .-target .-value)])
         props (assoc props :on-change change-fn)
-        props (assoc props :value bound)
-        ]
-    [:input props]))
+        props (assoc props :value bound)]
+    [(if textarea? :textarea :input) props]))
 
 (defn data-bound-select
-  "Build a select element that binds into `data-id`. Options is a seq of
-  maps with keys [:name, :value]."
-  [data-id options]
-  (let [bound @(re-frame/subscribe [:input data-id])
+  "Build a select element that binds into a chain `data-ids`. Options is
+  a seq of maps with keys [:name, :value]."
+  [data-ids options]
+  (let [bound @(re-frame/subscribe [:input data-ids])
         change-fn #(re-frame/dispatch [:change-input
-                                       data-id
+                                       data-ids
                                        (-> % .-target .-value)])
         props {:on-change change-fn
                :value (or bound "")}]
@@ -375,20 +364,20 @@
    [:form
     [:h1 "Filter photos"]
     [:div
-     [data-bound-input :camera-make
+     [data-bound-input [:filter :camera-make]
       {:type "text" :placeholder "Camera make"}]
-     [data-bound-input :camera-model
+     [data-bound-input [:filter :camera-model]
       {:type "text" :placeholder "Camera model"}]]
     [:div
      "Taken between "
-     [data-bound-input :taken-begin
+     [data-bound-input [:filter :taken-begin]
       {:type "date"}]
-     [data-bound-input :taken-end
+     [data-bound-input [:filter :taken-end]
       {:type "date"}]]
     [:h1 "Order"]
     [:div
      "Order by "
-     [data-bound-select :order-by
+     [data-bound-select [:filter :order-by]
       [{:name "Taken" :value "taken_ts"}
        {:name "Random" :value "random"}]]]
     [:a#filter-btn.button
@@ -428,15 +417,16 @@
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 "Create new tag"]
-     [data-bound-input :new-tag-name
+     [data-bound-input [:new-tag :new-tag-name]
       {:type :text
        :placeholder "Name"
        :name "tag-name"}]
      [:br]
-     [data-bound-textarea :new-tag-desc
+     [data-bound-input [:new-tag :new-tag-desc]
       {:type :text
        :placeholder "Description"
-       :name "tag-description"}]
+       :name "tag-description"}
+      :yes-do-a-textarea]
      [:div.footer
       [:a.button {:on-click #()}
        "Create"]
