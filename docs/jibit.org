@@ -534,18 +534,39 @@ Things
   :new-tag-dlg= and so on.
 
 ** TODO Modifying tags
+** TODO Deleting tags
+
+Put this thing under Modify dialog.
+
 ** DONE Don't launch Post req on an empty selection
 CLOSED: [2020-04-11 Sat 17:43]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-11 Sat 17:43]
 :END:
+
+* TODO Tag things pt 2 [0/2]
+** TODO Tag parents / hierarchies
+** TODO Order tags by hierarchy?
+** TODO Tag color 
 * Currently held states                                                :info:
 
 - nil :: default
 - create-tag :: modal, tag creation dialog
 
 * TODO Modal background : dblclick to turn off
-* TODO Check do we need that extra boolean on =data-bound-input=
+* DONE Check do we need that extra boolean on =data-bound-input=
+CLOSED: [2020-04-12 Sun 17:46]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-12 Sun 17:46]
+:END:
+
+Yep, seems like =<input>= element can't be made to imitate a
+=<textarea>= quite so easily.
+
+* TODO Make tags div stick (toggleable)
+
+Maybe good to place under a shortcut?
+
 * NOTSURE get-photos could be an effect
 CLOSED: [2020-04-12 Sun 13:31]
 

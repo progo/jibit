@@ -468,21 +468,28 @@
    (for [photo @(re-frame/subscribe [:photos])]
      ^{:key (:photo/uuid photo)} [slide photo])])
 
+(defn header []
+  (let [pc @(re-frame/subscribe [:photos-count])
+        sc @(re-frame/subscribe [:selected-count])]
+    [:h1#head "Photos"
+     [:span.photos-count \# pc]
+     (when (pos? sc)
+       [:span.selection-count "Selected " sc \space
+        [:a {:class "clear"
+             :on-click #(re-frame/dispatch [:clear-selection])
+             :href "#"} "Clear"]])]))
+
 (defn user-interface []
   [:div
-   (let [pc @(re-frame/subscribe [:photos-count])
-         sc @(re-frame/subscribe [:selected-count])]
-     [:h1#head "Photos"
-      [:span.photos-count \# pc]
-      (when (pos? sc)
-        [:span.selection-count "Selected " sc \space
-         [:a {:class "clear"
-              :on-click #(re-frame/dispatch [:clear-selection])
-              :href "#"} "Clear"]])])
-   [modal-background]
+   ;; Visible "zero-level" elements
+   [header]
    [filter-panel]
    [tags-view]
    [lighttable-bare]
+
+   ;; Modal dialogs that go above level zero. Shown and hidden as
+   ;; needed.
+   [modal-background]
    [create-tag-dialog]])
 
 ;;; re-frame boilerplate below
