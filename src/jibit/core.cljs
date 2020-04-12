@@ -152,9 +152,11 @@
 (re-frame/reg-event-db
  :cancel-create-tag
  (fn [db _]
-   (assoc db
-          :modal? false
-          :show-create-tag-dlg? false)))
+   (-> db
+       (assoc :modal? false
+              :show-create-tag-dlg? false)
+       ;; Clear set values, if any
+       (assoc-in [:input :new-tag] {}))))
 
 (re-frame/reg-event-fx
  :slide-mouse-down
