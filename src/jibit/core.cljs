@@ -354,12 +354,24 @@
   map that goes into creating the element. Optional `textarea?` makes
   this a textarea."
   [data-ids props & textarea?]
-  (let [bound @(re-frame/subscribe [:input data-ids])
+  (let [checkbox? (= :checkbox (:type props))
+        bound @(re-frame/subscribe [:input data-ids])
+        ;; Checkboxes (thus react) won't accept nils as false
+        bound (if checkbox?
+                (boolean bound)
+                bound)
         change-fn #(re-frame/dispatch [:change-input
                                        data-ids
-                                       (-> % .-target .-value)])
-        props (assoc props :on-change change-fn)
-        props (assoc props :value bound)]
+                                       (if checkbox?
+                                         (not bound)
+                                         (-> % .-target .-value))])
+        props (assoc props
+                     :on-change change-fn
+                     :value bound)
+        ;; more checkbox handling
+        props (if checkbox?
+                (assoc props :checked bound)
+                props)]
     [(if textarea? :textarea :input) props]))
 
 (defn data-bound-select
@@ -443,18 +455,36 @@
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 "Create new tag"]
-     [data-bound-input [:new-tag :new-tag-name]
-      {:type :text
-       :placeholder "Name"
-       :name "tag-name"}]
-     (when incomplete-form?
-       " * required")
-     [:br]
-     [data-bound-input [:new-tag :new-tag-desc]
-      {:type :text
-       :placeholder "Description"
-       :name "tag-description"}
-      :yes-do-a-textarea]
+     [:div.dialog-row
+      [:div.dialog-column
+       [:label {:for "tag-name"} "Name"] [:br]
+       [data-bound-input [:new-tag :new-tag-name]
+        {:type :text
+         :placeholder "Name"
+         :name "tag-name"}]
+       (when incomplete-form?
+         " * required")
+       [:br]
+       [:label {:for "tag-description"} "Description"] [:br]
+       [data-bound-input [:new-tag :new-tag-desc]
+        {:type :text
+         :placeholder "Description"
+         :name "tag-description"}
+        :yes-do-a-textarea]]
+      [:div.dialog-column
+       [:label "Parent tag"] [:br]
+       [:input {:type :text
+                :placeholder "Foo"}]
+       [:br]
+       [:label "Tag color"] [:br]
+       [data-bound-input [:new-tag :tag-color]
+        {:type :color}]
+       "  "
+       [data-bound-input [:new-tag :tag-color?]
+        {:type :checkbox
+         ;; :checked true
+         :value "yes"}]
+       "Use color"]]
      [:div.footer
       [:a.button {:on-click #(when-not incomplete-form?
                                (re-frame/dispatch [:create-new-tag]))
