@@ -413,7 +413,9 @@
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
 (defn create-tag-dialog []
-  (let [enabled? @(re-frame/subscribe [:show-create-tag-dlg?])]
+  (let [enabled? @(re-frame/subscribe [:show-create-tag-dlg?])
+        tag-name @(re-frame/subscribe [:input [:new-tag :new-tag-name]])
+        ]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 "Create new tag"]
@@ -421,6 +423,8 @@
       {:type :text
        :placeholder "Name"
        :name "tag-name"}]
+     (when (empty? tag-name)
+       " * required")
      [:br]
      [data-bound-input [:new-tag :new-tag-desc]
       {:type :text
