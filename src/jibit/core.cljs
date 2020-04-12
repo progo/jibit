@@ -417,7 +417,7 @@
 (defn create-tag-dialog []
   (let [enabled? @(re-frame/subscribe [:show-create-tag-dlg?])
         tag-name @(re-frame/subscribe [:input [:new-tag :new-tag-name]])
-        ]
+        incomplete-form? (empty? tag-name)]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 "Create new tag"]
@@ -425,7 +425,7 @@
       {:type :text
        :placeholder "Name"
        :name "tag-name"}]
-     (when (empty? tag-name)
+     (when incomplete-form?
        " * required")
      [:br]
      [data-bound-input [:new-tag :new-tag-desc]
@@ -434,7 +434,9 @@
        :name "tag-description"}
       :yes-do-a-textarea]
      [:div.footer
-      [:a.button {:on-click #()}
+      [:a.button {:on-click #(when-not incomplete-form?
+                               (re-frame/dispatch [:create-new-tag]))
+                  :class (when incomplete-form? "btn-disabled")}
        "Create"]
       [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag])}
        "Cancel"]]]))
