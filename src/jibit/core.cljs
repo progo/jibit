@@ -169,7 +169,7 @@
 (re-frame/reg-event-fx
  :create-new-tag
  (fn [{db :db} _]
-   (let [input (spy (-> db :input :new-tag))]
+   (let [input (spy (-> db :input :tag))]
      {:http-xhrio (build-edn-request :method :post
                                      :uri "/new-tag"
                                      :params input
@@ -181,7 +181,7 @@
    (-> db
        (assoc :state nil)
        ;; Clear set values, if any
-       (assoc-in [:input :new-tag] {}))))
+       (assoc-in [:input :tag] {}))))
 
 (re-frame/reg-event-fx
  :slide-mouse-down
@@ -455,7 +455,7 @@
 
 (defn create-tag-dialog []
   (let [enabled? (= :create-tag @(re-frame/subscribe [:state]))
-        tag-name @(re-frame/subscribe [:input [:new-tag :new-tag-name]])
+        tag-name @(re-frame/subscribe [:input [:tag :tag-name]])
         tags (->> @(re-frame/subscribe [:tags])
                   (map (juxt :tag/id :tag/name)))
         incomplete-form? (empty? tag-name)]
@@ -466,7 +466,7 @@
      [:div.dialog-row
       [:div.dialog-column
        [:label {:for "tag-name"} "Name"] [:br]
-       [data-bound-input [:new-tag :new-tag-name]
+       [data-bound-input [:tag :tag-name]
         {:type :text
          :placeholder "Name"
          :name "tag-name"}]
@@ -474,7 +474,7 @@
          " * required")
        [:br]
        [:label {:for "tag-description"} "Description"] [:br]
-       [data-bound-input [:new-tag :new-tag-desc]
+       [data-bound-input [:tag :tag-desc]
         {:type :text
          :placeholder "Description"
          :name "tag-description"}
@@ -482,16 +482,16 @@
 
       [:div.dialog-column
        [:label "Parent tag"] [:br]
-       [data-bound-select [:new-tag :tag-parent]
+       [data-bound-select [:tag :tag-parent]
         (concat [{:name "--" :value "nil"}]
                 (for [[tid tname] tags]
                   {:name tname :value tid}))]
        [:br]
        [:label "Tag color"] [:br]
-       [data-bound-input [:new-tag :tag-color]
+       [data-bound-input [:tag :tag-color]
         {:type :color}]
        "  "
-       [data-bound-input [:new-tag :tag-color?]
+       [data-bound-input [:tag :tag-color?]
         {:type :checkbox
          :value "yes"}]
        "Use color"]]

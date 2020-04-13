@@ -46,8 +46,8 @@
 (defn create-new-tag [req]
   {:status 200
    :headers edn-headers
-   :body (prn-str (let [{tag-name :new-tag-name
-                         tag-desc :new-tag-desc
+   :body (prn-str (let [{tag-name :tag-name
+                         tag-desc :tag-desc
                          tag-parent-id :tag-parent
                          tag-color :tag-color
                          use-color? :tag-color?} (view.filtering/read-edn req)]
