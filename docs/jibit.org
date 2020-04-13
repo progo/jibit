@@ -480,7 +480,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [85%]
+* TODO Tagging photos [75%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -533,7 +533,14 @@ Things
 - [X] Use a singular piece of state to denote what is shown. =:state
   :new-tag-dlg= and so on.
 
-** TODO Modifying tags
+** STARTED Modifying tags
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-04-13 Mon 11:13]
+- State "STARTED"    from "TODO"       [2020-04-13 Mon 11:13]
+:END:
+
+We have a bit of refactoring to unify create/modify tag.
+
 ** TODO Deleting tags
 
 Put this thing under Modify dialog.

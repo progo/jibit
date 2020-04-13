@@ -157,6 +157,11 @@
         {:dispatch [:get-photos]})))))
 
 (re-frame/reg-event-db
+ :show-edit-tag-dlg
+ (fn [db [_ tag-id]]
+   (assoc db :state :create-tag)))
+
+(re-frame/reg-event-db
  :show-create-tag-dlg
  (fn [db _]
    (assoc db :state :create-tag)))
@@ -168,8 +173,7 @@
      {:http-xhrio (build-edn-request :method :post
                                      :uri "/new-tag"
                                      :params input
-                                     :response :on-create-tag)}
-     )))
+                                     :response :on-create-tag)})))
 
 (re-frame/reg-event-db
  :cancel-create-tag-dlg
@@ -425,6 +429,7 @@
     ^{:key tag-id}
     [:li {:on-click #(re-frame/dispatch [:toggle-tag-on-selected tag-id])
           :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
+          :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
           :class (when selected? "selected")
           :title (or (:tag/description tag) "")}
      (:tag/name tag)]))
