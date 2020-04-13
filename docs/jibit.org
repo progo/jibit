@@ -480,7 +480,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [75%]
+* TODO Tagging photos [77%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -533,14 +533,19 @@ Things
 - [X] Use a singular piece of state to denote what is shown. =:state
   :new-tag-dlg= and so on.
 
-** STARTED Modifying tags
+** DONE Modifying tags
+CLOSED: [2020-04-13 Mon 13:15]
 :LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-04-13 Mon 13:15]
 - State "STARTED"    from "TODO"       [2020-04-13 Mon 11:13]
 - State "STARTED"    from "TODO"       [2020-04-13 Mon 11:13]
 :END:
 
 We have a bit of refactoring to unify create/modify tag.
 
+Well frankly we didn't need much at all to refactor!
+
+** TODO Modifying tags, make sure "use color" is on 
 ** TODO Deleting tags
 
 Put this thing under Modify dialog.
@@ -568,8 +573,8 @@ It's persisted on saving new ones.
 * Currently held states                                                :info:
 
 - nil :: default
-- create-tag :: modal, tag creation dialog
-
+- tag-dialog :: modal, tag edit/creation dialog
+     
 * TODO Modal background : dblclick to turn off
 * DONE Check do we need that extra boolean on =data-bound-input=
 CLOSED: [2020-04-12 Sun 17:46]

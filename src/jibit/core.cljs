@@ -142,7 +142,7 @@
    (when-let [sel (seq (-> db :selected))]
      (timbre/debugf "Setting tag %d to photos %s" tag-id sel)
      {:http-xhrio (build-edn-request :method :post
-                                     :uri "/tag"
+                                     :uri "/tag-photo"
                                      :params {:tag tag-id
                                               :photos sel}
                                      :response :on-tag)})))
@@ -159,19 +159,23 @@
 (re-frame/reg-event-db
  :show-edit-tag-dlg
  (fn [db [_ tag-id]]
-   (assoc db :state :create-tag)))
+   ;; omg a linear search
+   (let [tag (first (filter #(= tag-id (-> % :tag/id)) (:tags db)))]
+     (-> db
+         (assoc :state :tag-dialog)
+         (assoc-in [:input :tag] tag)))))
 
 (re-frame/reg-event-db
  :show-create-tag-dlg
  (fn [db _]
-   (assoc db :state :create-tag)))
+   (assoc db :state :tag-dialog)))
 
 (re-frame/reg-event-fx
  :create-new-tag
  (fn [{db :db} _]
    (let [input (spy (-> db :input :tag))]
      {:http-xhrio (build-edn-request :method :post
-                                     :uri "/new-tag"
+                                     :uri "/tag"
                                      :params input
                                      :response :on-create-tag)})))
 
@@ -453,20 +457,26 @@
   (let [enabled? (modal-state? @(re-frame/subscribe [:state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
-(defn create-tag-dialog []
-  (let [enabled? (= :create-tag @(re-frame/subscribe [:state]))
-        tag-name @(re-frame/subscribe [:input [:tag :tag-name]])
+(defn tag-edit-dialog []
+  (let [enabled? (= :tag-dialog @(re-frame/subscribe [:state]))
+        tag @(re-frame/subscribe [:input [:tag]])
+        new? (-> tag :tag/id nil?)
         tags (->> @(re-frame/subscribe [:tags])
                   (map (juxt :tag/id :tag/name)))
-        incomplete-form? (empty? tag-name)]
+        incomplete-form? (-> tag :tag/name empty?)]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
-     [:h1 "Create new tag"]
+     [:h1 (if new?
+            "Create"
+            "Modify")
+      \space
+      [:span.tag-edit
+       (:tag/name tag)]]
 
      [:div.dialog-row
       [:div.dialog-column
        [:label {:for "tag-name"} "Name"] [:br]
-       [data-bound-input [:tag :tag-name]
+       [data-bound-input [:tag :tag/name]
         {:type :text
          :placeholder "Name"
          :name "tag-name"}]
@@ -474,7 +484,7 @@
          " * required")
        [:br]
        [:label {:for "tag-description"} "Description"] [:br]
-       [data-bound-input [:tag :tag-desc]
+       [data-bound-input [:tag :tag/description]
         {:type :text
          :placeholder "Description"
          :name "tag-description"}
@@ -482,13 +492,13 @@
 
       [:div.dialog-column
        [:label "Parent tag"] [:br]
-       [data-bound-select [:tag :tag-parent]
+       [data-bound-select [:tag :tag/parent_id]
         (concat [{:name "--" :value "nil"}]
                 (for [[tid tname] tags]
                   {:name tname :value tid}))]
        [:br]
        [:label "Tag color"] [:br]
-       [data-bound-input [:tag :tag-color]
+       [data-bound-input [:tag :tag/style_color]
         {:type :color}]
        "  "
        [data-bound-input [:tag :tag-color?]
@@ -500,9 +510,9 @@
       [:a.button {:on-click #(when-not incomplete-form?
                                (re-frame/dispatch [:create-new-tag]))
                   :class (when incomplete-form? "btn-disabled")}
-       "Create"]
+       (if new? "Create" "Save")]
       [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
-       "Cancel"]]]))
+       "Close"]]]))
 
 (defn lighttable-bare []
   [:div.lighttable
@@ -531,7 +541,7 @@
    ;; Modal dialogs that go above level zero. Shown and hidden as
    ;; needed.
    [modal-background]
-   [create-tag-dialog]])
+   [tag-edit-dialog]])
 
 ;;; re-frame boilerplate below
 

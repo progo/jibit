@@ -3,12 +3,15 @@
   (:require [clurator.db :as db]))
 
 
-(defn create-tag
-  [tag-name desc parent color]
-  (db/query! {:insert-into :tag
-              :columns [:name :description :parent_id :style_color]
-              :values [[tag-name desc parent color]]
-              }))
+(defn create-edit-tag
+  [{id :tag/id
+    name :tag/name
+    desc :tag/description
+    parent :tag/parent_id
+    color :tag/style_color}]
+  (db/query! {:insert-or-replace :tag
+              :columns [:id :name :description :parent_id :style_color]
+              :values [[id name desc parent color]]}))
 
 (defn -add-tags-for-photos
   [tag-id photo-ids]

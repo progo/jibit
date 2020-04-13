@@ -1,4 +1,4 @@
-body{
+body {
     margin: 0;
     padding: 0;
 }
@@ -170,6 +170,7 @@ h1#head {
     font-size: 13px;
     font-weight: bolder;
 
+    user-select: none;
     border-radius: 6px;
     border: 2px orange solid;
 
@@ -290,4 +291,9 @@ div#modal-bg {
 
 .modal-dialog .footer .button {
     margin-right: 5px;
+}
+
+.modal-dialog h1 .tag-edit {
+    text-decoration: underline;
+    color: silver;
 }

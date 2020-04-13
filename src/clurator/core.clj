@@ -43,29 +43,24 @@
                  photo-ids :photos} (view.filtering/read-edn req)]
             (model.tag/set-tag-for-photos tag-id photo-ids :toggle)))})
 
-(defn create-new-tag [req]
+(defn create-update-new-tag [req]
   {:status 200
    :headers edn-headers
-   :body (prn-str (let [{tag-name :tag-name
-                         tag-desc :tag-desc
-                         tag-parent-id :tag-parent
-                         tag-color :tag-color
-                         use-color? :tag-color?} (view.filtering/read-edn req)]
-                    (model.tag/create-tag
-                     tag-name
-                     tag-desc
-                     tag-parent-id
-                     (if use-color? tag-color nil))))})
+   :body (prn-str (let [{use-color? :tag-color? :as tag} (view.filtering/read-edn req)
+                        tag (if use-color?
+                              tag
+                              (dissoc tag :tag/style_color))]
+                    (model.tag/create-edit-tag tag)))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
 
 (comp/defroutes app
   (GET "/" [] index)
-  (POST    "/tag" [] tag-photos)
+  (POST    "/tag-photo" [] tag-photos)
+  (OPTIONS "/tag-photo" [] {:status 200 :headers edn-headers})
+  (POST    "/tag" [] create-update-new-tag)
   (OPTIONS "/tag" [] {:status 200 :headers edn-headers})
-  (POST    "/new-tag" [] create-new-tag)
-  (OPTIONS "/new-tag" [] {:status 200 :headers edn-headers})
   (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
