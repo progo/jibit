@@ -4,10 +4,10 @@
 
 
 (defn create-tag
-  [tag-name tag-desc]
+  [tag-name desc parent color]
   (db/query! {:insert-into :tag
-              :columns [:name :description]
-              :values [[tag-name tag-desc]]
+              :columns [:name :description :parent_id :style_color]
+              :values [[tag-name desc parent color]]
               }))
 
 (defn -add-tags-for-photos

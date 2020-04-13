@@ -544,10 +544,20 @@ CLOSED: [2020-04-11 Sat 17:43]
 - State "DONE"       from "TODO"       [2020-04-11 Sat 17:43]
 :END:
 
-* TODO Tag things pt 2 [0/2]
-** TODO Tag parents / hierarchies
+* TODO Tag things pt 2 [0/3]
+** STARTED Tag parents / hierarchies
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-04-13 Mon 11:02]
+:END:
+
+It's persisted on saving new ones.
 ** TODO Order tags by hierarchy?
-** TODO Tag color 
+** STARTED Tag color 
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-04-13 Mon 11:02]
+:END:
+
+It's persisted on saving new ones.
 * Currently held states                                                :info:
 
 - nil :: default

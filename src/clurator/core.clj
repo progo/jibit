@@ -47,8 +47,15 @@
   {:status 200
    :headers edn-headers
    :body (prn-str (let [{tag-name :new-tag-name
-                         tag-desc :new-tag-desc} (view.filtering/read-edn req)]
-                    (model.tag/create-tag tag-name tag-desc)))})
+                         tag-desc :new-tag-desc
+                         tag-parent-id :tag-parent
+                         tag-color :tag-color
+                         use-color? :tag-color?} (view.filtering/read-edn req)]
+                    (model.tag/create-tag
+                     tag-name
+                     tag-desc
+                     tag-parent-id
+                     (if use-color? tag-color nil))))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

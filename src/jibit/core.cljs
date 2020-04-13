@@ -451,10 +451,13 @@
 (defn create-tag-dialog []
   (let [enabled? (= :create-tag @(re-frame/subscribe [:state]))
         tag-name @(re-frame/subscribe [:input [:new-tag :new-tag-name]])
+        tags (->> @(re-frame/subscribe [:tags])
+                  (map (juxt :tag/id :tag/name)))
         incomplete-form? (empty? tag-name)]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 "Create new tag"]
+
      [:div.dialog-row
       [:div.dialog-column
        [:label {:for "tag-name"} "Name"] [:br]
@@ -471,10 +474,13 @@
          :placeholder "Description"
          :name "tag-description"}
         :yes-do-a-textarea]]
+
       [:div.dialog-column
        [:label "Parent tag"] [:br]
-       [:input {:type :text
-                :placeholder "Foo"}]
+       [data-bound-select [:new-tag :tag-parent]
+        (concat [{:name "--" :value "nil"}]
+                (for [[tid tname] tags]
+                  {:name tname :value tid}))]
        [:br]
        [:label "Tag color"] [:br]
        [data-bound-input [:new-tag :tag-color]
@@ -482,9 +488,9 @@
        "  "
        [data-bound-input [:new-tag :tag-color?]
         {:type :checkbox
-         ;; :checked true
          :value "yes"}]
        "Use color"]]
+
      [:div.footer
       [:a.button {:on-click #(when-not incomplete-form?
                                (re-frame/dispatch [:create-new-tag]))

@@ -270,8 +270,15 @@ div#modal-bg {
     border: solid 1px #666;
 }
 
+.modal-dialog select {
+    border: solid 1px #666;
+    background-color: black;
+    color: orange;
+    width: 180px;
+}
+
 .modal-dialog label {
-    margin-top: 10px;
+    margin-top: 15px;
     margin-bottom: -15px;
     display: block;
 }
