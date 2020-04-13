@@ -480,7 +480,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [77%]
+* TODO Tagging photos [88%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -545,7 +545,11 @@ We have a bit of refactoring to unify create/modify tag.
 
 Well frankly we didn't need much at all to refactor!
 
-** TODO Modifying tags, make sure "use color" is on 
+** DONE Modifying tags, make sure "use color" is on 
+CLOSED: [2020-04-13 Mon 13:20]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-13 Mon 13:20]
+:END:
 ** TODO Deleting tags
 
 Put this thing under Modify dialog.

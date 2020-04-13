@@ -160,7 +160,9 @@
  :show-edit-tag-dlg
  (fn [db [_ tag-id]]
    ;; omg a linear search
-   (let [tag (first (filter #(= tag-id (-> % :tag/id)) (:tags db)))]
+   (let [tag (first (filter #(= tag-id (-> % :tag/id)) (:tags db)))
+         ;; apply the checkbox if there's color present.
+         tag (assoc tag :tag-color? (-> tag :tag/style_color boolean))]
      (-> db
          (assoc :state :tag-dialog)
          (assoc-in [:input :tag] tag)))))
