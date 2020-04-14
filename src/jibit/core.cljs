@@ -437,6 +437,9 @@
           :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
           :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
           :class (when selected? "selected")
+          :style {:border-color (if-let [color (:tag/computed_color tag)]
+                                  color
+                                  "")}
           :title (or (:tag/description tag) "")}
      (:tag/name tag)]))
 
