@@ -466,8 +466,10 @@
   (let [enabled? (= :tag-dialog @(re-frame/subscribe [:state]))
         tag @(re-frame/subscribe [:input [:tag]])
         new? (-> tag :tag/id nil?)
+        tag-sub-level (fn [tag]
+                        (-> tag :tag/nested_label count dec))
         tags (->> @(re-frame/subscribe [:tags])
-                  (map (juxt :tag/id :tag/name)))
+                  (map (juxt :tag/id :tag/name tag-sub-level)))
         incomplete-form? (-> tag :tag/name empty?)]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
@@ -499,8 +501,9 @@
        [:label "Parent tag"] [:br]
        [data-bound-select [:tag :tag/parent_id]
         (concat [{:name "--" :value "nil"}]
-                (for [[tid tname] tags]
-                  {:name tname :value tid}))]
+                (for [[tag-id tag-name sub-level] tags]
+                  {:name (str (apply str (repeat sub-level "—")) " " tag-name)
+                   :value tag-id}))]
        [:br]
        [:label "Tag color"] [:br]
        [data-bound-input [:tag :tag/style_color]
