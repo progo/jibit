@@ -569,7 +569,20 @@ CLOSED: [2020-04-14 Tue 16:58]
 :END:
 
 It's persisted on saving new ones.
-** TODO Order tags by hierarchy?
+** STARTED Order tags by hierarchy?
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-04-14 Tue 17:26]
+:END:
+
+1. Blue
+   1. Blue Sub 1
+   2. Blue Sub 2
+2. Red
+3. Green
+4. Cars
+   1. Old Cars
+   2. Supercars
+
 ** DONE Tag color 
 CLOSED: [2020-04-14 Tue 17:24]
 :LOGBOOK:

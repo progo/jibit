@@ -33,7 +33,7 @@
 (defn list-tags [req]
   {:status 200
    :headers edn-headers
-   :body (prn-str (model.tag/filter-tags))})
+   :body (prn-str (model.tag/query-tags))})
 
 (defn tag-photos [req]
   {:status 200

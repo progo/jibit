@@ -1,6 +1,7 @@
 (ns clurator.model.tag
   "Tag model."
-  (:require [clurator.db :as db]))
+  (:require [clurator.db :as db]
+            [taoensso.timbre :as timbre :refer [debug spy]]))
 
 
 (defn create-edit-tag
@@ -73,31 +74,40 @@
                     :from [:photo_tag]
                     :where [:= :photo_id (:photo/id photo)]})))
 
-(defn get-tag-by-id
-  [tag-id all-tags]
-  (->> all-tags
-       (filter #(= (:tag/id %) tag-id))
-       first))
-
 (defn find-color-for-tag
   "Find color for tag, from tag or its parents."
-  [tag all-tags]
+  [tag tag-db]
   (cond
     ;; If tag has own color, use it.
     (:tag/style_color tag) (:tag/style_color tag)
     ;; Otherwise check if parent possibly has color, it will be
     ;; inherited.
-    (:tag/parent_id tag) (find-color-for-tag (get-tag-by-id
-                                              (:tag/parent_id tag)
-                                              all-tags)
-                                             all-tags)
+    (:tag/parent_id tag) (recur (tag-db (:tag/parent_id tag)) tag-db)
     :t nil))
 
-(defn filter-tags
-  "All tags from DB."
+(defn nested-label-tag
+  "Give tag a nested name label like 'Supertag1/Supertag2/Subtag'. We
+  use this for sorting only..."
+  [tag tag-db]
+  (if-let [parent-tag (tag-db (:tag/parent_id tag))]
+    ;; Tag has a parent...
+    (str (nested-label-tag parent-tag tag-db)
+         "/"
+         (:tag/name tag))
+
+    ;; ...or not.
+    (:tag/name tag)
+    ))
+
+(defn query-tags
+  "Get all tags from DB, processed and ordered."
   []
   (let [all-tags (-> {:select [:*]
                       :from [:tag]}
-                     (db/query!))]
-    (map #(assoc % :tag/computed_color (find-color-for-tag % all-tags))
-         all-tags)))
+                     (db/query!))
+        tag-db (into {} (map (juxt :tag/id identity) all-tags))]
+    (->> all-tags
+         (map #(assoc %
+                      :tag/computed_color (find-color-for-tag % tag-db)
+                      :tag/nested_label (nested-label-tag % tag-db)))
+         (sort-by :tag/nested_label))))
