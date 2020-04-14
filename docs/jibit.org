@@ -204,6 +204,70 @@ be difficult to maintain the relations.
 - 4: Not sure if necessary, but flairs and "deletion flags" may
   warrant this kind of type distinction.
 
+** Migrations
+
+SQLite doesn't have good migration support for for example if =TAG=
+needs new constraints or something, we first have to create the new
+table with all the wanted baggage, move the data over and then try to
+drop the old one.
+
+The old one will still have some FK constraints in place.
+
+#+BEGIN_EXAMPLE
+  -- Migrate/update table "tag" with new constraints.
+  create table tag2
+  ( id                      integer primary key autoincrement
+  , name                    text not null
+  , type                    text
+  , description             text
+  , parent_id               integer
+  , style_color             text
+  , style_attrs             text
+  , public                  integer
+  , foreign key (parent_id) references tag(id) on delete restrict on update cascade
+                            check (parent_id != id)
+  , unique (name)
+  );
+  drop index ix_tag_name;       --new
+  drop index ix_tag_type;       --new
+  drop index ix_tag_parent_id;  --new
+  create index ix_tag_name on tag2(name);
+  create index ix_tag_type on tag2(type);
+  create index ix_tag_parent_id on tag2(parent_id);
+
+  insert into tag2 select * from tag;
+  commit;
+
+  -- all done
+
+  alter table tag rename to tag_d;
+  alter table tag2 rename to tag;
+#+END_EXAMPLE
+
+Look at this TechOnTheNet article about a working pattern:
+
+#+BEGIN_EXAMPLE
+  PRAGMA foreign_keys=off;
+
+  BEGIN TRANSACTION;
+
+  ALTER TABLE table1 RENAME TO _table1_old;
+
+  CREATE TABLE table1 (
+  ( column1 datatype [ NULL | NOT NULL ],
+    column2 datatype [ NULL | NOT NULL ],
+    ...
+  );
+
+  INSERT INTO table1 (column1, column2, ... column_n)
+    SELECT column1, column2, ... column_n
+    FROM _table1_old;
+
+  COMMIT;
+
+  PRAGMA foreign_keys=on;
+#+END_EXAMPLE
+
 ** Tag traps
 
 Tagged photos
@@ -480,7 +544,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [88%]
+* TODO Tagging photos [72%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -554,6 +618,12 @@ CLOSED: [2020-04-13 Mon 13:20]
 
 Put this thing under Modify dialog.
 
+** TODO Tag relations: don't let tag be its own parent
+
+- [X] db constraint?
+- ui check definitely
+
+** TODO Cyclical parents very bad
 ** DONE Don't launch Post req on an empty selection
 CLOSED: [2020-04-11 Sat 17:43]
 :LOGBOOK:

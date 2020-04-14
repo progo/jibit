@@ -95,6 +95,7 @@
       , style_attrs             text
       , public                  integer
       , foreign key (parent_id) references tag(id) on delete restrict on update cascade
+                                check (parent_id != id)
       , unique (name)
       );"
       "create index ix_tag_name on tag(name);"
