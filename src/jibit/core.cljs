@@ -386,12 +386,14 @@
 
 (defn data-bound-select
   "Build a select element that binds into a chain `data-ids`. Options is
-  a seq of maps with keys [:name, :value]."
+  a seq of maps with keys [:name, :value]. The value comes out thru as
+  a clojurescript readable symbol or value."
   [data-ids options]
   (let [bound @(re-frame/subscribe [:input data-ids])
         change-fn #(re-frame/dispatch [:change-input
                                        data-ids
-                                       (-> % .-target .-value)])
+                                       (cljs.reader/read-string
+                                        (-> % .-target .-value))])
         props {:on-change change-fn
                :value (or bound "")}]
     [:select props
@@ -470,7 +472,11 @@
                         (-> tag :tag/nested_label count dec))
         tags (->> @(re-frame/subscribe [:tags])
                   (map (juxt :tag/id :tag/name tag-sub-level)))
-        incomplete-form? (-> tag :tag/name empty?)]
+        incomplete-form? (-> tag :tag/name empty?)
+        parent-id-invalid? (and (-> tag :tag/id)
+                                (= (-> tag :tag/id)
+                                   (-> tag :tag/parent_id)))
+        prevent-saving? (or incomplete-form? parent-id-invalid?)]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 (if new?
@@ -504,6 +510,8 @@
                 (for [[tag-id tag-name sub-level] tags]
                   {:name (str (apply str (repeat sub-level "—")) " " tag-name)
                    :value tag-id}))]
+       (when parent-id-invalid?
+         " !!")
        [:br]
        [:label "Tag color"] [:br]
        [data-bound-input [:tag :tag/style_color]
@@ -515,9 +523,9 @@
        "Use color"]]
 
      [:div.footer
-      [:a.button {:on-click #(when-not incomplete-form?
+      [:a.button {:on-click #(when-not prevent-saving?
                                (re-frame/dispatch [:create-new-tag]))
-                  :class (when incomplete-form? "btn-disabled")}
+                  :class (when prevent-saving? "btn-disabled")}
        (if new? "Create" "Save")]
       [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
        "Close"]]]))

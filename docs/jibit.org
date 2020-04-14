@@ -544,7 +544,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [72%]
+* TODO Tagging photos [81%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -618,10 +618,14 @@ CLOSED: [2020-04-13 Mon 13:20]
 
 Put this thing under Modify dialog.
 
-** TODO Tag relations: don't let tag be its own parent
+** DONE Tag relations: don't let tag be its own parent
+CLOSED: [2020-04-14 Tue 19:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-14 Tue 19:35]
+:END:
 
 - [X] db constraint?
-- ui check definitely
+- [X] ui check definitely
 
 ** TODO Cyclical parents very bad
 ** DONE Don't launch Post req on an empty selection
