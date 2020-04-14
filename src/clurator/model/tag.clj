@@ -73,7 +73,31 @@
                     :from [:photo_tag]
                     :where [:= :photo_id (:photo/id photo)]})))
 
+(defn get-tag-by-id
+  [tag-id all-tags]
+  (->> all-tags
+       (filter #(= (:tag/id %) tag-id))
+       first))
+
+(defn find-color-for-tag
+  "Find color for tag, from tag or its parents."
+  [tag all-tags]
+  (cond
+    ;; If tag has own color, use it.
+    (:tag/style_color tag) (:tag/style_color tag)
+    ;; Otherwise check if parent possibly has color, it will be
+    ;; inherited.
+    (:tag/parent_id tag) (find-color-for-tag (get-tag-by-id
+                                              (:tag/parent_id tag)
+                                              all-tags)
+                                             all-tags)
+    :t nil))
+
 (defn filter-tags
+  "All tags from DB."
   []
-  (db/query! {:select [:*]
-              :from [:tag]}))
+  (let [all-tags (-> {:select [:*]
+                      :from [:tag]}
+                     (db/query!))]
+    (map #(assoc % :tag/computed_color (find-color-for-tag % all-tags))
+         all-tags)))
