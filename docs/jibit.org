@@ -560,7 +560,11 @@ CLOSED: [2020-04-11 Sat 17:43]
 - State "DONE"       from "TODO"       [2020-04-11 Sat 17:43]
 :END:
 
-* TODO Tag things pt 2 [2/3]
+* DONE Tag things pt 2 [3/3]
+CLOSED: [2020-04-14 Tue 18:16]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-14 Tue 18:16]
+:END:
 ** DONE Tag parents / hierarchies
 CLOSED: [2020-04-14 Tue 16:58]
 :LOGBOOK:
@@ -569,19 +573,12 @@ CLOSED: [2020-04-14 Tue 16:58]
 :END:
 
 It's persisted on saving new ones.
-** STARTED Order tags by hierarchy?
+** DONE Order tags by hierarchy?
+CLOSED: [2020-04-14 Tue 18:16]
 :LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-04-14 Tue 18:16]
 - State "STARTED"    from "TODO"       [2020-04-14 Tue 17:26]
 :END:
-
-1. Blue
-   1. Blue Sub 1
-   2. Blue Sub 2
-2. Red
-3. Green
-4. Cars
-   1. Old Cars
-   2. Supercars
 
 ** DONE Tag color 
 CLOSED: [2020-04-14 Tue 17:24]

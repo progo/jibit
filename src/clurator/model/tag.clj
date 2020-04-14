@@ -1,6 +1,7 @@
 (ns clurator.model.tag
   "Tag model."
   (:require [clurator.db :as db]
+            [clojure.string :refer [join]]
             [taoensso.timbre :as timbre :refer [debug spy]]))
 
 
@@ -86,18 +87,16 @@
     :t nil))
 
 (defn nested-label-tag
-  "Give tag a nested name label like 'Supertag1/Supertag2/Subtag'. We
-  use this for sorting only..."
+  "Give tag a nested name label like [Supertag1 Supertag2 Subtag]. It's
+  a vector."
   [tag tag-db]
   (if-let [parent-tag (tag-db (:tag/parent_id tag))]
     ;; Tag has a parent...
-    (str (nested-label-tag parent-tag tag-db)
-         "/"
-         (:tag/name tag))
+    (conj (nested-label-tag parent-tag tag-db)
+          (:tag/name tag))
 
     ;; ...or not.
-    (:tag/name tag)
-    ))
+    [(:tag/name tag)]))
 
 (defn query-tags
   "Get all tags from DB, processed and ordered."
@@ -110,4 +109,6 @@
          (map #(assoc %
                       :tag/computed_color (find-color-for-tag % tag-db)
                       :tag/nested_label (nested-label-tag % tag-db)))
-         (sort-by :tag/nested_label))))
+         (sort-by #(->> %
+                        :tag/nested_label
+                        (join "/"))))))
