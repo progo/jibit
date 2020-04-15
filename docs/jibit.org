@@ -544,7 +544,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [81%]
+* TODO Tagging photos [90%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -627,7 +627,34 @@ CLOSED: [2020-04-14 Tue 19:35]
 - [X] db constraint?
 - [X] ui check definitely
 
-** TODO Cyclical parents very bad
+** DONE Cyclical tag ancestors
+CLOSED: [2020-04-15 Wed 20:07]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-15 Wed 20:07]
+:END:
+
+Cyclic relations can be prohibited during pre-save with this.
+
+| id | pid | tag              |
+|----+-----+------------------|
+|  1 |     | Cars             |
+|  2 |   1 | -- Old Cars      |
+|  3 |   1 | -- Red Cars      |
+| 66 |   3 | ---- Maroon Cars |
+|  4 |     | Blue             |
+|  5 |     | Green            |
+|  6 |   5 | -- Forest Green  |
+
+Tag 1 (Cars) can't have pid 2, 3 or 66. Tag 5 can't have pid of 6. So
+it's the set of all children (descendants) that's verboten.
+
+But tag 66 (Maroon Cars) can be updated to have pid of 1 -- no
+restrictions.
+
+So this wishywashy reasoning leaves us to implement a check for
+children. Get all descendants as a set and make sure pid is not in
+that set.
+
 ** DONE Don't launch Post req on an empty selection
 CLOSED: [2020-04-11 Sat 17:43]
 :LOGBOOK:

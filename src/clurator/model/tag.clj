@@ -2,18 +2,8 @@
   "Tag model."
   (:require [clurator.db :as db]
             [clojure.string :refer [join]]
+            [clojure.set :as sset]
             [taoensso.timbre :as timbre :refer [debug spy]]))
-
-
-(defn create-edit-tag
-  [{id :tag/id
-    name :tag/name
-    desc :tag/description
-    parent :tag/parent_id
-    color :tag/style_color}]
-  (db/query! {:insert-or-replace :tag
-              :columns [:id :name :description :parent_id :style_color]
-              :values [[id name desc parent color]]}))
 
 (defn -add-tags-for-photos
   [tag-id photo-ids]
@@ -75,6 +65,40 @@
                     :from [:photo_tag]
                     :where [:= :photo_id (:photo/id photo)]})))
 
+(defn tag-parent-pairs
+  "Get from DB a seq of tuples [tag-id tags-parent-id] called tp-pairs."
+  []
+  (->> {:select [:id :parent_id]
+        :from [:tag]}
+       db/query!
+       (map (juxt :tag/id :tag/parent_id))))
+
+(defn ->parent-children-map
+  "From a tp-pair produce an inverse map of {tag: its-children}. All
+  top-level tags can also be found under key `nil`."
+  [tp-pairs]
+  (->>
+   (group-by second tp-pairs)
+   (map (fn [[k v]]
+          [k (into #{} (mapv first v))]))
+   (into {})))
+
+(defn tag-descendants
+  "Find all tags that have a tag ID'd `tag-id` as parents or great
+  parents. Does a live query from database for data. Returns a set of
+  IDs."
+  [tag-id]
+  ;; More or less a standard breadth-first search to avoid non-TCO
+  ;; recursion.
+  (let [pc (->parent-children-map (tag-parent-pairs))]
+    (loop [tag-ids [tag-id]
+           acc #{}]
+      (if (seq tag-ids)
+        (let [children (get pc (first tag-ids))]
+          (recur (concat (rest tag-ids) children)
+                 (sset/union acc children)))
+        acc))))
+
 (defn find-color-for-tag
   "Find color for tag, from tag or its parents."
   [tag tag-db]
@@ -112,3 +136,19 @@
          (sort-by #(->> %
                         :tag/nested_label
                         (join "/"))))))
+
+(defn create-edit-tag
+  [{id :tag/id
+    name :tag/name
+    desc :tag/description
+    parent :tag/parent_id
+    color :tag/style_color}]
+  (if (and (not (nil? id))
+           (not (nil? parent))
+           ((tag-descendants id) parent))
+    ;; We are trying to place a tag under its own descendant, which is
+    ;; no bueno.
+    nil
+    (db/query! {:insert-or-replace :tag
+                :columns [:id :name :description :parent_id :style_color]
+                :values [[id name desc parent color]]})))

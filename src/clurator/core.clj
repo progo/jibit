@@ -50,7 +50,9 @@
                         tag (if use-color?
                               tag
                               (dissoc tag :tag/style_color))]
-                    (model.tag/create-edit-tag tag)))})
+                    (if (model.tag/create-edit-tag tag)
+                      'ok
+                      'fail)))})
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
