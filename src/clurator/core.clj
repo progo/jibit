@@ -44,15 +44,19 @@
             (model.tag/set-tag-for-photos tag-id photo-ids :toggle)))})
 
 (defn create-update-new-tag [req]
-  {:status 200
-   :headers edn-headers
-   :body (prn-str (let [{use-color? :tag-color? :as tag} (view.filtering/read-edn req)
-                        tag (if use-color?
-                              tag
-                              (dissoc tag :tag/style_color))]
-                    (if (model.tag/create-edit-tag tag)
-                      'ok
-                      'fail)))})
+  (let [resp (let [{use-color? :tag-color? :as tag} (view.filtering/read-edn req)
+                   tag (if use-color?
+                         tag
+                         (dissoc tag :tag/style_color))]
+               (if (model.tag/create-edit-tag tag)
+                 :ok
+                 :fail))
+        status-code (case resp
+                      :ok 200
+                      :fail 500)]
+    {:status status-code
+     :headers edn-headers
+     :body (prn-str resp)}))
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

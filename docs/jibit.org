@@ -719,6 +719,37 @@ Yep, seems like =<input>= element can't be made to imitate a
 
 Maybe good to place under a shortcut?
 
+* TODO Refactor error messaging / route handling                    :backend:
+
+As the first thing we need to be sending correct status code when
+things go south. The messages and that can be considered later.
+
+Also =create-update-new-tag= needs to move over some place else.
+
+There should be a common protocol about what a route handler's
+response should look like.
+
+Minimalistic approach for starters, room to expand?
+
+#+BEGIN_EXAMPLE
+  {:status :ok
+   :response 'edn-formatted}
+#+END_EXAMPLE
+
+And a route handler looks like...
+
+#+BEGIN_EXAMPLE
+  (defn xyz [req]
+   (let [{code :status-code, resp :response} (xyz-handler req)]
+    {:status code
+     :headers edn-headers
+     :body (prn-str resp)}))
+#+END_EXAMPLE
+
+Pretty unified.
+
+Status code can be a number but we don't probs need others than 200 and 500.
+
 * NOTSURE get-photos could be an effect
 CLOSED: [2020-04-12 Sun 13:31]
 
