@@ -17,6 +17,20 @@
    "Access-Control-Allow-Headers" "Content-Type"
    "Access-Control-Allow-Origin" "*"})
 
+(defn make-req-handler
+  "Make a handler function that takes in a route request, patches it
+  through provided `handler-fn` (:: request -> {:status, :resp}) and
+  then makes a suitable response in EDN."
+  [handler-fn]
+  (fn [req]
+    (let [{status :status response :resp} (handler-fn req)
+          status-code (case status
+                        :ok 200
+                        :fail 500)]
+      {:status status-code
+       :headers edn-headers
+       :body (prn-str response)})))
+
 (defn index [req]
   {:status 200
    :headers {"Content-Type" "text/html"}
