@@ -706,6 +706,13 @@ avoid mixing user-given and computed data.
 - tag-dialog :: modal, tag edit/creation dialog
      
 * TODO Modal background : dblclick to turn off
+* DONE rename =toggle-button=
+CLOSED: [2020-04-17 Fri 18:20]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-17 Fri 18:20]
+:END:
+
+Maybe move all data-bound buttons outside
 * DONE Check do we need that extra boolean on =data-bound-input=
 CLOSED: [2020-04-12 Sun 17:46]
 :LOGBOOK:

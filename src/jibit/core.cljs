@@ -285,18 +285,18 @@
 
 ;;; Views and components
 
-(defn toggle-button
-  [data-id text-on text-off class-on class-off]
+(defn data-bound-toggle-button
+  [data-id {:keys [label-on label-off class-on class-off]}]
   (let [data-bind @(re-frame/subscribe [data-id])
         class (if data-bind
                 (or class-on "button-toggle-on")
                 (or class-off "button-toggle-off"))
-        text (if data-bind
-                (or text-on "On")
-                (or text-off "Off"))]
+        label (if data-bind
+                (or label-on "On")
+                (or label-off "Off"))]
     [:a.button {:class class
                 :on-click #(re-frame/dispatch [:toggle-tags-filter-union data-id])}
-     text]))
+     label]))
 
 (defn slide [image]
   [:div.slide-wrapper
@@ -387,7 +387,11 @@
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]
-    [toggle-button :tags-union "Any tag" "All tags" "btn-any-tag" "btn-all-tags"]
+    [data-bound-toggle-button :tags-union
+     {:label-on "Any tag"
+      :label-off "All tags"
+      :class-on "btn-any-tag"
+      :class-off "btn-all-tags"}]
     ]])
 
 (defn tag-view
