@@ -15,6 +15,7 @@
                  ;; jibit
                  [reagent "0.8.1"]
                  [re-frame "0.11.0-rc3"]
+                 [re-pressed "0.3.1"]
                  [day8.re-frame/http-fx "v0.2.0"]
 
                  ;; Clurator, file ops

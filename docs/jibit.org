@@ -857,7 +857,12 @@ CLOSED: [2020-04-05 Sun 11:31]
 * TODO Maybe show tiny photo counts per each tag?                      :idea:
 * TODO re-pressed
 
-something to do with keys?
+https://github.com/gadfly361/re-pressed
+
+Looks like a solid idea. It manages keyboard events. Probably more
+than beneficial.
+
+Added in project deps, experimentation to follow later on.
 
 * TODO UI: show total exp time                                         :idea:
 
