@@ -1,12 +1,10 @@
 (ns clurator.core
   (:require [org.httpkit.server :refer [run-server]]
             [compojure.core :as comp :refer [GET POST OPTIONS ANY]]
-            [ring.util.codec :refer [form-decode]]
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
-            [clurator.model.photo :as model.photo]
-            [clurator.model.tag :as model.tag]
-            [clurator.view.filtering :as view.filtering]
+            clurator.view.tag
+            clurator.view.photo
             clurator.settings))
 
 ;; We will serve jibit here, and provide an API, with websockets
@@ -39,36 +37,16 @@
    :body "<h1>Hello, world!</h1><p>Soon serving jibit here...</p>"})
 
 (def list-photos
-  (make-req-handler
-   (fn [req]
-     {:resp (model.photo/filter-photos
-             (view.filtering/handle-filter-criteria
-              (form-decode (:query-string req))))})))
+  (make-req-handler clurator.view.photo/list-photos))
 
 (def list-tags
-  (make-req-handler
-   (fn [req]
-     {:resp (model.tag/query-tags)})))
+  (make-req-handler clurator.view.tag/list-tags))
 
 (def tag-photos
-  (make-req-handler
-   (fn [req]
-     {:resp (prn-str
-             (let [{tag-id :tag
-                    photo-ids :photos} (view.filtering/read-edn req)]
-               (model.tag/set-tag-for-photos tag-id photo-ids :toggle)))})))
+  (make-req-handler clurator.view.tag/tag-photos))
 
 (def create-update-new-tag
-  (make-req-handler
-   (fn [req]
-     (let [{use-color? :tag-color? :as tag} (view.filtering/read-edn req)
-           tag (if use-color?
-                 tag
-                 (dissoc tag :tag/style_color))]
-       {:resp nil
-        :status (if (model.tag/create-edit-tag tag)
-                  :ok
-                  :fail)}))))
+  (make-req-handler clurator.view.tag/create-update-new-tag))
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

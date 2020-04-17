@@ -719,7 +719,11 @@ Yep, seems like =<input>= element can't be made to imitate a
 
 Maybe good to place under a shortcut?
 
-* TODO Refactor error messaging / route handling                    :backend:
+* DONE Refactor error messaging / route handling                    :backend:
+CLOSED: [2020-04-17 Fri 17:43]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-17 Fri 17:43]
+:END:
 
 As the first thing we need to be sending correct status code when
 things go south. The messages and that can be considered later.
