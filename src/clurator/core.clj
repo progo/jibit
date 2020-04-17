@@ -19,8 +19,9 @@
 
 (defn make-req-handler
   "Make a handler function that takes in a route request, patches it
-  through provided `handler-fn` (:: request -> {:status, :resp}) and
-  then makes a suitable response in EDN."
+  through provided `handler-fn` (:: request ->
+  {:status [:ok|:fail], :resp value}) and then makes a suitable
+  response in EDN."
   [handler-fn]
   (fn [req]
     (let [{status :status response :resp} (handler-fn req)
