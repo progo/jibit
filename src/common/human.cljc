@@ -3,7 +3,12 @@
 
   (:require [#?(:clj clojure.pprint
                 :cljs cljs.pprint)
-             :refer [cl-format]]))
+             :refer [cl-format]]
+
+            ;; for javascript, moment.js
+            #?(:cljs moment)
+
+            [taoensso.timbre :as timbre :refer [debug spy]]))
 
 (defn focal-length
   "Focal lengths in mm in short and sharp format. Focal lengths under 10
@@ -32,3 +37,16 @@
     "0"
     (cl-format nil "~,2@f" ec)))
 
+
+#?(:cljs
+   (do
+     (defn moment [& arg] (apply js/moment arg))
+
+     (defn datestamp
+       "Format a datetime as a date."
+       [dt]
+       (-> dt
+           moment
+           (.format "MMM D YYYY")))
+
+     ))

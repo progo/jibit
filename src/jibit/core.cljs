@@ -308,6 +308,7 @@
                 ""))}
     [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
     [:ul.info
+     [:li "Taken " (human/datestamp (:photo/taken_ts image))]
      [:li (:camera/exif_model image)]
      [:li (:lens/exif_model image)]
      [:li (human/focal-length (:photo/focal_length_35 image)) " mm"]
