@@ -21,8 +21,6 @@
 ;; Remember to specify protocol. And no trailing slash.
 (def server-uri "http://localhost:8088")
 
-(def selection-hold-time-msecs 320)
-
 (defn i
   "{debug} Inspect DB."
   [& ks]
@@ -189,49 +187,15 @@
        ;; Clear set values, if any
        (assoc-in [:input :tag] {}))))
 
-(re-frame/reg-event-fx
- :slide-mouse-down
- (fn [{db :db} [_ photo-id ts]]
-   (let [selections? (-> db :selected seq)
-         delay (if selections?
-                 100
-                 selection-hold-time-msecs)]
-     {:db (assoc-in db [:mouse-events :down]
-                    {:photo-id photo-id
-                     :timestamp ts})
-      :dispatch-after-delay {:event [:slide-mouse-up photo-id nil]
-                             :timeout delay}})))
-
 (re-frame/reg-event-db
  :select-photo
- (fn [db [_ photo-id toggle?]]
+ (fn [db [_ photo-id]]
    (update db :selected #(toggle-set-membership photo-id %))))
 
 (re-frame/reg-event-db
  :clear-selection
  (fn [db _]
    (update db :selected empty)))
-
-(re-frame/reg-event-fx
- :slide-mouse-up
- (fn [{db :db} [_ photo-id ts]]
-   ;; User released M-btn1 at moment `ts`. The timestamp can be nil
-   ;; particularly when we have automatically done something and
-   ;; reacted to the mousehold.
-   (if-let [down (-> db :mouse-events :down)]
-     (let [hold-begin (:timestamp down)
-           held-ms (- hold-begin ts)
-           held-long-enough (>= held-ms selection-hold-time-msecs)
-           ;; Remove the record now that we've done it.
-           db' (dissoc-in db [:mouse-events :down])]
-       (if held-long-enough
-         (do
-           ;; (debug "User released button:" held-ms "ms")
-           {:db db'
-            :dispatch [:select-photo photo-id :toggle]})
-         ;; User really just clicked and we handle that elsewhere.
-         {:db db'}))
-     {:db db})))
 
 ;; Toggle tag from query
 
@@ -337,13 +301,11 @@
 (defn slide [image]
   [:div.slide-wrapper
    [:div.slide
-    {:on-mouse-down #(re-frame/dispatch [:slide-mouse-down (:photo/id image) (js/Date.)])
-     :on-mouse-up #(re-frame/dispatch [:slide-mouse-up (:photo/id image) (js/Date.)])
+    {:on-context-menu #(dispatch-preventing-default-action % [:select-photo (:photo/id image)])
      :class (let [sels @(re-frame/subscribe [:selected])]
               (if (sels (:photo/id image))
                 "selected-slide"
-                ""))
-     }
+                ""))}
     [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
     [:ul.info
      [:li (:camera/exif_model image)]
