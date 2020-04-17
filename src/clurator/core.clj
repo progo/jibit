@@ -26,7 +26,8 @@
     (let [{status :status response :resp} (handler-fn req)
           status-code (case status
                         :ok 200
-                        :fail 500)]
+                        :fail 500
+                        200)]
       {:status status-code
        :headers edn-headers
        :body (prn-str response)})))
@@ -36,41 +37,37 @@
    :headers {"Content-Type" "text/html"}
    :body "<h1>Hello, world!</h1><p>Soon serving jibit here...</p>"})
 
-(defn list-photos [req]
-  {:status 200
-   :headers edn-headers
-   :body (prn-str
-          (model.photo/filter-photos
-           (view.filtering/handle-filter-criteria
-            (form-decode (:query-string req)))))})
+(def list-photos
+  (make-req-handler
+   (fn [req]
+     {:resp (model.photo/filter-photos
+             (view.filtering/handle-filter-criteria
+              (form-decode (:query-string req))))})))
 
-(defn list-tags [req]
-  {:status 200
-   :headers edn-headers
-   :body (prn-str (model.tag/query-tags))})
+(def list-tags
+  (make-req-handler
+   (fn [req]
+     {:resp (model.tag/query-tags)})))
 
-(defn tag-photos [req]
-  {:status 200
-   :headers edn-headers
-   :body (prn-str
-          (let [{tag-id :tag
-                 photo-ids :photos} (view.filtering/read-edn req)]
-            (model.tag/set-tag-for-photos tag-id photo-ids :toggle)))})
+(def tag-photos
+  (make-req-handler
+   (fn [req]
+     {:resp (prn-str
+             (let [{tag-id :tag
+                    photo-ids :photos} (view.filtering/read-edn req)]
+               (model.tag/set-tag-for-photos tag-id photo-ids :toggle)))})))
 
-(defn create-update-new-tag [req]
-  (let [resp (let [{use-color? :tag-color? :as tag} (view.filtering/read-edn req)
-                   tag (if use-color?
-                         tag
-                         (dissoc tag :tag/style_color))]
-               (if (model.tag/create-edit-tag tag)
-                 :ok
-                 :fail))
-        status-code (case resp
-                      :ok 200
-                      :fail 500)]
-    {:status status-code
-     :headers edn-headers
-     :body (prn-str resp)}))
+(def create-update-new-tag
+  (make-req-handler
+   (fn [req]
+     (let [{use-color? :tag-color? :as tag} (view.filtering/read-edn req)
+           tag (if use-color?
+                 tag
+                 (dissoc tag :tag/style_color))]
+       {:resp nil
+        :status (if (model.tag/create-edit-tag tag)
+                  :ok
+                  :fail)}))))
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
