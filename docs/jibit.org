@@ -660,6 +660,11 @@ CLOSED: [2020-04-11 Sat 17:43]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-11 Sat 17:43]
 :END:
+* TODO Inspect lighttable/slide performance                     :performance:
+
+Selecting a slide makes about 100 ms or 80 ms optimized and that's
+quite a bit. Our render is only 55 slides at the moment so expect a
+much worse time in the future.
 
 * DONE Tag things pt 2 [3/3]
 CLOSED: [2020-04-14 Tue 18:16]
