@@ -262,6 +262,31 @@ div#modal-bg {
     width: 80%;
 }
 
+#modal-prompt {
+    display: none;
+    z-index: 3;
+    background-color: #333;
+
+    padding: 20px;
+    border: 2px solid orange;
+    border-radius: 10px;
+
+    position: fixed;
+
+    left: 15%;
+    top: 30%;
+    width: 70%;
+}
+
+#modal-prompt .footer {
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+#modal-prompt .footer .button {
+    margin-right: 5px;
+}
+
 /*** Dialog/form arrangements **/
 
 .modal-dialog .dialog-row {

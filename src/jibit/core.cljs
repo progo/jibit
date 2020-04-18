@@ -118,7 +118,7 @@
                db
                {:photos []
                 :tags []
-                :state nil
+                :state ()
                 :selected-tags #{}
                 :selected #{}
                 :tags-union true
@@ -169,13 +169,13 @@
          ;; apply the checkbox if there's color present.
          tag (assoc tag :tag-color? (-> tag :tag/style_color boolean))]
      (-> db
-         (assoc :state :tag-dialog)
+         (update :state conj :tag-dialog)
          (assoc-in [:input :tag] tag)))))
 
 (re-frame/reg-event-db
  :show-create-tag-dlg
  (fn [db _]
-   (assoc db :state :tag-dialog)))
+   (update db :state conj :tag-dialog)))
 
 (re-frame/reg-event-fx
  :delete-tag
@@ -198,9 +198,31 @@
  :cancel-create-tag-dlg
  (fn [db _]
    (-> db
-       (assoc :state nil)
+       (update :state pop)
        ;; Clear set values, if any
        (assoc-in [:input :tag] {}))))
+
+(re-frame/reg-event-db
+ :open-prompt
+ (fn [db [_ {title :title
+             text :text
+             label-yes :label-yes
+             label-no :label-no
+             :or {title "Confirm"
+                  text "Are you sure?"
+                  label-yes "Ok"
+                  label-no "Cancel"}
+             :as prompt}]]
+   (-> db
+       (update :state conj :modal-prompt)
+       (assoc :prompt prompt))))
+
+(re-frame/reg-event-db
+ :close-prompt
+ (fn [db _]
+   (update db
+           :state pop
+           :prompt empty)))
 
 (re-frame/reg-event-db
  :select-photo
@@ -239,7 +261,12 @@
 (re-frame/reg-sub
  :state
  (fn [db _]
-   (:state db)))
+   (peek (:state db))))
+
+(re-frame/reg-sub
+ :prompt
+ (fn [db _]
+   (:prompt db)))
 
 (re-frame/reg-sub
  :tags
@@ -442,6 +469,22 @@
   ;; All non-nil states are modal, for now.
   state)
 
+(defn modal-prompt
+  []
+  (let [enabled? (= :modal-prompt @(re-frame/subscribe [:state]))
+        {title :title
+         text :text
+         label-yes :label-yes
+         label-no :label-no} @(re-frame/subscribe [:prompt])]
+    [:div#modal-prompt {:class (if enabled? "modal-shown" "")}
+     [:h1 title]
+     [:div text]
+     [:div.footer
+      [:div.button {:on-click #(re-frame/dispatch [:close-prompt])}
+       label-yes]
+      [:div.button {:on-click #(re-frame/dispatch [:close-prompt])}
+       label-no]]]))
+
 (defn modal-background []
   (let [enabled? (modal-state? @(re-frame/subscribe [:state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
@@ -542,7 +585,8 @@
    ;; Modal dialogs that go above level zero. Shown and hidden as
    ;; needed.
    [modal-background]
-   [tag-edit-dialog]])
+   [tag-edit-dialog]
+   [modal-prompt]])
 
 ;;; re-frame boilerplate below
 

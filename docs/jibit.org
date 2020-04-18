@@ -544,7 +544,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [90%]
+* TODO Tagging photos [83%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -725,8 +725,13 @@ avoid mixing user-given and computed data.
 
 * Currently held states                                                :info:
 
+: (:state db)
+
+Is a stack that we operate with =conj=, =pop= and =peek=.
+
 - nil :: default
 - tag-dialog :: modal, tag edit/creation dialog
+- modal-prompt :: modal, generic prompter
      
 * TODO Modal background : dblclick to turn off
 * DONE rename =toggle-button=
