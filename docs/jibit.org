@@ -621,11 +621,10 @@ CLOSED: [2020-04-13 Mon 13:20]
 
 Put this thing under Modify dialog.
 
-*** DONE remove that spy
-CLOSED: [2020-04-18 Sat 11:10]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-18 Sat 11:10]
-:END:
+- [ ] Deleting a tag, enforce tagged items (set null but ask)
+- [ ] Deleting a tag, enforce parent relation (set null but ask)
+- [ ] Confirm deleting a tag beforehands
+
 ** DONE Tag relations: don't let tag be its own parent
 CLOSED: [2020-04-14 Tue 19:35]
 :LOGBOOK:
@@ -668,6 +667,14 @@ CLOSED: [2020-04-11 Sat 17:43]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-11 Sat 17:43]
 :END:
+
+** TODO UI enhancements on Tag Color selection
+
+- [ ] If user deselects "Use color" checkbox, clear the color from
+  colorselector
+- [ ] If user selects a color using the selector, select "Use color"
+  automatically
+
 * TODO Inspect lighttable/slide performance                     :performance:
 
 Selecting a slide makes about 100 ms or 80 ms optimized and that's
