@@ -512,7 +512,7 @@
       [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
        "Close"]
       (when-not new?
-        [:a.button {:on-click #(re-frame/dispatch [:delete-tag (-> tag :tag/id)])}
+        [:a.button.red.right {:on-click #(re-frame/dispatch [:delete-tag (-> tag :tag/id)])}
          "Delete"])]]))
 
 (defn lighttable-bare []
