@@ -126,7 +126,13 @@
 ;; The rest of the file will be the versioned statements in var `schema-sql`.
 
 ;; Create the connection and update the file if needed.
-(def db (jdbc/get-datasource {:dbtype "sqlite"
-                              :dbname clurator.settings/database-file}))
+
+;; (def db (jdbc/get-datasource {:dbtype "sqlite"
+;;                               :dbname clurator.settings/database-file}))
+
+(let [conn-str (str "jdbc:sqlite:"
+                    clurator.settings/database-file
+                    "?foreign_keys=on;")]
+  (def db (jdbc/get-connection conn-str)))
 
 (update-schema! db)
