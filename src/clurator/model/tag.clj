@@ -143,15 +143,29 @@
     desc :tag/description
     parent :tag/parent_id
     color :tag/style_color}]
-  (if (and (not (nil? id))
+  (let [value-map {:id id
+                   :name name
+                   :description desc
+                   :parent_id parent
+                   :style_color color}]
+    (cond
+      ;; We are trying to place a tag under its own descendant, which
+      ;; is no bueno.
+      (and (not (nil? id))
            (not (nil? parent))
            ((tag-descendants id) parent))
-    ;; We are trying to place a tag under its own descendant, which is
-    ;; no bueno.
-    nil
-    (db/query! {:insert-or-replace :tag
-                :columns [:id :name :description :parent_id :style_color]
-                :values [[id name desc parent color]]})))
+      nil
+
+      ;; New tag
+      (nil? id)
+      (db/query! {:insert-into :tag
+                  :values [value-map]})
+
+      ;; Update old one
+      :else
+      (db/query! {:update :tag
+                  :set value-map
+                  :where [:= :id id]}))))
 
 (defn delete-tag
   [tag-id]
