@@ -152,3 +152,8 @@
     (db/query! {:insert-or-replace :tag
                 :columns [:id :name :description :parent_id :style_color]
                 :values [[id name desc parent color]]})))
+
+(defn delete-tag
+  [tag-id]
+  (db/query! {:delete-from :tag
+              :where [:= :tag.id tag-id]}))

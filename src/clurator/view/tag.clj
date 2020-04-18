@@ -24,3 +24,8 @@
                  :fail)]
     {:resp nil
      :status status}))
+
+(defn delete-tag [req]
+  (let [{tag-id :tag-id} (view.filtering/read-edn req)
+        _ (model.tag/delete-tag tag-id)]
+    {:status :ok}))

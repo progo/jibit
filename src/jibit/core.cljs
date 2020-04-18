@@ -88,6 +88,13 @@
      {:dispatch [:get-photos]})))
 
 (re-frame/reg-event-fx
+ :on-delete-tag
+ (fn [_ [_ success? response]]
+   (when success?
+     {:dispatch-n [[:reload-tags]
+                   [:cancel-create-tag-dlg]]})))
+
+(re-frame/reg-event-fx
  :on-create-tag
  (fn [cofx [_ success? response]]
    ;; We've made a new tag in the system.
@@ -169,6 +176,14 @@
  :show-create-tag-dlg
  (fn [db _]
    (assoc db :state :tag-dialog)))
+
+(re-frame/reg-event-fx
+ :delete-tag
+ (fn [{db :db} [_ tag-id]]
+   {:http-xhrio (build-edn-request :method :delete
+                                   :uri "/tag"
+                                   :params {:tag-id tag-id}
+                                   :response :on-delete-tag)}))
 
 (re-frame/reg-event-fx
  :create-new-tag
@@ -495,7 +510,10 @@
                   :class (when prevent-saving? "btn-disabled")}
        (if new? "Create" "Save")]
       [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
-       "Close"]]]))
+       "Close"]
+      (when-not new?
+        [:a.button {:on-click #(re-frame/dispatch [:delete-tag (-> tag :tag/id)])}
+         "Delete"])]]))
 
 (defn lighttable-bare []
   [:div.lighttable

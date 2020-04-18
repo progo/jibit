@@ -1,6 +1,6 @@
 (ns clurator.core
   (:require [org.httpkit.server :refer [run-server]]
-            [compojure.core :as comp :refer [GET POST OPTIONS ANY]]
+            [compojure.core :as comp :refer [GET POST OPTIONS DELETE]]
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
             clurator.view.tag
@@ -13,6 +13,7 @@
 (def edn-headers
   {"Content-Type" "application/edn"
    "Access-Control-Allow-Headers" "Content-Type"
+   "Access-Control-Allow-Methods" "*"
    "Access-Control-Allow-Origin" "*"})
 
 (defn make-req-handler
@@ -48,6 +49,9 @@
 (def create-update-new-tag
   (make-req-handler clurator.view.tag/create-update-new-tag))
 
+(def delete-tag
+  (make-req-handler clurator.view.tag/delete-tag))
+
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
 
@@ -57,6 +61,7 @@
   (OPTIONS "/tag-photo" [] {:status 200 :headers edn-headers})
   (POST    "/tag" [] create-update-new-tag)
   (OPTIONS "/tag" [] {:status 200 :headers edn-headers})
+  (DELETE  "/tag" [] delete-tag)
   (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
