@@ -614,10 +614,18 @@ CLOSED: [2020-04-13 Mon 13:20]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-13 Mon 13:20]
 :END:
-** TODO Deleting tags
+** STARTED Deleting tags
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-04-18 Sat 11:09]
+:END:
 
 Put this thing under Modify dialog.
 
+*** DONE remove that spy
+CLOSED: [2020-04-18 Sat 11:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-18 Sat 11:10]
+:END:
 ** DONE Tag relations: don't let tag be its own parent
 CLOSED: [2020-04-14 Tue 19:35]
 :LOGBOOK:
@@ -665,6 +673,9 @@ CLOSED: [2020-04-11 Sat 17:43]
 Selecting a slide makes about 100 ms or 80 ms optimized and that's
 quite a bit. Our render is only 55 slides at the moment so expect a
 much worse time in the future.
+
+- Removing the tag labels: no particular effect
+- Removing moment.js: no particular effect
 
 * DONE Tag things pt 2 [3/3]
 CLOSED: [2020-04-14 Tue 18:16]

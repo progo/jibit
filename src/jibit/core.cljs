@@ -188,7 +188,7 @@
 (re-frame/reg-event-fx
  :create-new-tag
  (fn [{db :db} _]
-   (let [input (spy (-> db :input :tag))]
+   (let [input (-> db :input :tag)]
      {:http-xhrio (build-edn-request :method :post
                                      :uri "/tag"
                                      :params input
