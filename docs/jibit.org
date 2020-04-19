@@ -769,6 +769,9 @@ Yep, seems like =<input>= element can't be made to imitate a
 
 Maybe good to place under a shortcut?
 
+* TODO What can be done for the dual-confirmation of tag deletion?       :ui:
+
+Two dialogs doesn't look that good. What could be done?
 * DONE Refactor error messaging / route handling                    :backend:
 CLOSED: [2020-04-17 Fri 17:43]
 :LOGBOOK:
