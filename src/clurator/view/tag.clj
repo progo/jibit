@@ -44,14 +44,9 @@
           ;; There are some things wrong...
           {:status :user
            :resp {:tag-id tag-id
-                  :messages [(when (pos? tagged-photos#)
-                               (format "%d photos have been tagged
-                                       with this. These taggings will
-                                       be removed." tagged-photos#))
-                             (when (seq children)
-                               (format "The tag has the following
-                                       subtags: [%s]. These tags will
-                                       be lifted as top-level tags."
-                                       (apply str (interpose ", " (map :tag/name children)))))]}}))
+                  :problems {:photos# (when (pos? tagged-photos#)
+                                        tagged-photos#)
+                             :children (when (seq children)
+                                         (map :tag/name children))}}}))
       {:status :ok
        :resp (model.tag/delete-tag* tag-id)})))

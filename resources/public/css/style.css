@@ -334,3 +334,7 @@ div#modal-bg {
     text-decoration: underline;
     color: silver;
 }
+
+ul.problem-list {
+    line-height: 150%;
+}

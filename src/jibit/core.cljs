@@ -6,6 +6,7 @@
    ajax.edn
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
+   [cljs.pprint :refer [cl-format]]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;;; events and handlers -- update db
@@ -105,19 +106,31 @@
    (when (ok? status)
      {:dispatch [:get-photos]})))
 
+(defn format-tag-delete-problems
+  "Deleting a tag can have issues, we decode those issues to the user.
+  The argument map `problems` potentially has keys :photos#
+  and :children that should be formatted as a prompt message."
+  [problems]
+  [:ul.problem-list
+   (when-let [photos# (:photos# problems)]
+     [:li (cl-format nil "~d photos have been tagged with this tag. They will be untagged."
+                     photos#)])
+   (when-let [children (:children problems)]
+     [:li "The following subtags will be lifted one level up."
+      [:ul
+       (for [c children]
+         ^{:key c} [:li c])
+       ]])])
+
 (re-frame/reg-event-fx
  :on-delete-tag
  (fn [{db :db} [_ {status :status response :response}]]
-   (debug "on-delete-tag" status response)
    (case status
      :ok {:dispatch-n [[:reload-tags]
                        [:cancel-create-tag-dlg]]}
      :user {:dispatch [:open-prompt
-                       {:text [:div
-                               [:ul
-                                (for [p (:messages response) :when p]
-                                  ^{:key p} [:li p])]]
-                        :label-yes "Delete"
+                       {:text (format-tag-delete-problems (:problems response))
+                        :label-yes "Go ahead!"
                         :callback-yes [:delete-tag (:tag-id response) true]}]}
      :fail {}
      )))
