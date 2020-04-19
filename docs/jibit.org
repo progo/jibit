@@ -686,7 +686,7 @@ much worse time in the future.
 - Removing the tag labels: no particular effect
 - Removing moment.js: no particular effect
 
-* TODO Rename =:cancel-create-tag-dlg=
+* TODO Rename =:cancel-create-tag-dlg=                               :rename:
 * TODO re-frame and multi-arity event handlers?
 
 https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-varargs
@@ -694,7 +694,11 @@ https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-vararg
 What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
 spend a moment to see if re-frame event handlers allow for a better
 way.
+* TODO Tags as a map in db?                                  :small:refactor:
 
+It's a smart format for tags to be in anyway, maybe we should store
+them as an ID:TAG map in the first place?
+* TODO =:open-prompt= -> =:show-prompt=                              :rename:
 * DONE Tag things pt 2 [3/3]
 CLOSED: [2020-04-14 Tue 18:16]
 :LOGBOOK:

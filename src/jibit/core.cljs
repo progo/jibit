@@ -48,6 +48,14 @@
   (. evt preventDefault)
   (re-frame/dispatch event))
 
+(defn get-tag-by-id
+  "Linear search from db"
+  [db tag-id]
+  (->> db
+       :tags
+       (filter #(= tag-id (-> % :tag/id)))
+       first))
+
 ;; Defining client/server conversations
 
 (defn build-edn-request
@@ -110,11 +118,11 @@
   "Deleting a tag can have issues, we decode those issues to the user.
   The argument map `problems` potentially has keys :photos#
   and :children that should be formatted as a prompt message."
-  [problems]
+  [tag problems]
   [:ul.problem-list
    (when-let [photos# (:photos# problems)]
-     [:li (cl-format nil "~d photos have been tagged with this tag. They will be untagged."
-                     photos#)])
+     [:li photos# " photos have been tagged with "
+      (:tag/name tag) ". They will be untagged."])
    (when-let [children (:children problems)]
      [:li "The following subtags will be lifted one level up."
       [:ul
@@ -125,15 +133,17 @@
 (re-frame/reg-event-fx
  :on-delete-tag
  (fn [{db :db} [_ {status :status response :response}]]
-   (case status
-     :ok {:dispatch-n [[:reload-tags]
-                       [:cancel-create-tag-dlg]]}
-     :user {:dispatch [:open-prompt
-                       {:text (format-tag-delete-problems (:problems response))
-                        :label-yes "Go ahead!"
-                        :callback-yes [:delete-tag (:tag-id response) true]}]}
-     :fail {}
-     )))
+   (let [tag-id (:tag-id response)
+         tag (get-tag-by-id db tag-id)]
+     (case status
+       :ok {:dispatch-n [[:reload-tags]
+                         [:cancel-create-tag-dlg]]}
+       :user {:dispatch [:open-prompt
+                         {:title (str "Confirm deletion of " (:tag/name tag))
+                          :text (format-tag-delete-problems tag (:problems response))
+                          :label-yes "Go ahead!"
+                          :callback-yes [:delete-tag tag-id true]}]}
+       :fail {}))))
 
 (re-frame/reg-event-fx
  :on-create-tag
@@ -605,7 +615,8 @@
       (when-not new?
         [:a.button.red.right
          {:on-click #(re-frame/dispatch [:open-prompt
-                                         {:label-yes "Delete!"
+                                         {:title (str "Confirm deletion of " (:tag/name tag))
+                                          :label-yes "Delete!"
                                           :callback-yes [:delete-tag (-> tag :tag/id)]}])}
          "Delete..."])]]))
 
