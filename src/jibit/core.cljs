@@ -208,14 +208,18 @@
              text :text
              label-yes :label-yes
              label-no :label-no
+             callback-yes :callback-yes
              :or {title "Confirm"
                   text "Are you sure?"
                   label-yes "Ok"
-                  label-no "Cancel"}
-             :as prompt}]]
+                  label-no "Cancel"}}]]
    (-> db
        (update :state conj :modal-prompt)
-       (assoc :prompt prompt))))
+       (assoc :prompt {:title title
+                       :text text
+                       :label-yes label-yes
+                       :label-no label-no
+                       :callback-yes callback-yes}))))
 
 (re-frame/reg-event-db
  :close-prompt
@@ -475,12 +479,14 @@
         {title :title
          text :text
          label-yes :label-yes
-         label-no :label-no} @(re-frame/subscribe [:prompt])]
+         label-no :label-no
+         callback-yes :callback-yes} @(re-frame/subscribe [:prompt])]
     [:div#modal-prompt {:class (if enabled? "modal-shown" "")}
      [:h1 title]
      [:div text]
      [:div.footer
-      [:div.button {:on-click #(re-frame/dispatch [:close-prompt])}
+      [:div.button {:on-click #(do (re-frame/dispatch callback-yes)
+                                   (re-frame/dispatch [:close-prompt]))}
        label-yes]
       [:div.button {:on-click #(re-frame/dispatch [:close-prompt])}
        label-no]]]))
@@ -555,7 +561,10 @@
       [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
        "Close"]
       (when-not new?
-        [:a.button.red.right {:on-click #(re-frame/dispatch [:delete-tag (-> tag :tag/id)])}
+        [:a.button.red.right
+         {:on-click #(re-frame/dispatch [:open-prompt
+                                         {:label-yes "Delete!"
+                                          :callback-yes [:delete-tag (-> tag :tag/id)]}])}
          "Delete"])]]))
 
 (defn lighttable-bare []
