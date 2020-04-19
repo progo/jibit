@@ -23,6 +23,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn query-1!
+  "Make a query-1. Take a map Honeysql understands."
+  [query-map]
+  (let [formatted-sql (sql/format query-map)]
+    (jdbc/execute-one! db formatted-sql)))
+
 (defn query!
   "Make a query. Take a map HoneySQL understands."
   [query-map]
@@ -33,9 +39,7 @@
 (defn query-count!
   "Make a counting query and extract the resulting integer"
   [query-map]
-  (-> (query! query-map)
-      first
-      seq
+  (-> (query-1! query-map)
       first
       second))
 

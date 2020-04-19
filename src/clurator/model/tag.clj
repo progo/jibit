@@ -185,3 +185,23 @@
   [tag-id]
   (db/query! {:delete-from :tag
               :where [:= :tag.id tag-id]}))
+
+(defn delete-tag*
+  "Deletes a tag like `delete-tag` does but this will clean any model
+  relations beforehands:
+
+  - photo_tag entries are removed
+  - subtags are lifted one level up (so tag hierarchy of 'VEHICES >
+    CARS > SUBARU' becomes 'VEHICES > SUBARU' if CARS deleted)
+  "
+  [tag-id]
+  (let [parent-id (-> (db/query-1! {:select [:parent_id]
+                                    :from [:tag]
+                                    :where [:= :id tag-id]})
+                      :tag/parent_id)]
+    (db/query! {:update :tag
+                :set {:parent_id parent-id}
+                :where [:= :tag.parent_id tag-id]}))
+  (db/query! {:delete-from :photo_tag
+              :where [:= :tag_id tag-id]})
+  (delete-tag tag-id))

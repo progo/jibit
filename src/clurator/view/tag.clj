@@ -28,10 +28,10 @@
 (defn delete-tag
   "Delete a tag denoted by tag-id in the request but we'll check against
   constraints. The checks may result in a fail. The second round
-  around pass an argument `:bypass true` to proceed."
+  around pass an argument `:bypass? true` to proceed."
   [req]
   (let [{tag-id :tag-id
-         bypass? :bypass} (view.filtering/read-edn req)]
+         bypass? :bypass?} (view.filtering/read-edn req)]
     (if-not bypass?
       (let [children (model.tag/tag-children tag-id)
             tagged-photos# (model.tag/tagged-photos# tag-id)]
@@ -39,11 +39,19 @@
 
           ;; No problemos so we can go ahead with the deletion
           {:status :ok
-           :resp (model.tag/delete-tag tag-id)}
+           :resp (model.tag/delete-tag* tag-id)}
 
-          ;; There are some things...
-          {:status :fail
-           :resp [(str "Tag has been used in " tagged-photos# " photos.")
-                  (str "Tag has subtags " (apply str (interpose ", " (mapv :tag/name children))))]}))
+          ;; There are some things wrong...
+          {:status :user
+           :resp {:tag-id tag-id
+                  :messages [(when (pos? tagged-photos#)
+                               (format "%d photos have been tagged
+                                       with this. These taggings will
+                                       be removed." tagged-photos#))
+                             (when (seq children)
+                               (format "The tag has the following
+                                       subtags: [%s]. These tags will
+                                       be lifted as top-level tags."
+                                       (apply str (interpose ", " (map :tag/name children)))))]}}))
       {:status :ok
-       :resp (model.tag/delete-tag tag-id)})))
+       :resp (model.tag/delete-tag* tag-id)})))

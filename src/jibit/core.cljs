@@ -29,6 +29,13 @@
       (nil? ks) (sort (keys db))
       :t (get-in db ks))))
 
+(defn join-strings
+  "Join nonempty non-nil strings with separator."
+  ([coll]
+   (join-strings ", " coll))
+  ([sep coll]
+   (apply str (interpose sep (filter identity coll)))))
+
 (defn toggle-set-membership
   [x s]
   (if (s x)
@@ -54,7 +61,7 @@
    :format (ajax.edn/edn-request-format)
    :response-format (ajax.edn/edn-response-format)
    :on-success [response]
-   :on-failure [response]})
+   :on-failure [response {:status :fail}]})
 
 ;;;;
 
@@ -100,11 +107,20 @@
 
 (re-frame/reg-event-fx
  :on-delete-tag
- (fn [_ [_ {status :status response :response}]]
+ (fn [{db :db} [_ {status :status response :response}]]
    (debug "on-delete-tag" status response)
-   (when (ok? status)
-     {:dispatch-n [[:reload-tags]
-                   [:cancel-create-tag-dlg]]})))
+   (case status
+     :ok {:dispatch-n [[:reload-tags]
+                       [:cancel-create-tag-dlg]]}
+     :user {:dispatch [:open-prompt
+                       {:text [:div
+                               [:ul
+                                (for [p (:messages response) :when p]
+                                  ^{:key p} [:li p])]]
+                        :label-yes "Delete"
+                        :callback-yes [:delete-tag (:tag-id response) true]}]}
+     :fail {}
+     )))
 
 (re-frame/reg-event-fx
  :on-create-tag
@@ -191,10 +207,11 @@
 
 (re-frame/reg-event-fx
  :delete-tag
- (fn [{db :db} [_ tag-id]]
+ (fn [{db :db} [_ tag-id & [surely?]]]
    {:http-xhrio (build-edn-request :method :delete
                                    :uri "/tag"
-                                   :params {:tag-id tag-id}
+                                   :params {:tag-id tag-id
+                                            :bypass? surely?}
                                    :response :on-delete-tag)}))
 
 (re-frame/reg-event-fx

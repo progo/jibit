@@ -544,7 +544,7 @@ Bright yellow and red easy to use as warning colors, blue/green easy
 to adapt into tags.
 
 * TODO Unit tests
-* TODO Tagging photos [83%]
+* TODO Tagging photos [91%]
 ** DONE Show existing tags on photos
 CLOSED: [2020-04-05 Sun 13:34]
 :LOGBOOK:
@@ -614,15 +614,17 @@ CLOSED: [2020-04-13 Mon 13:20]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-13 Mon 13:20]
 :END:
-** STARTED Deleting tags
+** DONE Deleting tags
+CLOSED: [2020-04-19 Sun 18:39]
 :LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-04-19 Sun 18:39]
 - State "STARTED"    from "TODO"       [2020-04-18 Sat 11:09]
 :END:
 
 Put this thing under Modify dialog.
 
-- [ ] Deleting a tag, enforce tagged items (set null but ask)
-- [ ] Deleting a tag, enforce parent relation (set null but ask)
+- [X] Deleting a tag, enforce tagged items (set null but ask)
+- [X] Deleting a tag, enforce parent relation (set null but ask)
 - [X] Confirm deleting a tag beforehands
 
 ** DONE Tag relations: don't let tag be its own parent
@@ -683,6 +685,15 @@ much worse time in the future.
 
 - Removing the tag labels: no particular effect
 - Removing moment.js: no particular effect
+
+* TODO Rename =:cancel-create-tag-dlg=
+* TODO re-frame and multi-arity event handlers?
+
+https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-varargs
+
+What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
+spend a moment to see if re-frame event handlers allow for a better
+way.
 
 * DONE Tag things pt 2 [3/3]
 CLOSED: [2020-04-14 Tue 18:16]
