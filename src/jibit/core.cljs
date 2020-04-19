@@ -565,7 +565,7 @@
          {:on-click #(re-frame/dispatch [:open-prompt
                                          {:label-yes "Delete!"
                                           :callback-yes [:delete-tag (-> tag :tag/id)]}])}
-         "Delete"])]]))
+         "Delete..."])]]))
 
 (defn lighttable-bare []
   [:div.lighttable

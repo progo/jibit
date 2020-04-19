@@ -65,6 +65,20 @@
                     :from [:photo_tag]
                     :where [:= :photo_id (:photo/id photo)]})))
 
+(defn tag-children
+  "Return basic things about a tag's children."
+  [tag-id]
+  (db/query! {:select [:id :name]
+              :from [:tag]
+              :where [:= :parent_id tag-id]}))
+
+(defn tagged-photos#
+  "Return a count of tagged photos using this tag-id."
+  [tag-id]
+  (db/query-count! {:select [:%count]
+                    :from [:photo_tag]
+                    :where [:= :tag_id tag-id]}))
+
 (defn tag-parent-pairs
   "Get from DB a seq of tuples [tag-id tags-parent-id] called tp-pairs."
   []

@@ -50,7 +50,7 @@
   (make-req-handler clurator.view.tag/create-update-new-tag))
 
 (def delete-tag
-  (make-req-handler clurator.view.tag/delete-tag))
+  (make-req-handler #'clurator.view.tag/delete-tag))
 
 (defn photo-thumbnail [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

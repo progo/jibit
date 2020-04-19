@@ -623,7 +623,7 @@ Put this thing under Modify dialog.
 
 - [ ] Deleting a tag, enforce tagged items (set null but ask)
 - [ ] Deleting a tag, enforce parent relation (set null but ask)
-- [ ] Confirm deleting a tag beforehands
+- [X] Confirm deleting a tag beforehands
 
 ** DONE Tag relations: don't let tag be its own parent
 CLOSED: [2020-04-14 Tue 19:35]
