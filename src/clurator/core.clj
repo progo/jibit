@@ -38,16 +38,16 @@
    :body "<h1>Hello, world!</h1><p>Soon serving jibit here...</p>"})
 
 (def list-photos
-  (make-req-handler clurator.view.photo/list-photos))
+  (make-req-handler #'clurator.view.photo/list-photos))
 
 (def list-tags
-  (make-req-handler clurator.view.tag/list-tags))
+  (make-req-handler #'clurator.view.tag/list-tags))
 
 (def tag-photos
-  (make-req-handler clurator.view.tag/tag-photos))
+  (make-req-handler #'clurator.view.tag/tag-photos))
 
 (def create-update-new-tag
-  (make-req-handler clurator.view.tag/create-update-new-tag))
+  (make-req-handler #'clurator.view.tag/create-update-new-tag))
 
 (def delete-tag
   (make-req-handler #'clurator.view.tag/delete-tag))
