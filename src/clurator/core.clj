@@ -19,15 +19,18 @@
 (defn make-req-handler
   "Make a handler function that takes in a route request, patches it
   through provided `handler-fn` (:: request ->
-  {:status [:ok|:fail], :resp value}) and then makes a suitable
+  {:status [:ok|:user|:fail], :resp value}) and then makes a suitable
   response in EDN."
   [handler-fn]
   (fn [req]
     (let [{status :status response :resp} (handler-fn req)
           status-code (case status
                         :ok 200
+                        :user 200
                         :fail 500
-                        200)]
+                        200)
+          response {:status (or status :ok)
+                    :response response}]
       {:status status-code
        :headers edn-headers
        :body (prn-str response)})))

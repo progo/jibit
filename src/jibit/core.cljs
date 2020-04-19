@@ -53,8 +53,8 @@
    :params params
    :format (ajax.edn/edn-request-format)
    :response-format (ajax.edn/edn-response-format)
-   :on-success [response true]
-   :on-failure [response false]})
+   :on-success [response]
+   :on-failure [response]})
 
 ;;;;
 
@@ -63,17 +63,28 @@
   [p]
   (set (map :photo/id p)))
 
-;;;; Our ajax responses from server
+;;;; Our ajax responses from server.
+;; Events come with a map with keys [:status :response], where status
+;; is one of {:ok :fail :user}.
+;; - :ok is a 200
+;; - :fail is a 5xx
+;; - :user is a 2xx status where original request wasn't completed
+;;   because of ambiguous data or similar -- we want to ask the user
+;;   about how to proceed.
+
+(defn ok?
+  [status]
+  (= status :ok))
 
 (re-frame/reg-event-db
  :on-get-tags
- (fn [db [_ success? response]]
+ (fn [db [_ {status :status response :response}]]
    (assoc db :tags response)))
 
 (re-frame/reg-event-db
  :on-get-photos
- (fn [db [_ success? new-photos]]
-   (when success?
+ (fn [db [_ {status :status new-photos :response}]]
+   (when (ok? status)
      (let [ids (clojure.set/intersection (photo-ids new-photos)
                                          (:selected db))]
        (assoc db
@@ -82,23 +93,24 @@
 
 (re-frame/reg-event-fx
  :on-tag
- (fn [cofx [_ success? response]]
+ (fn [cofx [_ {status :status response :response}]]
    ;; We've just tagged images
-   (when success?
+   (when (ok? status)
      {:dispatch [:get-photos]})))
 
 (re-frame/reg-event-fx
  :on-delete-tag
- (fn [_ [_ success? response]]
-   (when success?
+ (fn [_ [_ {status :status response :response}]]
+   (debug "on-delete-tag" status response)
+   (when (ok? status)
      {:dispatch-n [[:reload-tags]
                    [:cancel-create-tag-dlg]]})))
 
 (re-frame/reg-event-fx
  :on-create-tag
- (fn [cofx [_ success? response]]
+ (fn [cofx [_ {status :status response :response}]]
    ;; We've made a new tag in the system.
-   (when success?
+   (when (ok? status)
      {:dispatch-n [[:reload-tags]
                    [:cancel-create-tag-dlg]]})))
 
