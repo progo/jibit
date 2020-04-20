@@ -172,7 +172,7 @@
                 :state ()
                 :selected-tags #{}
                 :selected #{}
-                :tags-union true
+                :tags-union? true
                 :init-done true})]
      {:dispatch [:reload-tags]
       :db db'})))
@@ -319,7 +319,7 @@
  (fn [{db :db} _]
    (let [filter-criteria (-> db :input :filter
                              (assoc :tags (:selected-tags db))
-                             (assoc :tags-union (:tags-union db)))]
+                             (assoc :tags-union? (:tags-union? db)))]
      (debug "Get photos with:" filter-criteria)
      {:http-xhrio (build-edn-request :method :get
                                      :uri "/photos"
@@ -350,9 +350,9 @@
    (into {} (map (juxt :tag/id identity) (-> db :tags)))))
 
 (re-frame/reg-sub
- :tags-union
+ :tags-union?
  (fn [db _]
-   (or false (-> db :tags-union))))
+   (or false (-> db :tags-union?))))
 
 (re-frame/reg-sub
  :selected-count
@@ -500,7 +500,7 @@
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]
-    [data-bound-toggle-button :tags-union
+    [data-bound-toggle-button :tags-union?
      {:label-on "Any tag"
       :label-off "All tags"
       :class-on "btn-any-tag"

@@ -62,14 +62,14 @@
     camera-model :camera-model
 
     tags :tags
-    tags-union :tags-union
+    tags-union? :tags-union?
 
     :or {order-by :taken_ts
          offset 0
          limit 1234}}]
   (let [taken-crit (build-taken-criteria taken-begin taken-end)
         make-model-crit (build-make-model-criteria camera-make camera-model)
-        tags-crit (build-tags-criteria tags tags-union)]
+        tags-crit (build-tags-criteria tags tags-union?)]
     (-> {:select [:photo.* :camera.* :lens.*]
          :from [:photo]
          :left-join [:camera [:= :camera.id :photo.camera_id]

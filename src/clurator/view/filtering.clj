@@ -48,10 +48,10 @@
   ;; taken-end    date
   ;; camera-make  text
   ;; camera-model text
-  ;; tags-union   boolean
+  ;; tags-union?  boolean
   ;; tags         set of IDs
   (merge {}
-         (clean-edn-input :tags-union)
+         (clean-edn-input :tags-union?)
          (clean-edn-input :tags)
          (clean-input :order-by
               (case input
