@@ -413,14 +413,6 @@ equally blurry.
 Light value is probably something we can just show with rounded to two
 decimal places.
 
-* DONE inbox: fs/expand-home
-CLOSED: [2020-03-29 Sun 19:32]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-03-29 Sun 19:32]
-:END:
-
-This thing should really be done once at settings' reading time.
-
 * TODO Our backend API should be stricter with Access-Control-Allow-Origin
 
 Limit it to localhost? And this is naturally something the production
@@ -481,15 +473,6 @@ Other tools we need or benefit from:
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
 
-* DONE Normalize lens/camera info?
-CLOSED: [2020-03-28 Sat 17:04]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-03-28 Sat 17:04]
-:END:
-
-Things like Lens_make, lens_model, FL_min, FL_max, aperture info could
-be served well to be in its own table to help with data fill-in.
-
 * DONE Round up all configuration in one EDN file or something
 CLOSED: [2020-03-15 Sun 19:08]
 :LOGBOOK:
@@ -507,43 +490,9 @@ edn file. In this case we can skip CLI arguments.
 
 Keep EDN in considerations though.
 
-* DONE Fix Thumbnails
-CLOSED: [2020-03-28 Sat 10:51]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-03-28 Sat 10:51]
-:END:
-
-Do them on import maybe? 
-
-- We want a way to later on adjust the thumbnail size, redo everything
-  in batch
-
-* DONE We need good logging facilities
-CLOSED: [2020-03-28 Sat 17:56]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-03-28 Sat 17:56]
-:END:
-
-Timbre is an old friend, let's set it up.
-
-It's somewhat unmaintained as of today. It works but it's somewhat
-hard to configure... Well it's figured out.
-
-The docs are a mess but the "f" variants of logging utilities are
-"format" versions. Standard C-style format flags work, with java
-dialect.
-
-: (debug "foo" "bar" :fez [2 4 5])
-: (debugf "This octal is wicked %o" 42)
-
-* UI things
-
-Have to say, the current [2020-03-28 Sat] color palette is looking
-nice. Gold + silver on the front against dark grays on the back.
-Bright yellow and red easy to use as warning colors, blue/green easy
-to adapt into tags.
-
 * TODO Unit tests
+* TODO Filter panel enhancements [0/1]
+** TODO Imported "today/yesterday/this week/all time"
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
@@ -686,42 +635,6 @@ CLOSED: [2020-04-20 Mon 18:03]
   automatically
   
 We can bind these to an "on click" event for better or worse.
-
-* TODO Inspect lighttable/slide performance                     :performance:
-
-Selecting a slide makes about 100 ms or 80 ms optimized and that's
-quite a bit. Our render is only 55 slides at the moment so expect a
-much worse time in the future.
-
-- Removing the tag labels: no particular effect
-- Removing moment.js: no particular effect
-
-* DONE Rename =:cancel-create-tag-dlg=                               :rename:
-CLOSED: [2020-04-20 Mon 17:46]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-20 Mon 17:46]
-:END:
-* TODO re-frame and multi-arity event handlers?
-
-https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-varargs
-
-What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
-spend a moment to see if re-frame event handlers allow for a better
-way.
-* TODO Tags as a map in db?                                  :small:refactor:
-
-It's a smart format for tags to be in anyway, maybe we should store
-them as an ID:TAG map in the first place?
-* DONE =:open-prompt= -> =:show-prompt=                              :rename:
-CLOSED: [2020-04-20 Mon 18:05]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-20 Mon 18:05]
-:END:
-* DONE Tag things pt 2 [3/3]
-CLOSED: [2020-04-14 Tue 18:16]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-14 Tue 18:16]
-:END:
 ** DONE Tag parents / hierarchies
 CLOSED: [2020-04-14 Tue 16:58]
 :LOGBOOK:
@@ -756,6 +669,27 @@ it.
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
 
+* TODO Inspect lighttable/slide performance                     :performance:
+
+Selecting a slide makes about 100 ms or 80 ms optimized and that's
+quite a bit. Our render is only 55 slides at the moment so expect a
+much worse time in the future.
+
+- Removing the tag labels: no particular effect
+- Removing moment.js: no particular effect
+
+* TODO re-frame and multi-arity event handlers?
+
+https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-varargs
+
+What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
+spend a moment to see if re-frame event handlers allow for a better
+way.
+* TODO Tags as a map in db?                                  :small:refactor:
+
+It's a smart format for tags to be in anyway, maybe we should store
+them as an ID:TAG map in the first place?
+
 * Currently held states                                                :info:
 
 : (:state db)
@@ -766,23 +700,12 @@ Is a stack that we operate with =conj=, =pop= and =peek=.
 - tag-dialog :: modal, tag edit/creation dialog
 - modal-prompt :: modal, generic prompter
      
+* Naming conventions                                                   :info:
+
+- Boolean vars should always end in ?
+- Vars pointing to "counts" like "photo-count" should be ended with #
+
 * TODO Modal background : dblclick to turn off
-* DONE rename =toggle-button=
-CLOSED: [2020-04-17 Fri 18:20]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-17 Fri 18:20]
-:END:
-
-Maybe move all data-bound buttons outside
-* DONE Check do we need that extra boolean on =data-bound-input=
-CLOSED: [2020-04-12 Sun 17:46]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-12 Sun 17:46]
-:END:
-
-Yep, seems like =<input>= element can't be made to imitate a
-=<textarea>= quite so easily.
-
 * TODO Make tags div stick (toggleable)
 
 Maybe good to place under a shortcut?
@@ -790,53 +713,6 @@ Maybe good to place under a shortcut?
 * TODO What can be done for the dual-confirmation of tag deletion?       :ui:
 
 Two dialogs doesn't look that good. What could be done?
-* DONE Refactor error messaging / route handling                    :backend:
-CLOSED: [2020-04-17 Fri 17:43]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-17 Fri 17:43]
-:END:
-
-As the first thing we need to be sending correct status code when
-things go south. The messages and that can be considered later.
-
-Also =create-update-new-tag= needs to move over some place else.
-
-There should be a common protocol about what a route handler's
-response should look like.
-
-Minimalistic approach for starters, room to expand?
-
-#+BEGIN_EXAMPLE
-  {:status :ok
-   :response 'edn-formatted}
-#+END_EXAMPLE
-
-And a route handler looks like...
-
-#+BEGIN_EXAMPLE
-  (defn xyz [req]
-   (let [{code :status-code, resp :response} (xyz-handler req)]
-    {:status code
-     :headers edn-headers
-     :body (prn-str resp)}))
-#+END_EXAMPLE
-
-Pretty unified.
-
-Status code can be a number but we don't probs need others than 200 and 500.
-
-* NOTSURE get-photos could be an effect
-CLOSED: [2020-04-12 Sun 13:31]
-
-If we pass all the input to it via arguments. Pure style!
-
-I miscalculated the scope of effects handler. Its result aren't indeed
-handled the same way the effects are, so let's not go that way.
-
-* TODO tags-union into predicate form 
-
-Add =?=
-
 * DONE Selections
 CLOSED: [2020-04-11 Sat 17:40]
 :LOGBOOK:
@@ -868,20 +744,6 @@ CLOSED: [2020-04-11 Sat 17:30]
 :END:
 
 Should we perhaps keep the intersection of photos selected? Yes...
-* DONE Effects and Events
-CLOSED: [2020-04-11 Sat 17:41]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-11 Sat 17:41]
-:END:
-
-We'll have to check how the difference shows, especially when an
-effect handler doesn't get cofx like that.
-
-Event handlers and effect handlers are a bit complected right now at
-re-frame level so it means we use whatever we need to --
-events/handlers even when the behavior is more effect-like. Effects
-when we can.
-
 * TODO Streamline photo filtering?                                  :backend:
 
 Tags per photo are currently subqueries (and there's that interesting
@@ -897,34 +759,6 @@ To get photos and tags in one query, you join =PHOTO_TAG= and collect
   be a tiny bit faster but there's no flexibility after we want those
   extra bits of information that we store in the M2M relation
   =PHOTO_TAG=.
-* DONE Unify terms in code backend/frontend
-CLOSED: [2020-04-04 Sat 13:17]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-04 Sat 13:17]
-:END:
-
-- Negatives, photos, images... Just *photo* is good? 
-- I guess we can go for "slides" on a "lighttable" in jibit.
-  
-We could check out the darkroom/lighttable terminology for a hint of
-nostalgia to get juices going on.
-
-Let's try to keep "photo" as the common term across the board. Use
-"slide" and "lighttable" when talking about the representation.
-
-* DONE [#B] Order-by doesn't update repr if data changes
-CLOSED: [2020-04-04 Sat 14:06]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-04 Sat 14:06]
-:END:
-
-Never mind, ~<select value="foo">~ does this for us.
-
-* DONE Round up Tags in a rounded div
-CLOSED: [2020-04-05 Sun 11:31]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-05 Sun 11:31]
-:END:
 * TODO Maybe show tiny photo counts per each tag?                      :idea:
 * TODO re-pressed
 
@@ -959,9 +793,180 @@ In CLJS / repl
 : re-frame.db/app-db
 
 Alternative tool: ~re-frame-10x~
-* NOTSURE Check out if Metosin muuntaja is useful
-CLOSED: [2020-03-15 Sun 18:45]
-* DONE Prepare real data
+* Mundane things done
+** DONE rename =toggle-button=
+CLOSED: [2020-04-17 Fri 18:20]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-17 Fri 18:20]
+:END:
+
+Maybe move all data-bound buttons outside
+** DONE Check do we need that extra boolean on =data-bound-input=
+CLOSED: [2020-04-12 Sun 17:46]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-12 Sun 17:46]
+:END:
+
+Yep, seems like =<input>= element can't be made to imitate a
+=<textarea>= quite so easily.
+
+** DONE Refactor error messaging / route handling                  :backend:
+CLOSED: [2020-04-17 Fri 17:43]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-17 Fri 17:43]
+:END:
+
+As the first thing we need to be sending correct status code when
+things go south. The messages and that can be considered later.
+
+Also =create-update-new-tag= needs to move over some place else.
+
+There should be a common protocol about what a route handler's
+response should look like.
+
+Minimalistic approach for starters, room to expand?
+
+#+BEGIN_EXAMPLE
+  {:status :ok
+   :response 'edn-formatted}
+#+END_EXAMPLE
+
+And a route handler looks like...
+
+#+BEGIN_EXAMPLE
+  (defn xyz [req]
+   (let [{code :status-code, resp :response} (xyz-handler req)]
+    {:status code
+     :headers edn-headers
+     :body (prn-str resp)}))
+#+END_EXAMPLE
+
+Pretty unified.
+
+Status code can be a number but we don't probs need others than 200 and 500.
+
+** NOTSURE get-photos could be an effect
+CLOSED: [2020-04-12 Sun 13:31]
+
+If we pass all the input to it via arguments. Pure style!
+
+I miscalculated the scope of effects handler. Its result aren't indeed
+handled the same way the effects are, so let's not go that way.
+
+** DONE Effects and Events
+CLOSED: [2020-04-11 Sat 17:41]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-11 Sat 17:41]
+:END:
+
+We'll have to check how the difference shows, especially when an
+effect handler doesn't get cofx like that.
+
+Event handlers and effect handlers are a bit complected right now at
+re-frame level so it means we use whatever we need to --
+events/handlers even when the behavior is more effect-like. Effects
+when we can.
+
+** DONE tags-union into predicate form 
+CLOSED: [2020-04-20 Mon 18:14]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-20 Mon 18:14]
+:END:
+
+Add =?=
+
+** DONE Unify terms in code backend/frontend
+CLOSED: [2020-04-04 Sat 13:17]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-04 Sat 13:17]
+:END:
+
+- Negatives, photos, images... Just *photo* is good? 
+- I guess we can go for "slides" on a "lighttable" in jibit.
+  
+We could check out the darkroom/lighttable terminology for a hint of
+nostalgia to get juices going on.
+
+Let's try to keep "photo" as the common term across the board. Use
+"slide" and "lighttable" when talking about the representation.
+
+** DONE [#B] Order-by doesn't update repr if data changes
+CLOSED: [2020-04-04 Sat 14:06]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-04 Sat 14:06]
+:END:
+
+Never mind, ~<select value="foo">~ does this for us.
+
+** DONE Round up Tags in a rounded div
+CLOSED: [2020-04-05 Sun 11:31]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-05 Sun 11:31]
+:END:
+** DONE inbox: fs/expand-home
+CLOSED: [2020-03-29 Sun 19:32]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-29 Sun 19:32]
+:END:
+
+This thing should really be done once at settings' reading time.
+
+** DONE Normalize lens/camera info?
+CLOSED: [2020-03-28 Sat 17:04]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-28 Sat 17:04]
+:END:
+
+Things like Lens_make, lens_model, FL_min, FL_max, aperture info could
+be served well to be in its own table to help with data fill-in.
+
+** DONE Fix Thumbnails
+CLOSED: [2020-03-28 Sat 10:51]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-28 Sat 10:51]
+:END:
+
+Do them on import maybe? 
+
+- We want a way to later on adjust the thumbnail size, redo everything
+  in batch
+
+** DONE We need good logging facilities
+CLOSED: [2020-03-28 Sat 17:56]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-28 Sat 17:56]
+:END:
+
+Timbre is an old friend, let's set it up.
+
+It's somewhat unmaintained as of today. It works but it's somewhat
+hard to configure... Well it's figured out.
+
+The docs are a mess but the "f" variants of logging utilities are
+"format" versions. Standard C-style format flags work, with java
+dialect.
+
+: (debug "foo" "bar" :fez [2 4 5])
+: (debugf "This octal is wicked %o" 42)
+
+** UI things
+
+Have to say, the current [2020-03-28 Sat] color palette is looking
+nice. Gold + silver on the front against dark grays on the back.
+Bright yellow and red easy to use as warning colors, blue/green easy
+to adapt into tags.
+
+** DONE Rename =:cancel-create-tag-dlg=                             :rename:
+CLOSED: [2020-04-20 Mon 17:46]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-20 Mon 17:46]
+:END:
+** DONE =:open-prompt= -> =:show-prompt=                            :rename:
+CLOSED: [2020-04-20 Mon 18:05]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-20 Mon 18:05]
+:END:
+** DONE Prepare real data
 CLOSED: [2020-02-22 Sat 17:00]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-02-22 Sat 17:00]
@@ -972,7 +977,7 @@ CLOSED: [2020-02-22 Sat 17:00]
 - inbox.backup is always there.
 - 624 megabytes in 55 eligible files.
 
-**  Found
+***  Found
 
 - Canon 5Dm2 SOOC jpegs + a few DT processed ones, plus 1 CR2
 - Olympus EPL5 SOOC file and ORF files, and XMP sidecars as clutter
@@ -980,6 +985,8 @@ CLOSED: [2020-02-22 Sat 17:00]
 - Pokkari-SOOC
 - Leica Q: DT-processed files (with dupes) + DNG + XMP
 - M240: dt, rt, dng, sidecars xmp + pp3
+** NOTSURE Check out if Metosin muuntaja is useful
+CLOSED: [2020-03-15 Sun 18:45]
 * Setting up the dev environment                                :emacs:cider:
 
 System:
