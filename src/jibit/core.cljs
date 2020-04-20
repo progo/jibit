@@ -233,6 +233,11 @@
      db)))
 
 (re-frame/reg-event-db
+ :activate-tag-use-color
+ (fn [db _]
+   (assoc-in db [:input :tag :tag-color?] true)))
+
+(re-frame/reg-event-db
  :show-create-tag-dlg
  (fn [db _]
    (update db :state conj :tag-dialog)))
@@ -608,8 +613,7 @@
        [:label "Tag color"] [:br]
        [data-bound-input [:tag :tag/style_color]
         {:type :color
-         ;; TODO
-         }]
+         :on-click #(re-frame/dispatch [:activate-tag-use-color])}]
        "  "
        [data-bound-input [:tag :tag-color?]
         {:type :checkbox
