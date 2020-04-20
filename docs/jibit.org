@@ -712,7 +712,11 @@ way.
 
 It's a smart format for tags to be in anyway, maybe we should store
 them as an ID:TAG map in the first place?
-* TODO =:open-prompt= -> =:show-prompt=                              :rename:
+* DONE =:open-prompt= -> =:show-prompt=                              :rename:
+CLOSED: [2020-04-20 Mon 18:05]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-20 Mon 18:05]
+:END:
 * DONE Tag things pt 2 [3/3]
 CLOSED: [2020-04-14 Tue 18:16]
 :LOGBOOK:

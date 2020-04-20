@@ -138,7 +138,7 @@
      (case status
        :ok {:dispatch-n [[:reload-tags]
                          [:close-and-clear-tag-dlg]]}
-       :user {:dispatch [:open-prompt
+       :user {:dispatch [:show-prompt
                          {:title (str "Confirm deletion of " (:tag/name tag))
                           :text (format-tag-delete-problems tag (:problems response))
                           :label-yes "Go ahead!"
@@ -269,7 +269,7 @@
        (assoc-in [:input :tag] {}))))
 
 (re-frame/reg-event-db
- :open-prompt
+ :show-prompt
  (fn [db [_ {title :title
              text :text
              label-yes :label-yes
@@ -630,7 +630,7 @@
        "Close"]
       (when-not new?
         [:a.button.red.right
-         {:on-click #(re-frame/dispatch [:open-prompt
+         {:on-click #(re-frame/dispatch [:show-prompt
                                          {:title (str "Confirm deletion of " (:tag/name tag))
                                           :label-yes "Delete!"
                                           :callback-yes [:delete-tag (-> tag :tag/id)]}])}
