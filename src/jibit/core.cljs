@@ -329,9 +329,14 @@
 ;;; queries from db
 
 (re-frame/reg-sub
- :state
+ :current-state
  (fn [db _]
    (peek (:state db))))
+
+(re-frame/reg-sub
+ :state-stack
+ (fn [db _]
+   (:state db)))
 
 (re-frame/reg-sub
  :prompt
@@ -541,7 +546,7 @@
 
 (defn modal-prompt
   []
-  (let [enabled? (= :modal-prompt @(re-frame/subscribe [:state]))
+  (let [enabled? (= :modal-prompt @(re-frame/subscribe [:current-state]))
         {title :title
          text :text
          label-yes :label-yes
@@ -558,11 +563,11 @@
        label-no]]]))
 
 (defn modal-background []
-  (let [enabled? (modal-state? @(re-frame/subscribe [:state]))]
+  (let [enabled? (modal-state? @(re-frame/subscribe [:current-state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
 (defn tag-edit-dialog []
-  (let [enabled? (= :tag-dialog @(re-frame/subscribe [:state]))
+  (let [enabled? (some #{:tag-dialog} @(re-frame/subscribe [:state-stack]))
         tag @(re-frame/subscribe [:input [:tag]])
         new? (-> tag :tag/id nil?)
         tag-sub-level (fn [tag]
