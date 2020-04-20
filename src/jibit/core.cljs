@@ -137,7 +137,7 @@
          tag (get-tag-by-id db tag-id)]
      (case status
        :ok {:dispatch-n [[:reload-tags]
-                         [:cancel-create-tag-dlg]]}
+                         [:close-and-clear-tag-dlg]]}
        :user {:dispatch [:open-prompt
                          {:title (str "Confirm deletion of " (:tag/name tag))
                           :text (format-tag-delete-problems tag (:problems response))
@@ -151,7 +151,7 @@
    ;; We've made a new tag in the system.
    (when (ok? status)
      {:dispatch-n [[:reload-tags]
-                   [:cancel-create-tag-dlg]]})))
+                   [:close-and-clear-tag-dlg]]})))
 
 ;;;; Ajax end
 
@@ -247,7 +247,7 @@
                                      :response :on-create-tag)})))
 
 (re-frame/reg-event-db
- :cancel-create-tag-dlg
+ :close-and-clear-tag-dlg
  (fn [db _]
    (-> db
        (update :state pop)
@@ -610,7 +610,7 @@
                                (re-frame/dispatch [:create-new-tag]))
                   :class (when prevent-saving? "btn-disabled")}
        (if new? "Create" "Save")]
-      [:a.button {:on-click #(re-frame/dispatch [:cancel-create-tag-dlg])}
+      [:a.button {:on-click #(re-frame/dispatch [:close-and-clear-tag-dlg])}
        "Close"]
       (when-not new?
         [:a.button.red.right

@@ -686,7 +686,11 @@ much worse time in the future.
 - Removing the tag labels: no particular effect
 - Removing moment.js: no particular effect
 
-* TODO Rename =:cancel-create-tag-dlg=                               :rename:
+* DONE Rename =:cancel-create-tag-dlg=                               :rename:
+CLOSED: [2020-04-20 Mon 17:46]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-20 Mon 17:46]
+:END:
 * TODO re-frame and multi-arity event handlers?
 
 https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-varargs
