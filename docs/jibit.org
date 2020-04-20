@@ -491,8 +491,11 @@ edn file. In this case we can skip CLI arguments.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [0/1]
+* TODO Filter panel enhancements [0/4]
 ** TODO Imported "today/yesterday/this week/all time"
+** TODO Show Untitled
+** TODO Show untagged
+** TODO Show unrated
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
@@ -668,6 +671,29 @@ it.
 
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
+* TODO Automatic tags on import and "system tags"?
+
+- Some of the exif /might/ be useful to have as tags so that it's
+  possible to exclude that stuff.
+- Then again, it'll introduce a lot of things... perhaps not desired?
+  
+But we definitely need a way to mass-tag and mass-edit photos by gear,
+edit their lens data for example. For that kind of things we have
+means to do so with taggings.
+
+But the problem is then that we have an excessive amount of tags to an
+image and all that...
+
+This is a nonstarter perhaps, because we have separate fields for that
+info in the schema, better go that way? (Or we refactor once more?)
+
+* TODO On click, show image FS
+
+Let's take that good image gallery plugin into the mix.
+
+* TODO Image name, description fields
+
+We have to think about the UI for this.
 
 * TODO Inspect lighttable/slide performance                     :performance:
 
