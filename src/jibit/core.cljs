@@ -223,6 +223,15 @@
          (update :state conj :tag-dialog)
          (assoc-in [:input :tag] tag)))))
 
+;; User has selected not to save tag color and we'll give feedback
+;; about the choice by clearing out any selected color in the picker.
+(re-frame/reg-event-db
+ :clear-tag-color
+ (fn [db _]
+   (if (-> db :input :tag :tag-color?)
+     (assoc-in db [:input :tag :tag/style_color] nil)
+     db)))
+
 (re-frame/reg-event-db
  :show-create-tag-dlg
  (fn [db _]
@@ -598,10 +607,13 @@
        [:br]
        [:label "Tag color"] [:br]
        [data-bound-input [:tag :tag/style_color]
-        {:type :color}]
+        {:type :color
+         ;; TODO
+         }]
        "  "
        [data-bound-input [:tag :tag-color?]
         {:type :checkbox
+         :on-click #(re-frame/dispatch [:clear-tag-color])
          :value "yes"}]
        "Use color"]]
 

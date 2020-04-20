@@ -672,10 +672,12 @@ CLOSED: [2020-04-11 Sat 17:43]
 
 ** TODO UI enhancements on Tag Color selection
 
-- [ ] If user deselects "Use color" checkbox, clear the color from
+- [X] If user deselects "Use color" checkbox, clear the color from
   colorselector
 - [ ] If user selects a color using the selector, select "Use color"
   automatically
+  
+We can bind these to an "on click" event for better or worse.
 
 * TODO Inspect lighttable/slide performance                     :performance:
 
