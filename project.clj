@@ -18,6 +18,7 @@
                  [re-pressed "0.3.1"]
                  [day8.re-frame/http-fx "v0.2.0"]
                  [cljsjs/moment "2.24.0-0"]
+                 [cljsjs/photoswipe "4.1.1-0"]
 
                  ;; Clurator, file ops
                  [me.raynes/fs "1.4.6"]

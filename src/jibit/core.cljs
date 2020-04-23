@@ -7,6 +7,7 @@
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
    [cljs.pprint :refer [cl-format]]
+   [cljsjs.photoswipe]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;;; events and handlers -- update db
@@ -669,6 +670,8 @@
    ;; needed.
    [modal-background]
    [tag-edit-dialog]
+
+   ;; Prompt downmost
    [modal-prompt]])
 
 ;;; re-frame boilerplate below
