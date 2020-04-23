@@ -8,6 +8,7 @@
    [common.human :as human]
    [cljs.pprint :refer [cl-format]]
    [cljsjs.photoswipe]
+   [cljsjs.photoswipe-ui-default]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;;; events and handlers -- update db
@@ -22,6 +23,18 @@
 
 ;; Remember to specify protocol. And no trailing slash.
 (def server-uri "http://localhost:8088")
+
+(defn photo-image-uri
+  [photo]
+  (str server-uri "/TODO/" (:photo/uuid photo)))
+
+(defn photo-thumbnail-uri
+  [photo]
+  (str server-uri "/thumbnail/" (:photo/uuid photo)))
+
+(defn get-photoswipe-elt
+  []
+  (first (array-seq (js/document.querySelectorAll ".pswp"))))
 
 (defn i
   "{debug} Inspect DB."
@@ -327,6 +340,25 @@
                                      :params filter-criteria
                                      :response :on-get-photos)})))
 
+(re-frame/reg-event-fx
+ :show-photo
+ (fn [{db :db} [_ photo]]
+   (let [{width :photo/width
+          height :photo/height} photo
+         thumbnail-uri (photo-thumbnail-uri photo)
+         full-uri thumbnail-uri]
+     ;; TODO into effect
+     (doto (js/PhotoSwipe. (spy (get-photoswipe-elt))
+                           js/PhotoSwipeUI_Default
+                           [{:src full-uri
+                             :msrc thumbnail-uri
+                             :w width
+                             :h height}]
+                           {:index 0
+                            :closeOnScroll false})
+       (.init))
+     )))
+
 ;;; queries from db
 
 (re-frame/reg-sub
@@ -420,11 +452,12 @@
   [:div.slide-wrapper
    [:div.slide
     {:on-context-menu #(dispatch-preventing-default-action % [:select-photo (:photo/id image)])
+     :on-click #(re-frame/dispatch [:show-photo image])
      :class (let [sels @(re-frame/subscribe [:selected])]
               (if (sels (:photo/id image))
                 "selected-slide"
                 ""))}
-    [:img {:src (str server-uri "/thumbnail/" (:photo/uuid image))}]
+    [:img {:src (photo-thumbnail-uri image)}]
     [:ul.info
      [:li (human/datestamp (:photo/taken_ts image))]
      [:li (:camera/exif_model image)]
@@ -642,6 +675,29 @@
                                           :callback-yes [:delete-tag (-> tag :tag/id)]}])}
          "Delete..."])]]))
 
+(defn projector []
+  [:div.pswp {:tab-index -1 :role "dialog" :aria-hidden true}
+   [:div.pswp__bg]
+   [:div.pswp__scroll-wrap
+    [:div.pswp__container
+     [:div.pswp__item]
+     [:div.pswp__item]
+     [:div.pswp__item]]
+    [:div.pswp__ui.pswp__ui--hidden
+     [:div.pswp__top-bar
+      [:div.pswp__counter]
+      [:button.pswp__button.pswp__button--close {:title "Close (Esc)"}]
+      [:button.pswp__button.pswp__button--fs {:title "Toggle fs"}]
+      [:button.pswp__button.pswp__button--zoom {:title "Zoom in/out"}]
+      [:div.pswp__preloader
+       [:div.pswp__preloader__icn
+        [:div.pswp__preloader__cut
+         [:div.pswp__preloader__donut]]]]
+      [:button.pswp__button.pswp__button--arrow-left {:title "Previous"}]
+      [:button.pswp__button.pswp__button--arrow-right {:title "Next"}]
+      [:div.pswp__caption
+       [:div.pswp__caption__center]]]]]])
+
 (defn lighttable-bare []
   [:div.lighttable
    (for [photo @(re-frame/subscribe [:photos])]
@@ -665,6 +721,9 @@
    [filter-panel]
    [tags-view]
    [lighttable-bare]
+
+   ;; Modal lightbox, let's playfully call it a projector
+   [projector]
 
    ;; Modal dialogs that go above level zero. Shown and hidden as
    ;; needed.
