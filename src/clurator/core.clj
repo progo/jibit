@@ -55,9 +55,6 @@
 (def delete-tag
   (make-req-handler #'clurator.view.tag/delete-tag))
 
-(defn photo-thumbnail [uuid]
-  (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))
-
 (comp/defroutes app
   (GET "/" [] index)
   (POST    "/tag-photo" [] tag-photos)
@@ -67,7 +64,8 @@
   (DELETE  "/tag" [] delete-tag)
   (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)
-  (GET "/thumbnail/:uuid" [uuid] (photo-thumbnail uuid))
+  (GET "/thumbnail/:uuid" [uuid] (clurator.view.photo/serve-thumbnail-by-uuid uuid))
+  (GET "/photo/:uuid" [uuid] (clurator.view.photo/serve-full-by-uuid uuid))
   (compojure.route/not-found "not found"))
 
 (defn -main [& args]

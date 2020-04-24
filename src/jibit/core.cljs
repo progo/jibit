@@ -26,7 +26,7 @@
 
 (defn photo-image-uri
   [photo]
-  (str server-uri "/TODO/" (:photo/uuid photo)))
+  (str server-uri "/photo/" (:photo/uuid photo)))
 
 (defn photo-thumbnail-uri
   [photo]
@@ -168,6 +168,22 @@
                    [:close-and-clear-tag-dlg]]})))
 
 ;;;; Ajax end
+
+(re-frame/reg-fx
+ :show-photo-on-lightbox
+ (fn [{width :photo/width
+       height :photo/height
+       :as photo}]
+   (let [thumbnail-uri (photo-thumbnail-uri photo)
+         full-uri (photo-image-uri photo)]
+     (doto (js/PhotoSwipe. (get-photoswipe-elt)
+                           js/PhotoSwipeUI_Default
+                           (clj->js [{:src full-uri
+                                      :msrc thumbnail-uri
+                                      :w width
+                                      :h height}])
+                           #js {:index 0})
+       (.init)))))
 
 (re-frame/reg-fx
  :dispatch-after-delay
@@ -342,22 +358,8 @@
 
 (re-frame/reg-event-fx
  :show-photo
- (fn [{db :db} [_ photo]]
-   (let [{width :photo/width
-          height :photo/height} photo
-         thumbnail-uri (photo-thumbnail-uri photo)
-         full-uri thumbnail-uri]
-     ;; TODO into effect
-     (doto (js/PhotoSwipe. (get-photoswipe-elt)
-                           js/PhotoSwipeUI_Default
-                           (clj->js [{:src full-uri
-                                      :msrc thumbnail-uri
-                                      :w width
-                                      :h height}])
-                           #js {:index 0
-                                :closeOnScroll false})
-       (.init))
-     {})))
+ (fn [_ [_ photo]]
+   {:show-photo-on-lightbox photo}))
 
 ;;; queries from db
 

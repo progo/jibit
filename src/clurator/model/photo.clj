@@ -4,6 +4,12 @@
             [clurator.model.tag :as tag]
             [taoensso.timbre :as timbre :refer [spy debug]]))
 
+(defn get-by-uuid
+  [uuid]
+  (db/query-1! {:select [:*]
+                :from [:photo]
+                :where [:= :uuid uuid]}))
+
 (defn build-taken-criteria
   [taken-begin taken-end]
   (cond
