@@ -348,16 +348,16 @@
          thumbnail-uri (photo-thumbnail-uri photo)
          full-uri thumbnail-uri]
      ;; TODO into effect
-     (doto (js/PhotoSwipe. (spy (get-photoswipe-elt))
+     (doto (js/PhotoSwipe. (get-photoswipe-elt)
                            js/PhotoSwipeUI_Default
-                           [{:src full-uri
-                             :msrc thumbnail-uri
-                             :w width
-                             :h height}]
-                           {:index 0
-                            :closeOnScroll false})
+                           (clj->js [{:src full-uri
+                                      :msrc thumbnail-uri
+                                      :w width
+                                      :h height}])
+                           #js {:index 0
+                                :closeOnScroll false})
        (.init))
-     )))
+     {})))
 
 ;;; queries from db
 
@@ -723,7 +723,9 @@
    [lighttable-bare]
 
    ;; Modal lightbox, let's playfully call it a projector
-   [projector]
+   ;; [projector]
+   ;; NB we currently skip reactifying this and go with native DOM
+   ;; elements. index.html contains the elements.
 
    ;; Modal dialogs that go above level zero. Shown and hidden as
    ;; needed.

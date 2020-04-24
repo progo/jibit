@@ -687,9 +687,55 @@ image and all that...
 This is a nonstarter perhaps, because we have separate fields for that
 info in the schema, better go that way? (Or we refactor once more?)
 
-* TODO On click, show image FS
+* DONE On click, show image FS
+CLOSED: [2020-04-24 Fri 18:34]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-24 Fri 18:34]
+:END:
 
-Let's take that good image gallery plugin into the mix.
+Let's take that good image gallery plugin into the mix. PhotoSwipe is
+the name.
+
+** Problems with setting this up
+
+Could be something about React's nature. Separate little things with
+CLJS but they're somewhat solved.
+
+This is the current problem:
+
+#+BEGIN_EXAMPLE
+  Uncaught DOMException: Failed to execute 'insertBefore' on 'Node': The
+  node before which the new node is to be inserted is not a child of
+  this node.
+
+    at PhotoSwipe._applyNavBarGaps (http://localhost:9500/cljs-out/dev/cljsjs/photoswipe/development/photoswipe-ui-default.inc.js:351:17)
+#+END_EXAMPLE
+
+The line of code in question:
+
+#+BEGIN_SRC js
+  _controls.insertBefore(_fakeCaptionContainer, _captionContainer);
+#+END_SRC
+
+Where =_controls= points to the div with classes =pswp__ui
+pswp__ui--hidden pswp__ui--one-slide=.
+
+This line of error is usually attributed to ReactJS.
+
+*** DONE Bypassed this problem by bypassing making it a React component
+
+So it's plain elements in =index.html= now. Maybe not as elegant but
+it's working seamlessly. This is because this library behaves
+functionally and very well, doesn't cause distractions. Especially in
+my use currently when I don't need that slide show capability.
+
+We /may/ need to revisit this thing later on, but I don't think
+current bypassed "hack" is particularly ugly in isolation, nor will
+cause trouble.
+
+*** DONE Google about PhotoSwipe + ReactJS 
+
+Nothing interesting
 
 * TODO Image name, description fields
 
