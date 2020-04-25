@@ -525,25 +525,30 @@
 
 (defn filter-panel []
   [:div#filter
-   [:form
-    [:h1 "Filter photos"]
-    [:div
-     [data-bound-input [:filter :camera-make]
-      {:type "text" :placeholder "Camera make"}]
-     [data-bound-input [:filter :camera-model]
-      {:type "text" :placeholder "Camera model"}]]
-    [:div
-     "Taken between "
-     [data-bound-input [:filter :taken-begin]
-      {:type "date"}]
-     [data-bound-input [:filter :taken-end]
-      {:type "date"}]]
-    [:h1 "Order"]
-    [:div
+   [:div.filter-row
+    [:div.filter-column
+     [:h1 "Filter options"]
+     [:div
+      [data-bound-input [:filter :camera-make]
+       {:type "text" :placeholder "Camera make"}]
+      [data-bound-input [:filter :camera-model]
+       {:type "text" :placeholder "Camera model"}]]
+     [:div
+      "Taken between "
+      [:br]
+      [data-bound-input [:filter :taken-begin]
+       {:type "date"}]
+      [data-bound-input [:filter :taken-end]
+       {:type "date"}]]]
+
+    [:div.filter-column
+     [:h1 "Order options"]
      "Order by "
      [data-bound-select [:filter :order-by]
       [{:name "Taken" :value "taken_ts"}
-       {:name "Random" :value "random"}]]]
+       {:name "Random" :value "random"}]]]]
+
+   [:div.filter-row
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]

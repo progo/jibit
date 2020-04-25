@@ -43,9 +43,12 @@ h1#head {
 }
 
 .selection-count a.clear:hover{
-    /* color: red; */
     border-color: pink;
-    /* background-color: #eee; */
+}
+
+.lighttable {
+    margin-left: 25px;
+    margin-right: 25px;
 }
 
 .lighttable .slide-wrapper {
@@ -146,17 +149,28 @@ h1#head {
 
 #filter {
     background-color: black;
-    padding: 4px;
-    margin: 0px;
+    padding: 15px;
+    margin-left: 25px;
+    margin-right: 25px;
+    /* margin-top: 15px; */
+    /* margin-bottom: 5px; */
+    border-radius: 10px;
 }
 
 #filter h1 {
     font-size: 16px;
 }
 
-#filter-btn {
-    /* float: right; */
+#filter .filter-row {
+    margin-top: 5px;
+    display: flex;
 }
+
+#filter .filter-column {
+    flex: 50%;
+}
+
+#filter-btn {}
 
 /* Tags */
 
