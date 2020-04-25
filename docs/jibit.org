@@ -816,6 +816,13 @@ This div can use all kinds of cool background styles to fade out the raw thumbna
 One place where we could use one: when trying to open up a raw file
 and we won't do it. (event =:show-photo=)
 
+* TODO Tag list as a tree or a list                                 :ui:tags:
+
+- We show currently tags as a list (but ordered so that subtags are
+  grouped together)
+- Alternative view that takes more space might be cool: tree form
+  where subtags are indented off from the supertag 
+
 * DONE Selections
 CLOSED: [2020-04-11 Sat 17:40]
 :LOGBOOK:
