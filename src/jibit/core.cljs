@@ -452,32 +452,32 @@
                 :on-click #(re-frame/dispatch [:toggle-tags-filter-union data-id])}
      label]))
 
-(defn slide [image]
+(defn slide [photo]
   [:div.slide-wrapper
    [:div.slide
-    {:on-context-menu #(dispatch-preventing-default-action % [:select-photo (:photo/id image)])
-     :on-click #(re-frame/dispatch [:show-photo image])
+    {:on-context-menu #(dispatch-preventing-default-action % [:select-photo (:photo/id photo)])
+     :on-click #(re-frame/dispatch [:show-photo photo])
      :class (let [sels @(re-frame/subscribe [:selected])]
-              (if (sels (:photo/id image))
+              (if (sels (:photo/id photo))
                 "selected-slide"
                 ""))}
-    [:img {:class (when (:photo/is_raw image)
+    [:img {:class (when (:photo/is_raw photo)
                     "raw-image")
-           :src (photo-thumbnail-uri image)}]
+           :src (photo-thumbnail-uri photo)}]
     [:ul.info
-     [:li (human/datestamp (:photo/taken_ts image))]
-     [:li (:camera/exif_model image)]
-     [:li (:lens/exif_model image)]
-     [:li (human/focal-length (:photo/focal_length_35 image)) " mm"]
-     [:li (human/aperture (:photo/aperture image))]
-     [:li (human/shutter-speed (:photo/shutter_speed image)) " s"]
-     (when-not (zero? (:photo/exposure_comp image))
-       [:li (human/exp-comp (:photo/exposure_comp image)) " EV"])
-     [:li "ISO " (:photo/iso image)]
-     (when (:photo/is_raw image)
+     [:li (human/datestamp (:photo/taken_ts photo))]
+     [:li (:camera/exif_model photo)]
+     [:li (:lens/exif_model photo)]
+     [:li (human/focal-length (:photo/focal_length_35 photo)) " mm"]
+     [:li (human/aperture (:photo/aperture photo))]
+     [:li (human/shutter-speed (:photo/shutter_speed photo)) " s"]
+     (when-not (zero? (:photo/exposure_comp photo))
+       [:li (human/exp-comp (:photo/exposure_comp photo)) " EV"])
+     [:li "ISO " (:photo/iso photo)]
+     (when (:photo/is_raw photo)
        [:li "RAW"])
      (let [tag-db (re-frame/subscribe [:tags-map])]
-       (when-let [tags (seq (:tagged/ids image))]
+       (when-let [tags (seq (:tagged/ids photo))]
          [:li (render-tags-from-ids @tag-db tags)]))
      ]]])
 
