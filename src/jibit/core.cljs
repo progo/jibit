@@ -359,7 +359,9 @@
 (re-frame/reg-event-fx
  :show-photo
  (fn [_ [_ photo]]
-   {:show-photo-on-lightbox photo}))
+   (if-not (:photo/is_raw photo)
+     {:show-photo-on-lightbox photo}
+     {})))
 
 ;;; queries from db
 
@@ -472,6 +474,8 @@
      (when-not (zero? (:photo/exposure_comp image))
        [:li (human/exp-comp (:photo/exposure_comp image)) " EV"])
      [:li "ISO " (:photo/iso image)]
+     (when (:photo/is_raw image)
+       [:li "RAW"])
      (let [tag-db (re-frame/subscribe [:tags-map])]
        (when-let [tags (seq (:tagged/ids image))]
          [:li (render-tags-from-ids @tag-db tags)]))

@@ -738,7 +738,11 @@ cause trouble.
 
 Nothing interesting
 
-* TODO Image show: disallow raw files                                    :ui:
+* DONE Image show: disallow raw files                                    :ui:
+CLOSED: [2020-04-25 Sat 11:41]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-25 Sat 11:41]
+:END:
 
 We are not going to render raw files by ourselves right now, so what
 should happen is that the interface should know photo being
@@ -798,6 +802,20 @@ Maybe good to place under a shortcut?
 * TODO What can be done for the dual-confirmation of tag deletion?       :ui:
 
 Two dialogs doesn't look that good. What could be done?
+
+* TODO Slide visual work                                                 :ui:
+** TODO Raw indication: show another div over the thumbnail
+
+This div can use all kinds of cool background styles to fade out the raw thumbnail.
+
+** TODO Film slide look?
+** TODO Info/details are useless?
+
+* TODO Short messages that show for 2 sec                                :ui:
+
+One place where we could use one: when trying to open up a raw file
+and we won't do it. (event =:show-photo=)
+
 * DONE Selections
 CLOSED: [2020-04-11 Sat 17:40]
 :LOGBOOK:
