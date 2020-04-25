@@ -491,12 +491,28 @@ edn file. In this case we can skip CLI arguments.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [0/5]
+* TODO Filter panel enhancements [4/5]
 ** TODO Imported "today/yesterday/this week/all time"
-** TODO Show Untitled
-** TODO Show untagged
-** TODO Show unrated
-** TODO Include raws on/off
+** DONE Show untitled
+CLOSED: [2020-04-25 Sat 14:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
+:END:
+** DONE Show untagged
+CLOSED: [2020-04-25 Sat 14:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
+:END:
+** DONE Show unrated
+CLOSED: [2020-04-25 Sat 14:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
+:END:
+** DONE Include raws on/off
+CLOSED: [2020-04-25 Sat 14:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
+:END:
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:

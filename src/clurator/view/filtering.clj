@@ -49,9 +49,17 @@
   ;; camera-make  text
   ;; camera-model text
   ;; tags-union?  boolean
+  ;; show-only-untitled? boolean
+  ;; show-only-untagged? boolean
+  ;; show-only-unrated?  boolean
+  ;; show-only-uncooked? boolean
   ;; tags         set of IDs
   (merge {}
          (clean-edn-input :tags-union?)
+         (clean-edn-input :show-only-untitled?)
+         (clean-edn-input :show-only-untagged?)
+         (clean-edn-input :show-only-unrated?)
+         (clean-edn-input :show-only-uncooked?)
          (clean-edn-input :tags)
          (clean-input :order-by
               (case input

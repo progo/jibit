@@ -32,9 +32,20 @@
     a+b))
 
 (defn build-tags-criteria
-  [tags union?]
+  "Given a collection of `tags` (ids) build a query condition to filter
+  photos that are somehow tagged with these tags. `union?` denotes if
+  we get a union of tagged photos -- intersection if false.
+  `zero-tags?` is a bolted on special case when we want to query
+  photos that have no tags. In case it's true, we don't bother with
+  further conditions."
+  [tags union? zero-tags?]
   (let [tags (seq tags)]
     (cond
+      ;; No tags first
+      zero-tags?
+      [:not-in :photo.id {:select [:photo_id]
+                          :from [:photo_tag]}]
+
       ;; Union
       (and tags union?)
       [:in :photo.id {:select [:photo_id]
@@ -51,6 +62,24 @@
                         [:= :photo_tag.photo_id :photo.id]]
                 :group-by [:photo_tag.photo_id]
                 :having [:= (count tags) [:count :tag.id]]}])))
+
+(defn build-rated-criterion
+  [only-unrated?]
+  (if only-unrated?
+    [:= :photo.rating nil]
+    true))
+
+(defn build-cooked-criterion
+  [only-uncooked?]
+  (if only-uncooked?
+    [:= :photo.is_raw false]
+    true))
+
+(defn build-title-criterion
+  [only-untitled?]
+  (if only-untitled?
+    [:= :photo.title nil]
+    true))
 
 (defn fetch-tags
   "Run an extra query to get tag IDs for given photo."
@@ -75,12 +104,18 @@
     tags :tags
     tags-union? :tags-union?
 
+    show-only-untitled? :show-only-untitled?
+    show-only-untagged? :show-only-untagged?
+    show-only-unrated? :show-only-unrated?
+    show-only-uncooked? :show-only-uncooked?
+
     :or {order-by :taken_ts
          offset 0
          limit 1234}}]
+
   (let [taken-crit (build-taken-criteria taken-begin taken-end)
         make-model-crit (build-make-model-criteria camera-make camera-model)
-        tags-crit (build-tags-criteria tags tags-union?)]
+        tags-crit (build-tags-criteria tags tags-union? show-only-untagged?)]
     (-> {:select [:photo.* :camera.* :lens.*]
          :from [:photo]
          :left-join [:camera [:= :camera.id :photo.camera_id]
@@ -88,7 +123,10 @@
          :where [:and true
                  taken-crit
                  make-model-crit
-                 tags-crit]
+                 tags-crit
+                 (build-rated-criterion show-only-unrated?)
+                 (build-cooked-criterion show-only-uncooked?)
+                 (build-title-criterion show-only-untitled?)]
          :order-by [order-by]
          :offset offset
          :limit limit}

@@ -531,24 +531,26 @@
       [data-bound-input [:filter :taken-begin]
        {:type "date"}]
       [data-bound-input [:filter :taken-end]
-       {:type "date"}]]]
+       {:type "date"}]]
 
-    [:div.filter-column
      [:h1 "Order options"]
      "Order by "
      [data-bound-select [:filter :order-by]
       [{:name "Taken" :value "taken_ts"}
-       {:name "Random" :value "random"}]]
+       {:name "Random" :value "random"}]]]
 
-     [:br]
+    [:div.filter-column
      "Only untitled "
-     [data-bound-toggle-button [:filter :show-only-untitled] {}]
+     [data-bound-toggle-button [:filter :show-only-untitled?] {}]
      [:br]
      "Only untagged "
-     [data-bound-toggle-button [:filter :show-only-untagged] {}]
+     [data-bound-toggle-button [:filter :show-only-untagged?] {}]
      [:br]
      "Only unrated "
-     [data-bound-toggle-button [:filter :show-only-unrated] {}]
+     [data-bound-toggle-button [:filter :show-only-unrated?] {}]
+     [:br]
+     "Only developed "
+     [data-bound-toggle-button [:filter :show-only-uncooked?] {}]
      [:br]
      "Filter by selected tags "
      [data-bound-toggle-button [:filter :tags-union?]
