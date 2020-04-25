@@ -794,7 +794,8 @@ Is a stack that we operate with =conj=, =pop= and =peek=.
 - Boolean vars should always end in ?
 - Vars pointing to "counts" like "photo-count" should be ended with #
 
-* TODO Modal background : dblclick to turn off
+* NOTSURE Modal background : dblclick to turn off
+CLOSED: [2020-04-25 Sat 12:57]
 * TODO Make tags div stick (toggleable)
 
 Maybe good to place under a shortcut?
