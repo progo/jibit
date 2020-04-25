@@ -202,7 +202,7 @@
                 :state ()
                 :selected-tags #{}
                 :selected #{}
-                :tags-union? true
+                :tags-union? false
                 :init-done true})]
      {:dispatch [:reload-tags]
       :db db'})))
