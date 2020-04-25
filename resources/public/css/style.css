@@ -187,6 +187,10 @@ h1#head {
     cursor: pointer;
 }
 
+#tags li.not-taggable {
+    cursor: not-allowed;
+}
+
 #tags li.selected {
     color: #333;
     background-color: yellow;

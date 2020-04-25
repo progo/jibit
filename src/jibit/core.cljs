@@ -558,13 +558,18 @@
   "Render a small element that visually represents a clickable tag."
   [tag]
   (let [tag-id (:tag/id tag)
+        photos-selected? (pos? @(re-frame/subscribe [:selected-count]))
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
     ^{:key tag-id}
-    [:li {:on-click #(re-frame/dispatch [:toggle-tag-on-selected tag-id])
+    [:li {:on-click #(when photos-selected?
+                       (re-frame/dispatch [:toggle-tag-on-selected tag-id]))
           :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
           :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
-          :class (when selected? "selected")
+          :class (str
+                  (if photos-selected? "" "not-taggable")
+                  \space
+                  (if selected? "selected" ""))
           :style {:border-color (if-let [color (:tag/computed_color tag)]
                                   color
                                   "")}
