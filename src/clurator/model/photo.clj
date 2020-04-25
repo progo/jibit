@@ -113,23 +113,20 @@
          offset 0
          limit 1234}}]
 
-  (let [taken-crit (build-taken-criteria taken-begin taken-end)
-        make-model-crit (build-make-model-criteria camera-make camera-model)
-        tags-crit (build-tags-criteria tags tags-union? show-only-untagged?)]
-    (-> {:select [:photo.* :camera.* :lens.*]
-         :from [:photo]
-         :left-join [:camera [:= :camera.id :photo.camera_id]
-                     :lens [:= :lens.id :photo.lens_id]]
-         :where [:and true
-                 taken-crit
-                 make-model-crit
-                 tags-crit
-                 (build-rated-criterion show-only-unrated?)
-                 (build-cooked-criterion show-only-uncooked?)
-                 (build-title-criterion show-only-untitled?)]
-         :order-by [order-by]
-         :offset offset
-         :limit limit}
-        db/query!
-        (#(map fetch-tags %))
-        (#(map massage-content %)))))
+  (-> {:select [:photo.* :camera.* :lens.*]
+       :from [:photo]
+       :left-join [:camera [:= :camera.id :photo.camera_id]
+                   :lens [:= :lens.id :photo.lens_id]]
+       :where [:and true
+               (build-taken-criteria taken-begin taken-end)
+               (build-make-model-criteria camera-make camera-model)
+               (build-tags-criteria tags tags-union? show-only-untagged?)
+               (build-rated-criterion show-only-unrated?)
+               (build-cooked-criterion show-only-uncooked?)
+               (build-title-criterion show-only-untitled?)]
+       :order-by [order-by]
+       :offset offset
+       :limit limit}
+      db/query!
+      (#(map fetch-tags %))
+      (#(map massage-content %))))
