@@ -202,7 +202,6 @@
                 :state ()
                 :selected-tags #{}
                 :selected #{}
-                :tags-union? false
                 :init-done true})]
      {:dispatch [:reload-tags]
       :db db'})))
@@ -221,6 +220,11 @@
  (fn [db [_ data-ids new-value]]
    (assoc-in db (conj (seq data-ids) :input) new-value)))
 
+(re-frame/reg-event-db
+ :toggle-input
+ (fn [db [_ data-ids]]
+   (update-in db (conj (seq data-ids) :input) not)))
+
 ;;; Set tags on selected photos!
 (re-frame/reg-event-fx
  :toggle-tag-on-selected
@@ -232,15 +236,6 @@
                                      :params {:tag tag-id
                                               :photos sel}
                                      :response :on-tag)})))
-
-(re-frame/reg-event-fx
- :toggle-tags-filter-union
- (fn [{db :db} [_ item]]
-   (let [any-tags-selected? (-> db :selected-tags seq)]
-     (merge
-      {:db (update db item not)}
-      (when any-tags-selected?
-        {:dispatch [:get-photos]})))))
 
 (re-frame/reg-event-db
  :show-edit-tag-dlg
@@ -348,8 +343,7 @@
  :get-photos
  (fn [{db :db} _]
    (let [filter-criteria (-> db :input :filter
-                             (assoc :tags (:selected-tags db))
-                             (assoc :tags-union? (:tags-union? db)))]
+                             (assoc :tags (:selected-tags db)))]
      (debug "Get photos with:" filter-criteria)
      {:http-xhrio (build-edn-request :method :get
                                      :uri "/photos"
@@ -390,11 +384,6 @@
  :tags-map
  (fn [db _]
    (into {} (map (juxt :tag/id identity) (-> db :tags)))))
-
-(re-frame/reg-sub
- :tags-union?
- (fn [db _]
-   (or false (-> db :tags-union?))))
 
 (re-frame/reg-sub
  :selected-count
@@ -440,16 +429,19 @@
 ;;; Views and components
 
 (defn data-bound-toggle-button
-  [data-id {:keys [label-on label-off class-on class-off]}]
-  (let [data-bind @(re-frame/subscribe [data-id])
-        class (if data-bind
-                (or class-on "button-toggle-on")
-                (or class-off "button-toggle-off"))
-        label (if data-bind
-                (or label-on "On")
-                (or label-off "Off"))]
+  [data-ids {:keys [label-on
+                    label-off
+                    class-on
+                    class-off]
+             :or {label-on "On"
+                  label-off "Off"
+                  class-on "button-toggle-on"
+                  class-off "button-toggle-off"}}]
+  (let [bound @(re-frame/subscribe [:input data-ids])
+        class (if bound class-on class-off)
+        label (if bound label-on label-off)]
     [:a.button {:class class
-                :on-click #(re-frame/dispatch [:toggle-tags-filter-union data-id])}
+                :on-click #(re-frame/dispatch [:toggle-input data-ids])}
      label]))
 
 (defn slide [photo]
@@ -546,18 +538,29 @@
      "Order by "
      [data-bound-select [:filter :order-by]
       [{:name "Taken" :value "taken_ts"}
-       {:name "Random" :value "random"}]]]]
+       {:name "Random" :value "random"}]]
+
+     [:br]
+     "Only untitled "
+     [data-bound-toggle-button [:filter :show-only-untitled] {}]
+     [:br]
+     "Only untagged "
+     [data-bound-toggle-button [:filter :show-only-untagged] {}]
+     [:br]
+     "Only unrated "
+     [data-bound-toggle-button [:filter :show-only-unrated] {}]
+     [:br]
+     "Filter by selected tags "
+     [data-bound-toggle-button [:filter :tags-union?]
+     {:label-on "Match any"
+      :label-off "Match all"
+      :class-on "btn-any-tag"
+      :class-off "btn-all-tags"}]]]
 
    [:div.filter-row
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
-     "Filter"]
-    [data-bound-toggle-button :tags-union?
-     {:label-on "Any tag"
-      :label-off "All tags"
-      :class-on "btn-any-tag"
-      :class-off "btn-all-tags"}]
-    ]])
+     "Filter"]]])
 
 (defn tag-view
   "Render a small element that visually represents a clickable tag."
