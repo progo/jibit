@@ -459,7 +459,9 @@
               (if (sels (:photo/id image))
                 "selected-slide"
                 ""))}
-    [:img {:src (photo-thumbnail-uri image)}]
+    [:img {:class (when (:photo/is_raw image)
+                    "raw-image")
+           :src (photo-thumbnail-uri image)}]
     [:ul.info
      [:li (human/datestamp (:photo/taken_ts image))]
      [:li (:camera/exif_model image)]

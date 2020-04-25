@@ -53,9 +53,14 @@
                 :having [:= (count tags) [:count :tag.id]]}])))
 
 (defn fetch-tags
-  [photos]
-  (for [p photos]
-    (assoc p :tagged/ids (tag/get-tag-ids-for-photo p))))
+  "Run an extra query to get tag IDs for given photo."
+  [photo]
+  (assoc photo :tagged/ids (tag/get-tag-ids-for-photo photo)))
+
+(defn massage-content
+  "Turn some integers into booleans etc"
+  [photo]
+  (update photo :photo/is_raw #(if (zero? %) false true)))
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
@@ -88,4 +93,5 @@
          :offset offset
          :limit limit}
         db/query!
-        fetch-tags)))
+        (#(map fetch-tags %))
+        (#(map massage-content %)))))

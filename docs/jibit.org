@@ -491,11 +491,12 @@ edn file. In this case we can skip CLI arguments.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [0/4]
+* TODO Filter panel enhancements [0/5]
 ** TODO Imported "today/yesterday/this week/all time"
 ** TODO Show Untitled
 ** TODO Show untagged
 ** TODO Show unrated
+** TODO Include raws on/off
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
@@ -737,6 +738,14 @@ cause trouble.
 
 Nothing interesting
 
+* TODO Image show: disallow raw files                                    :ui:
+
+We are not going to render raw files by ourselves right now, so what
+should happen is that the interface should know photo being
+cooked/uncooked (raw).
+
+We should also mark it in the slide if photo is a raw.
+
 * TODO Image name, description fields
 
 We have to think about the UI for this.
@@ -761,6 +770,10 @@ way.
 
 It's a smart format for tags to be in anyway, maybe we should store
 them as an ID:TAG map in the first place?
+* TODO Photo insert things from db to model.photo          :backend:refactor:
+
+And we have this bipolar difference in terminology... can we simplify
+it, rid of it?
 
 * Currently held states                                                :info:
 

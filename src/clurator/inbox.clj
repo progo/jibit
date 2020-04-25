@@ -54,6 +54,7 @@
             :original-filename (fs/base-name f)
             :original-dir (subdirectory-under-inbox f)
             :original-raw nil
+            :raw? (futils/raw-file? f)
             :storage filename}
      exif-tags)))
 

@@ -55,6 +55,7 @@
       , original_file   text
       , original_raw    text
       , original_dir    text
+      , is_raw          boolean
       , uuid            text
       , storage_filename text
       , foreign key (lens_id)   references lens(id)   on delete restrict on update cascade
@@ -84,6 +85,7 @@
       "create index ix_photo_original_file on photo(original_file);"
       "create index ix_photo_original_raw on photo(original_raw);"
       "create index ix_photo_original_dir on photo(original_dir);"
+      "create index ix_photo_israw on photo(is_raw);"
 
       "create table tag
       ( id                      integer primary key autoincrement

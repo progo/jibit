@@ -47,8 +47,7 @@
 
 (def photo-clj->db-key
   "Database keys map to what processed keys."
-  {
-   :focal_length        :exif/FocalLength
+  {:focal_length        :exif/FocalLength
    :focal_length_35     :exif/FocalLength35efl
    :aperture            :exif/Aperture
    :exposure_comp       :exif/ExposureCompensation
@@ -71,6 +70,7 @@
    :original_raw        :meta/original-raw
    :original_dir        :meta/original-dir
    :uuid                :meta/uuid
+   :is_raw              :meta/raw?
    :storage_filename    :meta/storage})
 
 (defn build-sql-keys [e]

@@ -65,14 +65,16 @@ h1#head {
     outline-offset: -4px;
 }
 
-.selected-slide .info {
-    /* background-color: #523900 !important; */
-}
+.selected-slide .info {}
 
 .slide img {
     object-fit: contain;
     width: 200px;
     height: 200px;
+}
+
+.slide img.raw-image {
+    background:radial-gradient(#887e09, transparent);
 }
 
 .lighttable .slide .info {
