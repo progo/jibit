@@ -66,6 +66,7 @@
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (clurator.view.photo/serve-thumbnail-by-uuid uuid))
   (GET "/photo/:uuid" [uuid] (clurator.view.photo/serve-full-by-uuid uuid))
+  (compojure.route/resources "/fonts" {:root "/public/fonts"})
   (compojure.route/not-found "not found"))
 
 (defn -main [& args]
