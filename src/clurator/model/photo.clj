@@ -102,26 +102,26 @@
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
-  [{order-by :order-by
-    offset :offset
-    limit :limit
+  [{:keys
+    [order-by
+     offset
+     limit
 
-    taken-begin :taken-begin
-    taken-end :taken-end
-    imported-begin :imported-begin
-    imported-end :imported-end
+     taken-begin
+     taken-end
+     imported-begin
+     imported-end
 
-    camera-make :camera-make
-    camera-model :camera-model
+     camera-make
+     camera-model
 
-    tags :tags
-    tags-union? :tags-union?
+     tags
+     tags-union?
 
-    show-only-untitled? :show-only-untitled?
-    show-only-untagged? :show-only-untagged?
-    show-only-unrated? :show-only-unrated?
-    show-only-uncooked? :show-only-uncooked?
-
+     show-only-untitled?
+     show-only-untagged?
+     show-only-unrated?
+     show-only-uncooked?]
     :or {order-by :taken_ts
          offset 0
          limit 1234}}]
