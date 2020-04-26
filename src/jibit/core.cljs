@@ -22,7 +22,8 @@
 ;; rounds if we can fix things in some end, but I don't know.
 
 ;; Remember to specify protocol. And no trailing slash.
-(def server-uri "http://localhost:8088")
+;; (def server-uri "http://localhost:8088")
+(def server-uri "")
 
 (defn photo-image-uri
   [photo]

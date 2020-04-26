@@ -1158,12 +1158,46 @@ Connect both at once as the good RMS intended.
 
 : M-x cider-jack-in-clj&cljs
 
-In the CLJ repl evaluate =clurator.core= and in that namespace run:
+Figwheel-main starts our backend and serves frontend things, and is
+running in port 9500 so head to http://localhost:9500 and see the
+magic.
 
-: (def SERV (-main))
+** DONE Combining servers
+[2020-04-26 Sun]
 
-Now the server starts at port 8088. Stop the server by running the
-bound function =(SERV)=.
+We've hit several times to the issues that come from running a
+figwheel server at port 9500 and then the rest of our clojure code at
+port 8088.
 
-And frontend/figwheel things are running in port 9500 so head to
-http://localhost:9500 and see the magic.
+Luckily this issue is well known by others too, so there's some help
+available.
+
+https://figwheel.org/docs/your_own_server.html
+
+It is unclear whether the trick will exactly allow simultaneous
+development of CLJ and CLJS.
+
+Can we route (proxy) requests via figwheel's own server to port 8088?
+Now browser ever only interacts with localhost:9500.
+
+What we can do easily is supply the ring-handler so that running
+figwheel-main connects to our clurator. Stuff this in for example
+=dev.cljs.edn=.
+
+#+BEGIN_EXAMPLE
+  :ring-handler clurator.core/app
+#+END_EXAMPLE
+
+All good... Just remember to wipe out =server-uri= in core.cljs, so
+that we connect to same-domain. The same will go for CSS references
+and so on.
+
+But now, what of modifying clurator code?!
+
+Let's jack into the code, not sure what that did actually. Started a
+new JVM, hopefully not?
+
+Hmm, seems to work out of the box. Marvelous, so marvelous.
+
+I believe the original =cider-jack-in-clj&cljs= will still do. Let's
+try that out.
