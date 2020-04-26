@@ -181,6 +181,8 @@ be difficult to maintain the relations.
 - description :: (String) any notes and comments and stories about the
   image.
 - notes :: (String) personal notes and comments not meant for exported
+- is_raw :: (Boolean) whether the file is a raw file or a bitmap like
+     JPEG or PNG.
 - original_file  :: (String) the file name of the original file when
   it was imported.
 - original_raw :: (String) the location of the raw file the file was
