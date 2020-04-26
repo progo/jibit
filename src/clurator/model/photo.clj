@@ -10,6 +10,15 @@
                 :from [:photo]
                 :where [:= :uuid uuid]}))
 
+(defn build-imported-criteria
+  [imported-begin imported-end]
+  (cond
+    (and (not imported-begin) (not imported-end)) nil
+    (and (not imported-begin) imported-end)       [:< :photo.import_ts imported-end]
+    (and imported-begin       (not imported-end)) [:> :photo.import_ts imported-begin]
+    :else [:between :photo.import_ts imported-begin imported-end]))
+
+
 (defn build-taken-criteria
   [taken-begin taken-end]
   (cond
@@ -96,8 +105,12 @@
   [{order-by :order-by
     offset :offset
     limit :limit
+
     taken-begin :taken-begin
     taken-end :taken-end
+    imported-begin :imported-begin
+    imported-end :imported-end
+
     camera-make :camera-make
     camera-model :camera-model
 
@@ -119,6 +132,7 @@
                    :lens [:= :lens.id :photo.lens_id]]
        :where [:and true
                (build-taken-criteria taken-begin taken-end)
+               (build-imported-criteria imported-begin imported-end)
                (build-make-model-criteria camera-make camera-model)
                (build-tags-criteria tags tags-union? show-only-untagged?)
                (build-rated-criterion show-only-unrated?)

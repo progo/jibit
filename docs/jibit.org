@@ -491,8 +491,15 @@ edn file. In this case we can skip CLI arguments.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [4/5]
-** TODO Imported "today/yesterday/this week/all time"
+* TODO Filter panel enhancements [5/5]
+** DONE Imported "today/yesterday/this week/all time"
+CLOSED: [2020-04-26 Sun 11:17]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-26 Sun 11:17]
+:END:
+
+First we do a dumb version, then try to import the date selection
+widget for all dates.
 ** DONE Show untitled
 CLOSED: [2020-04-25 Sat 14:47]
 :LOGBOOK:
@@ -513,6 +520,17 @@ CLOSED: [2020-04-25 Sat 14:47]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
 :END:
+* TODO Fancy date selector
+
+We should build a date selector that has a couple of ways to interact,
+and provide some default ranges.
+
+- "today"
+- "yesterday"
+- "this week"
+- "this month"
+- between dt-dt
+
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
@@ -794,6 +812,11 @@ them as an ID:TAG map in the first place?
 
 And we have this bipolar difference in terminology... can we simplify
 it, rid of it?
+
+* TODO Tri-state or N-state toggle buttons?                              :ui:
+
+They're built with a seq of keywords-label pairs, plus input where it
+binds the selection. Would work nicely for a few cases in our ui.
 
 * Currently held states                                                :info:
 

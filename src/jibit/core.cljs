@@ -532,6 +532,13 @@
        {:type "date"}]
       [data-bound-input [:filter :taken-end]
        {:type "date"}]]
+     [:div
+      "Imported between "
+      [:br]
+      [data-bound-input [:filter :imported-begin]
+       {:type "date"}]
+      [data-bound-input [:filter :imported-end]
+       {:type "date"}]]
 
      [:h1 "Order options"]
      "Order by "

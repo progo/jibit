@@ -68,5 +68,7 @@
                 :taken_ts))
          (clean-input :camera-make)
          (clean-input :camera-model)
+         (clean-input :imported-begin)
+         (clean-input :imported-end)
          (clean-input :taken-begin)
          (clean-input :taken-end)))
