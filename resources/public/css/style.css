@@ -1,16 +1,15 @@
 /** Fonts and stuff */
 
-/* Blarg, currently hardcode the dev server but any hardcoding won't
-   be necessary once they combine. */
 @font-face {
     font-family: 'Bebas Neue Regular';
-    src: url('http://localhost:8088/fonts/BebasNeue-Regular.ttf');
+    src: url('/fonts/BebasNeue-Regular.ttf');
 }
 
 
 body {
     margin: 0;
     padding: 0;
+    font-family: "Bebas Neue Regular";
 }
 
 html {

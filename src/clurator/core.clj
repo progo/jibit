@@ -11,10 +11,7 @@
 ;; probably.
 
 (def edn-headers
-  {"Content-Type" "application/edn"
-   "Access-Control-Allow-Headers" "Content-Type"
-   "Access-Control-Allow-Methods" "*"
-   "Access-Control-Allow-Origin" "*"})
+  {"Content-Type" "application/edn"})
 
 (defn make-req-handler
   "Make a handler function that takes in a route request, patches it
@@ -58,9 +55,7 @@
 (comp/defroutes app
   (GET "/" [] index)
   (POST    "/tag-photo" [] tag-photos)
-  (OPTIONS "/tag-photo" [] {:status 200 :headers edn-headers})
   (POST    "/tag" [] create-update-new-tag)
-  (OPTIONS "/tag" [] {:status 200 :headers edn-headers})
   (DELETE  "/tag" [] delete-tag)
   (GET "/tags" [] list-tags)
   (GET "/photos" [] list-photos)

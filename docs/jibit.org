@@ -415,7 +415,11 @@ equally blurry.
 Light value is probably something we can just show with rounded to two
 decimal places.
 
-* TODO Our backend API should be stricter with Access-Control-Allow-Origin
+* DONE Our backend API should be stricter with Access-Control-Allow-Origin
+CLOSED: [2020-04-26 Sun 13:05]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-26 Sun 13:05]
+:END:
 
 Limit it to localhost? And this is naturally something the production
 shouldn't need... Since the same URI serves the JS and the API.
@@ -423,6 +427,9 @@ shouldn't need... Since the same URI serves the JS and the API.
 Using a wildcard on local dev setup is not a problem. The header
 should not be set in "production" to ensure only local same-host
 queries get through.
+
+Now that we combined servers this is unnecessary and extra headers
+have been removed.
 
 * NOTSURE Fix import inaccuracies
 CLOSED: [2020-03-07 Sat 17:21]
