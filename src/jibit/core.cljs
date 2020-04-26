@@ -448,13 +448,13 @@
   [:div.slide-wrapper
    [:div.slide
     {:on-context-menu #(dispatch-preventing-default-action % [:select-photo (:photo/id photo)])
-     :on-click #(re-frame/dispatch [:show-photo photo])
      :class (let [sels @(re-frame/subscribe [:selected])]
               (if (sels (:photo/id photo))
                 "selected-slide"
                 ""))}
     [:img {:class (when (:photo/is_raw photo)
                     "raw-image")
+           :on-click #(re-frame/dispatch [:show-photo photo])
            :src (photo-thumbnail-uri photo)}]
     [:ul.info
      [:li (human/datestamp (:photo/taken_ts photo))]

@@ -845,6 +845,10 @@ Maybe good to place under a shortcut?
 
 Two dialogs doesn't look that good. What could be done?
 
+We can absolutely combine the two confirmations in one. Now the first
+run will be a "dry run", collecting the potential trouble and then we
+confirm regardless of found trouble.
+
 * TODO Slide visual work                                                 :ui:
 ** TODO Raw indication: show another div over the thumbnail
 
