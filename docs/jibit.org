@@ -937,6 +937,15 @@ Added in project deps, experimentation to follow later on.
 For example user has selected 5 images that have all been exposed
 1/250 sec, the total is 1.25 sec.
 
+Let's definitely bake this into when we make little "stats" from selections.
+
+This stats idea would contain things like:
+
+- tag cloud, frequencies
+- used FLs, apertures
+- used cameras, lenses
+- and yes, total exposure time in seconds, minutes, hours?!
+
 * Thumbnails from raws
 
 <<rawthumbnail>>
