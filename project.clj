@@ -22,7 +22,6 @@
 
                  ;; Clurator, file ops
                  [me.raynes/fs "1.4.6"]
-                 [com.drewnoakes/metadata-extractor "2.13.0"]
                  [com.github.mjeanroy/exiftool-lib "2.5.0"]
 
                  ;; Database things
