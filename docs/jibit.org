@@ -335,6 +335,27 @@ Can also search by other tag properties easily.
 - So maybe just UUIDs for file names. UUID + original extension.
 - We can write "views" over the data using hard or soft links and
   those files can be named using any available metadata.
+* ClojureScript 1.10.741
+[2020-04-26 Sun]
+
+- Looks like this new release causes issues with our stack. The
+  underlying issue appears to be google closure updates.
+  - figwheel
+
+    #+BEGIN_EXAMPLE
+      Use of undeclared Var goog.net.XhrIo/send
+    #+END_EXAMPLE
+
+  - taoensso.timbre
+
+    #+BEGIN_EXAMPLE
+      Compile Warning: Use of undeclared Var goog.structs/Map
+    #+END_EXAMPLE
+
+- Fall back to 1.10.597 for time being.
+  - Although we started with version 1.10.520
+  - Figwheel-main's docs have been updated to mention about this
+    problem so expect a solution soon.
 
 * Trolling the drop box                                              :import:
 ** About sidecars
