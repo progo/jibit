@@ -182,6 +182,7 @@ h1#head {
     margin-bottom: 5px;
     background-color: black;
     border-radius: 10px;
+    min-height: 28px;
 }
 
 #tags li {
