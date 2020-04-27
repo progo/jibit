@@ -2,4 +2,5 @@
   :css-dirs ["resources/public/css"]
   :ring-handler clurator.core/app
   :auto-testing true}
-{:main jibit.core}
+{:main jibit.core
+ :npm-deps {}}
