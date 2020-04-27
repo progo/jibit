@@ -133,13 +133,13 @@ h1#head {
 }
 
 .button:hover {
-	background:linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
-	background-color:#ffab23;
+    background:linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
+    background-color:#ffab23;
 }
 
 .button:active {
-	position:relative;
-	top:1px;
+    position:relative;
+    top:1px;
 }
 
 .btn-disabled {
@@ -150,8 +150,21 @@ h1#head {
     color: #ffec64;
     cursor: not-allowed;
 }
+
 .btn-disabled:hover {
     background: linear-gradient(to bottom, #6e6f21 5%, #333 100%);
+}
+
+/** Default toggle styling */
+
+.button.button-toggle-on {
+    background: linear-gradient(to left, #82b77e 80%, black);
+    border: 1px solid #666;
+}
+
+.button.button-toggle-off {
+    background: linear-gradient(to right, #e4ca90 80%, black);
+    border: 1px solid #666;
 }
 
 /*  FILTER */
