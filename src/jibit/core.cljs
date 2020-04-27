@@ -588,9 +588,9 @@
                   (if photos-selected? "" "not-taggable")
                   \space
                   (if selected? "selected" ""))
-          :style {:border-color (if-let [color (:tag/computed_color tag)]
-                                  color
-                                  "")}
+          :style (if-let [color (:tag/computed_color tag)]
+                   {:background-color (str color "35") ; approx 20 % opacity on the background
+                    :border-color color})
           :title (or (:tag/description tag) "")}
      (:tag/name tag)]))
 

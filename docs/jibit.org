@@ -848,6 +848,15 @@ it, rid of it?
 They're built with a seq of keywords-label pairs, plus input where it
 binds the selection. Would work nicely for a few cases in our ui.
 
+But where exactly did we need one?
+
+Maybe here:
+
+- Show photos
+  - Raw
+  - Cooked
+  - All
+
 * Currently held states                                                :info:
 
 : (:state db)
