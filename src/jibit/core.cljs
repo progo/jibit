@@ -562,8 +562,8 @@
      [:br]
      "Filter by selected tags "
      [data-bound-toggle-button [:filter :tags-union?]
-     {:label-on "Match any"
-      :label-off "Match all"
+     {:label-on "ANY"
+      :label-off "ALL"
       :class-on "btn-any-tag"
       :class-off "btn-all-tags"}]]]
 
