@@ -516,6 +516,41 @@
       (for [{name :name value :value} options]
         ^{:key value} [:option {:value value} name]))]))
 
+(def fancydate-presets
+  [{:key :today :label "Today"}
+   {:key :yesterday :label "Yesterday"}
+   {:key :this-week :label "This week"}
+   {:key :this-year :label "This year"}])
+
+(defn data-bound-fancydate
+  "Create a fancydate type dropdown/date range selector. Binds to a
+  chain `data-ids`. Property map `props` is fed to the outermost
+  element (a div)."
+  [data-ids props]
+  (let [bound @(re-frame/subscribe [:input data-ids])
+        props' props]
+    [:div.fancydate
+     props'
+     (str (or bound "not selected"))
+     [:ul.fd-dropdown
+      (for [{:keys [key label]} fancydate-presets]
+        ^{:key key}
+        ;; TODO need a new event instead, that turn keywords into datetimes via functions
+        ;; (then those custom fields will also reflect on the changes immediately)
+        [:li {:on-click #(re-frame/dispatch [:change-input data-ids key])}
+         label])
+      [:li "Custom"
+       [:ul
+        [:li "Begin "
+         (data-bound-input
+          (conj data-ids :begin)
+          {:type :date})]
+        [:li "End "
+         (data-bound-input
+          (conj data-ids :end)
+          {:type :date})]]
+       ]]]))
+
 (defn filter-panel []
   [:div#filter
    [:div.filter-row
@@ -526,20 +561,15 @@
        {:type "text" :placeholder "Camera make"}]
       [data-bound-input [:filter :camera-model]
        {:type "text" :placeholder "Camera model"}]]
+
      [:div
-      "Taken between "
-      [:br]
-      [data-bound-input [:filter :taken-begin]
-       {:type "date"}]
-      [data-bound-input [:filter :taken-end]
-       {:type "date"}]]
+      "Taken "
+      (data-bound-fancydate [:filter :taken-ts]
+                            {:style {:width "50%"}})]
      [:div
-      "Imported between "
-      [:br]
-      [data-bound-input [:filter :imported-begin]
-       {:type "date"}]
-      [data-bound-input [:filter :imported-end]
-       {:type "date"}]]
+      "Imported "
+      (data-bound-fancydate [:filter :imported-ts]
+                            {:style {:width "50%"}})]
 
      [:h1 "Order options"]
      "Order by "

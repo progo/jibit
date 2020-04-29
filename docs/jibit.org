@@ -561,6 +561,10 @@ and provide some default ranges.
 - "this month"
 - between dt-dt
 
+* TODO Comboboxes natively
+
+Input + datalist is a thing actually.
+
 * TODO Metadata tools in a menu [0/2]
 
 These should work on the selection.
