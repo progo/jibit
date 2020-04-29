@@ -561,6 +561,14 @@ and provide some default ranges.
 - "this month"
 - between dt-dt
 
+* TODO Metadata tools in a menu [0/2]
+
+These should work on the selection.
+
+** TODO Adjust "taken" time by shifting hours on selected
+** TODO Replace Lens used
+
+Search/replace kind of a deal?
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
@@ -736,7 +744,8 @@ it.
 
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
-* TODO Automatic tags on import and "system tags"?
+* NOTSURE Automatic tags on import and "system tags"?
+CLOSED: [2020-04-27 Mon 18:32]
 
 - Some of the exif /might/ be useful to have as tags so that it's
   possible to exclude that stuff.
@@ -751,6 +760,12 @@ image and all that...
 
 This is a nonstarter perhaps, because we have separate fields for that
 info in the schema, better go that way? (Or we refactor once more?)
+
+** I like the idea about automatically given "unprocessed" tag
+
+You'd have a good view of pics that haven't been processed by you.
+
+Then again, we have "unrated", "untagged", "untitled" so.
 
 * DONE On click, show image FS
 CLOSED: [2020-04-24 Fri 18:34]
