@@ -572,6 +572,13 @@
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]]])
 
+(defn rgb->rgba
+  "Given hex string #RRGGBB turn it into #RRGGBBAA. Opacity is a decimal
+  between [0, 1]"
+  [rgb opacity]
+  (let [op (int (* 255 opacity))]
+    (cl-format nil "~a~2'0x" rgb op)))
+
 (defn tag-view
   "Render a small element that visually represents a clickable tag."
   [tag]
@@ -589,7 +596,7 @@
                   \space
                   (if selected? "selected" ""))
           :style (if-let [color (:tag/computed_color tag)]
-                   {:background-color (str color "35") ; approx 20 % opacity on the background
+                   {:background-color (rgb->rgba color 0.20)
                     :border-color color})
           :title (or (:tag/description tag) "")}
      (:tag/name tag)]))
