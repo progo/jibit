@@ -1,7 +1,8 @@
 (ns clurator.view.filtering
   "Process user's requests to filter photos, into safer data structures
   that we use."
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [taoensso.timbre :as timbre :refer [debug spy]]))
 
 (defn read-edn
   [req]
@@ -35,6 +36,13 @@
       {~kw ~@body}
       )))
 
+(defmacro clean-input-as
+  "Check if `input-key` found in a scoped map `criteria` and if so,
+  produce a map {kw (criteria input-key)}."
+  [kw input-key]
+  `(if-let [val# (nilify (get ~'criteria ~input-key))]
+     {~kw val#}))
+
 (defmacro clean-edn-input
   "Given `kw', parse `(get criteria kw)` as edn value."
   [kw]
@@ -43,17 +51,19 @@
 
 (defn handle-filter-criteria
   [criteria]
-  ;; order-by
-  ;; taken-begin  date
-  ;; taken-end    date
-  ;; camera-make  text
-  ;; camera-model text
-  ;; tags-union?  boolean
+  ;; order-by            enum
+  ;; camera-make         text
+  ;; camera-model        text
+  ;; tags-union?         boolean
   ;; show-only-untitled? boolean
   ;; show-only-untagged? boolean
   ;; show-only-unrated?  boolean
   ;; show-only-uncooked? boolean
-  ;; tags         set of IDs
+  ;; tags                set of IDs
+  ;; taken-ts[begin]     date
+  ;; taken-ts[end]       date
+  ;; imported-ts[begin]  date
+  ;; imported-ts[end]    date
   (merge {}
          (clean-edn-input :tags-union?)
          (clean-edn-input :show-only-untitled?)
@@ -61,14 +71,14 @@
          (clean-edn-input :show-only-unrated?)
          (clean-edn-input :show-only-uncooked?)
          (clean-edn-input :tags)
+         (clean-input-as :taken-begin "taken-ts[begin]")
+         (clean-input-as :taken-end "taken-ts[end]")
+         (clean-input-as :imported-begin "imported-ts[begin]")
+         (clean-input-as :imported-end "imported-ts[end]")
          (clean-input :order-by
               (case input
                 "random" :%random
                 "taken" :taken_ts
                 :taken_ts))
          (clean-input :camera-make)
-         (clean-input :camera-model)
-         (clean-input :imported-begin)
-         (clean-input :imported-end)
-         (clean-input :taken-begin)
-         (clean-input :taken-end)))
+         (clean-input :camera-model)))

@@ -550,7 +550,10 @@ CLOSED: [2020-04-25 Sat 14:47]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
 :END:
-* TODO Fancy date selector
+* STARTED Fancy date selector
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-05-01 Fri 10:58]
+:END:
 
 We should build a date selector that has a couple of ways to interact,
 and provide some default ranges.
