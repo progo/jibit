@@ -238,16 +238,20 @@
                    [yesterday yesterday])
       :this-week [(.startOf (jibit.datetime/moment) "week") today]
       :this-year [(.startOf (jibit.datetime/moment) "year") today]
-      [nil nil])))
+      [])))
 
 ;; Fancydate can provide with presets, we'll update accordingly
 (re-frame/reg-event-db
  :change-input-date-preset
  (fn [db [_ data-ids preset]]
    (let [[begin end] (fancydate-preset->daterange preset)]
-     (assoc-in db (conj (seq data-ids) :input)
-               {:begin (and begin (jibit.datetime/iso-format begin))
-                :end (and end (jibit.datetime/iso-format end))}))))
+     (assoc-in db
+               (conj (seq data-ids) :input)
+               (into {}
+                     [(if begin
+                        [:begin (jibit.datetime/iso-format begin)])
+                      (if end
+                        [:end (jibit.datetime/iso-format end)])])))))
 
 (re-frame/reg-event-db
  :toggle-input
