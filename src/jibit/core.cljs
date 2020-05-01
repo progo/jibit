@@ -222,29 +222,42 @@
    (assoc-in db (conj (seq data-ids) :input) new-value)))
 
 (def fancydate-presets
-  [{:key :nil :label "[Clear]"}
-   {:key :today :label "Today"}
-   {:key :yesterday :label "Yesterday"}
-   {:key :this-week :label "This week"}
-   {:key :this-year :label "This year"}])
-
-(defn fancydate-preset->daterange
-  [preset]
-  ;; beware as moment objects are mutable
-  (let [today (jibit.datetime/moment)]
-    (case preset
-      :today [today today]
-      :yesterday (let [yesterday (.subtract today 1 "days")]
-                   [yesterday yesterday])
-      :this-week [(.startOf (jibit.datetime/moment) "week") today]
-      :this-year [(.startOf (jibit.datetime/moment) "year") today]
-      [])))
+  ^{:doc "Ordered seq of maps with keys {:key :label :begin-dt
+  :end-dt}. Begin/end dts are zero-arity functions that return Date
+  objects to evaluate applied range."}
+  (let [today jibit.datetime/moment]
+    [{:key :nil
+      :label "[Clear]"
+      :begin-dt (constantly nil)
+      :end-dt (constantly nil)}
+     {:key :today
+      :label "Today"
+      :begin-dt #(today)
+      :end-dt #(today)}
+     {:key :yesterday
+      :label "Yesterday"
+      :begin-dt #(.subtract (today) 1 "days")
+      :end-dt #(.subtract (today) 1 "days")}
+     {:key :this-week
+      :label "This week"
+      :begin-dt #(.startOf (today) "week")
+      :end-dt #(today)}
+     {:key :last-year
+      :label "Last year"
+      :begin-dt #(.startOf (.subtract (today) 1 "years") "year")
+      :end-dt #(.endOf (.subtract (today) 1 "years") "year")}
+     {:key :this-year
+      :label "This year"
+      :begin-dt #(.startOf (today) "year")
+      :end-dt #(today)}]))
 
 ;; Fancydate can provide with presets, we'll update accordingly
 (re-frame/reg-event-db
  :change-input-date-preset
  (fn [db [_ data-ids preset]]
-   (let [[begin end] (fancydate-preset->daterange preset)]
+   (let [{:keys [begin-dt end-dt]} (first (filter #(#{preset} (:key %)) fancydate-presets))
+         begin (begin-dt)
+         end (end-dt)]
      (assoc-in db
                (conj (seq data-ids) :input)
                (into {}
