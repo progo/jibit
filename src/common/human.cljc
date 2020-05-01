@@ -5,8 +5,7 @@
                 :cljs cljs.pprint)
              :refer [cl-format]]
 
-            ;; for javascript, moment.js
-            #?(:cljs moment)
+            #?(:cljs jibit.datetime)
 
             [taoensso.timbre :as timbre :refer [debug spy]]))
 
@@ -40,13 +39,7 @@
 
 #?(:cljs
    (do
-     (defn moment [& arg] (apply js/moment arg))
-
      (defn datestamp
        "Format a datetime as a date."
        [dt]
-       (-> dt
-           moment
-           (.format "MMM D YYYY")))
-
-     ))
+       (jibit.datetime/format "MMM D YYYY" dt))))

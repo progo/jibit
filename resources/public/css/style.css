@@ -230,7 +230,6 @@ h1#head {
 .fancydate .fd-dropdown {
     display: none;
     background-color: #542;
-    width: inherit;
 
     margin-top: 0;
     padding-top: 5px;

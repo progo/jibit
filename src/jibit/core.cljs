@@ -221,6 +221,34 @@
  (fn [db [_ data-ids new-value]]
    (assoc-in db (conj (seq data-ids) :input) new-value)))
 
+(def fancydate-presets
+  [{:key :nil :label "[Clear]"}
+   {:key :today :label "Today"}
+   {:key :yesterday :label "Yesterday"}
+   {:key :this-week :label "This week"}
+   {:key :this-year :label "This year"}])
+
+(defn fancydate-preset->daterange
+  [preset]
+  ;; beware as moment objects are mutable
+  (let [today (jibit.datetime/moment)]
+    (case preset
+      :today [today today]
+      :yesterday (let [yesterday (.subtract today 1 "days")]
+                   [yesterday yesterday])
+      :this-week [(.startOf (jibit.datetime/moment) "week") today]
+      :this-year [(.startOf (jibit.datetime/moment) "year") today]
+      [nil nil])))
+
+;; Fancydate can provide with presets, we'll update accordingly
+(re-frame/reg-event-db
+ :change-input-date-preset
+ (fn [db [_ data-ids preset]]
+   (let [[begin end] (fancydate-preset->daterange preset)]
+     (assoc-in db (conj (seq data-ids) :input)
+               {:begin (and begin (jibit.datetime/iso-format begin))
+                :end (and end (jibit.datetime/iso-format end))}))))
+
 (re-frame/reg-event-db
  :toggle-input
  (fn [db [_ data-ids]]
@@ -516,28 +544,31 @@
       (for [{name :name value :value} options]
         ^{:key value} [:option {:value value} name]))]))
 
-(def fancydate-presets
-  [{:key :today :label "Today"}
-   {:key :yesterday :label "Yesterday"}
-   {:key :this-week :label "This week"}
-   {:key :this-year :label "This year"}])
-
 (defn data-bound-fancydate
   "Create a fancydate type dropdown/date range selector. Binds to a
   chain `data-ids`. Property map `props` is fed to the outermost
   element (a div)."
   [data-ids props]
-  (let [bound @(re-frame/subscribe [:input data-ids])
+  (let [{:keys [begin end]} @(re-frame/subscribe [:input data-ids])
+        repr (cond
+               (and (empty? begin) (empty? end))
+               "Not selected"
+
+               (= begin end)
+               (jibit.datetime/org-format begin)
+
+               :t
+               (str (jibit.datetime/org-format begin)
+                    " ⟶ "
+                    (jibit.datetime/org-format end)))
         props' props]
     [:div.fancydate
      props'
-     (str (or bound "not selected"))
+     repr
      [:ul.fd-dropdown
       (for [{:keys [key label]} fancydate-presets]
         ^{:key key}
-        ;; TODO need a new event instead, that turn keywords into datetimes via functions
-        ;; (then those custom fields will also reflect on the changes immediately)
-        [:li {:on-click #(re-frame/dispatch [:change-input data-ids key])}
+        [:li {:on-click #(re-frame/dispatch [:change-input-date-preset data-ids key])}
          label])
       [:li "Custom"
        [:ul
