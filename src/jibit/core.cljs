@@ -108,6 +108,11 @@
   (= status :ok))
 
 (re-frame/reg-event-db
+ :on-get-gear
+ (fn [db [_ {status :status response :response}]]
+   (assoc db :gear response)))
+
+(re-frame/reg-event-db
  :on-get-tags
  (fn [db [_ {status :status response :response}]]
    (assoc db :tags response)))
@@ -204,7 +209,8 @@
                 :selected-tags #{}
                 :selected #{}
                 :init-done true})]
-     {:dispatch [:reload-tags]
+     {:dispatch-n [[:reload-tags]
+                   [:reload-gear]]
       :db db'})))
 
 (re-frame/reg-event-fx
@@ -213,6 +219,14 @@
    {:http-xhrio (build-edn-request :method :get
                                    :uri "/tags"
                                    :response :on-get-tags)}))
+
+(re-frame/reg-event-fx
+ :reload-gear
+ (fn [_ _]
+   {:http-xhrio (build-edn-request :method :get
+                                   :uri "/gear"
+                                   :response :on-get-gear)}))
+
 
 ;; Store changed input value under a chain of keys in db,
 ;; under :input.
@@ -425,6 +439,11 @@
  (fn [db _]
    (-> db :tags)))
 
+(re-frame/reg-sub
+ :gear-raw
+ (fn [db [_ gear-type]]
+   (-> db :gear gear-type)))
+
 ;; Tags but in a map of (tag-id -> tag)
 (re-frame/reg-sub
  :tags-map
@@ -606,9 +625,9 @@
      [:h1 "Filter options"]
      [:div
       [data-bound-input [:filter :camera]
-       {:type "text" :placeholder "Camera"}]
+       {:type "text" :list "camera-list" :placeholder "Camera"}]
       [data-bound-input [:filter :lens]
-       {:type "text" :placeholder "Lens"}]]
+       {:type "text" :list "lens-list" :placeholder "Lens"}]]
 
      [:div
       "Taken "
@@ -819,6 +838,14 @@
    (for [photo @(re-frame/subscribe [:photos])]
      ^{:key (:photo/uuid photo)} [slide photo])])
 
+(defn gear-datalists [id gear-type]
+  (let [gear @(re-frame/subscribe [:gear-raw gear-type])]
+    [:datalist
+     {:id id}
+     (for [g gear]
+       ^{:key (str "gear-" id ((keyword gear-type :id) g))}
+       [:option {:value ((keyword gear-type :exif_model) g)}])]))
+
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
         sc @(re-frame/subscribe [:selected-count])]
@@ -837,6 +864,10 @@
    [filter-panel]
    [tags-view]
    [lighttable-bare]
+
+   ;; unrendered metadata for form inputs
+   [gear-datalists "camera-list" :camera]
+   [gear-datalists "lens-list"   :lens]
 
    ;; Modal lightbox, let's playfully call it a projector
    ;; [projector]

@@ -3,6 +3,7 @@
             [compojure.core :as comp :refer [GET POST OPTIONS DELETE]]
             compojure.route
             [taoensso.timbre :as timbre :refer [debug spy]]
+            clurator.view.gear
             clurator.view.tag
             clurator.view.photo
             clurator.settings))
@@ -52,12 +53,16 @@
 (def delete-tag
   (make-req-handler #'clurator.view.tag/delete-tag))
 
+(def list-gear
+  (make-req-handler #'clurator.view.gear/list-gear))
+
 (comp/defroutes app
   (GET "/" [] index)
   (POST    "/tag-photo" [] tag-photos)
   (POST    "/tag" [] create-update-new-tag)
   (DELETE  "/tag" [] delete-tag)
   (GET "/tags" [] list-tags)
+  (GET "/gear" [] list-gear)
   (GET "/photos" [] list-photos)
   (GET "/thumbnail/:uuid" [uuid] (clurator.view.photo/serve-thumbnail-by-uuid uuid))
   (GET "/photo/:uuid" [uuid] (clurator.view.photo/serve-full-by-uuid uuid))

@@ -566,9 +566,16 @@ and provide some default ranges.
 - "this month"
 - between dt-dt
 
-* TODO Comboboxes natively
+* DONE Comboboxes natively
+CLOSED: [2020-05-02 Sat 18:19]
+:LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-05-02 Sat 18:19]
+- State "STARTED"    from "TODO"       [2020-05-02 Sat 17:48]
+:END:
 
 Input + datalist is a thing actually.
+
+The simple native solution works rather beautifully for our simple case.
 
 * TODO Metadata tools in a menu [0/2]
 
