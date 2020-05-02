@@ -605,10 +605,10 @@
     [:div.filter-column
      [:h1 "Filter options"]
      [:div
-      [data-bound-input [:filter :camera-make]
-       {:type "text" :placeholder "Camera make"}]
-      [data-bound-input [:filter :camera-model]
-       {:type "text" :placeholder "Camera model"}]]
+      [data-bound-input [:filter :camera]
+       {:type "text" :placeholder "Camera"}]
+      [data-bound-input [:filter :lens]
+       {:type "text" :placeholder "Lens"}]]
 
      [:div
       "Taken "

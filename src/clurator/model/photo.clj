@@ -27,18 +27,17 @@
     (and taken-begin       (not taken-end)) [:> :photo.taken_ts taken-begin]
     :else [:between :photo.taken_ts taken-begin taken-end]))
 
-(defn build-make-model-criteria
-  [make model]
-  (let [a (if make
-            [:like :camera.exif_make (str \% make \%)])
-        b (if model
-            [:like :camera.exif_model (str \% model \%)])
-        a+b (cond
-              (and a b) [:and a b]
-              a a
-              b b
-              :else nil)]
-    a+b))
+(defn build-gear-criteria
+  "Gear is :camera or :lens"
+  [gear make+model]
+  (when make+model
+    [:or
+     [:like
+      (keyword (str (name gear) ".exif_make"))
+      (str \% make+model \%)]
+     [:like
+      (keyword (str (name gear) ".exif_model"))
+      (str \% make+model \%)]]))
 
 (defn build-tags-criteria
   "Given a collection of `tags` (ids) build a query condition to filter
@@ -112,8 +111,8 @@
      imported-begin
      imported-end
 
-     camera-make
-     camera-model
+     camera
+     lens
 
      tags
      tags-union?
@@ -133,7 +132,8 @@
        :where [:and true
                (build-taken-criteria taken-begin taken-end)
                (build-imported-criteria imported-begin imported-end)
-               (build-make-model-criteria camera-make camera-model)
+               (build-gear-criteria :camera camera)
+               (build-gear-criteria :lens lens)
                (build-tags-criteria tags tags-union? show-only-untagged?)
                (build-rated-criterion show-only-unrated?)
                (build-cooked-criterion show-only-uncooked?)

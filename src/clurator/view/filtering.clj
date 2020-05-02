@@ -80,5 +80,5 @@
                 "random" :%random
                 "taken" :taken_ts
                 :taken_ts))
-         (clean-input :camera-make)
-         (clean-input :camera-model)))
+         (clean-input :camera)
+         (clean-input :lens)))
