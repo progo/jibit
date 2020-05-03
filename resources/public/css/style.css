@@ -296,12 +296,12 @@ h1#head {
 
 .tags-bar-big li.selected {
     color: #333;
-    background-color: yellow;
+    background-color: yellow !important;
 }
 
 .tags-bar-big li:hover {
     color: #333;
-    background-color: #ffec64;
+    background-color: #ffec64 !important;
 }
 
 .tags-bar-big #create-tag {
