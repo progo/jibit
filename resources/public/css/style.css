@@ -55,16 +55,16 @@ h1#head {
     border-color: pink;
 }
 
-.lighttable {
+#lighttable {
     margin-left: 25px;
     margin-right: 25px;
 }
 
-.lighttable .slide-wrapper {
+#lighttable .slide-wrapper {
     display: inline-block;
 }
 
-.lighttable .slide {
+#lighttable .slide {
     display: flex;
     width: 400px;
     margin: 1px;
@@ -89,7 +89,7 @@ h1#head {
     background:radial-gradient(#887e09, transparent);
 }
 
-.lighttable .slide .info {
+#lighttable .slide .info {
     display: inline-block;
     position: relative;
     top: 0;

@@ -587,6 +587,8 @@ These should work on the selection.
 ** TODO Replace Lens used
 
 Search/replace kind of a deal?
+
+* TODO Gear editor
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
@@ -847,7 +849,7 @@ cooked/uncooked (raw).
 
 We should also mark it in the slide if photo is a raw.
 
-* TODO Image name, description fields
+* TODO Image name, rating, description fields
 
 We have to think about the UI for this.
 
@@ -859,6 +861,12 @@ much worse time in the future.
 
 - Removing the tag labels: no particular effect
 - Removing moment.js: no particular effect
+  
+The large problem was the selection model: make one selection and the
+entire grid is redrawn.
+
+I introduced a new selection sub that listens to one particular photo
+ID being selected, now the delay is reduced.
 
 * TODO re-frame and multi-arity event handlers?
 

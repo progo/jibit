@@ -451,14 +451,22 @@
    (into {} (map (juxt :tag/id identity) (-> db :tags)))))
 
 (re-frame/reg-sub
- :selected-count
+ :selected-photos#
  (fn [db _]
    (count (-> db :selected))))
 
+;; Set of all selected photos
 (re-frame/reg-sub
- :selected
+ :selected-photos-all
  (fn [db _]
    (-> db :selected)))
+
+;; Is this photo selected or not
+(re-frame/reg-sub
+ :selected-photo?
+ (fn [db [_ photo-id]]
+   (contains? (-> db :selected)
+              photo-id)))
 
 (re-frame/reg-sub
  :input
@@ -510,33 +518,35 @@
      label]))
 
 (defn slide [photo]
-  [:div.slide-wrapper
-   [:div.slide
-    {:on-context-menu #(dispatch-preventing-default-action % [:select-photo (:photo/id photo)])
-     :class (let [sels @(re-frame/subscribe [:selected])]
-              (if (sels (:photo/id photo))
-                "selected-slide"
-                ""))}
-    [:img {:class (when (:photo/is_raw photo)
-                    "raw-image")
-           :on-click #(re-frame/dispatch [:show-photo photo])
-           :src (photo-thumbnail-uri photo)}]
-    [:ul.info
-     [:li (human/datestamp (:photo/taken_ts photo))]
-     [:li (:camera/exif_model photo)]
-     [:li (:lens/exif_model photo)]
-     [:li (human/focal-length (:photo/focal_length_35 photo)) " mm"]
-     [:li (human/aperture (:photo/aperture photo))]
-     [:li (human/shutter-speed (:photo/shutter_speed photo)) " s"]
-     (when-not (zero? (:photo/exposure_comp photo))
-       [:li (human/exp-comp (:photo/exposure_comp photo)) " EV"])
-     [:li "ISO " (:photo/iso photo)]
-     (when (:photo/is_raw photo)
-       [:li "RAW"])
-     (let [tag-db (re-frame/subscribe [:tags-map])]
-       (when-let [tags (seq (:tagged/ids photo))]
-         [:li (render-tags-from-ids @tag-db tags)]))
-     ]]])
+  (let [tags-map (re-frame/subscribe [:tags-map])]
+    (fn []
+      [:div.slide-wrapper
+       [:div.slide
+        {:on-context-menu #(dispatch-preventing-default-action
+                            %
+                            [:select-photo (:photo/id photo)])
+         :class (if @(re-frame/subscribe [:selected-photo? (:photo/id photo)])
+                  "selected-slide"
+                  "")}
+        [:img {:class (when (:photo/is_raw photo)
+                        "raw-image")
+               :on-click #(re-frame/dispatch [:show-photo photo])
+               :src (photo-thumbnail-uri photo)}]
+        [:ul.info
+         [:li (human/datestamp (:photo/taken_ts photo))]
+         [:li (:camera/exif_model photo)]
+         [:li (:lens/exif_model photo)]
+         [:li (human/focal-length (:photo/focal_length_35 photo)) " mm"]
+         [:li (human/aperture (:photo/aperture photo))]
+         [:li (human/shutter-speed (:photo/shutter_speed photo)) " s"]
+         (when-not (zero? (:photo/exposure_comp photo))
+           [:li (human/exp-comp (:photo/exposure_comp photo)) " EV"])
+         [:li "ISO " (:photo/iso photo)]
+         (when (:photo/is_raw photo)
+           [:li "RAW"])
+         (when-let [tags (seq (:tagged/ids photo))]
+           [:li (render-tags-from-ids @tags-map tags)])
+         ]]])))
 
 (defn data-bound-input
   "Build an input element that binds into a chain `data-ids`. Props is a
@@ -680,7 +690,7 @@
   "Render a small element that visually represents a clickable tag."
   [tag]
   (let [tag-id (:tag/id tag)
-        photos-selected? (pos? @(re-frame/subscribe [:selected-count]))
+        photos-selected? (pos? @(re-frame/subscribe [:selected-photos#]))
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
     ^{:key tag-id}
@@ -833,10 +843,12 @@
       [:div.pswp__caption
        [:div.pswp__caption__center]]]]]])
 
-(defn lighttable-bare []
-  [:div.lighttable
-   (for [photo @(re-frame/subscribe [:photos])]
-     ^{:key (:photo/uuid photo)} [slide photo])])
+(defn lighttable []
+  (let [photos (re-frame/subscribe [:photos])]
+    (fn []
+      [:div#lighttable
+       (for [photo @photos]
+         ^{:key (:photo/uuid photo)} [slide photo])])))
 
 (defn gear-datalists [id gear-type]
   (let [gear @(re-frame/subscribe [:gear-raw gear-type])]
@@ -848,7 +860,7 @@
 
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
-        sc @(re-frame/subscribe [:selected-count])]
+        sc @(re-frame/subscribe [:selected-photos#])]
     [:h1#head "Photos"
      [:span.photos-count \# pc]
      (when (pos? sc)
@@ -863,7 +875,7 @@
    [header]
    [filter-panel]
    [tags-view]
-   [lighttable-bare]
+   [lighttable]
 
    ;; unrendered metadata for form inputs
    [gear-datalists "camera-list" :camera]
