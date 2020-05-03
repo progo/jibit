@@ -346,6 +346,39 @@ h1#head {
     border-radius: 5px;
 }
 
+/** Clearable inputs **/
+.input-outer-clearable {
+    display: inline-block;
+}
+
+.input-outer {
+    display: inline-block;
+}
+
+.input-outer-clearable input {
+    padding-right: 20px;
+}
+
+.input-outer-clearable .input-clear {
+    font-family: 'Permanent Marker';
+    color: black;
+    font-size: smaller;
+
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+
+    position: relative;
+    left: -20px;
+    /* float: right; */
+    background-color: #ffec64;
+    border-radius: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: -2px;
+    padding-bottom: -2px;
+}
+
 /** Modal dialog things **/
 
 div#modal-bg {
@@ -416,6 +449,21 @@ div#modal-bg {
 .modal-dialog .dialog-column {
     flex: 50%;
 }
+
+.modal-dialog .input-outer {
+    /* width: 100%; */
+}
+
+/** remove native clear button from chromiums */
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance:none;
+}
+
+/** a hack affecting firefox that we could do away by flexboxing more liberally */
+.modal-dialog textarea{width: 190px;}
 
 .modal-dialog input,textarea {
     padding: 2px;

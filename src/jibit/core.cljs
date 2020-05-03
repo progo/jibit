@@ -246,7 +246,9 @@
 (re-frame/reg-event-db
  :change-input
  (fn [db [_ data-ids new-value]]
-   (assoc-in db (conj (seq data-ids) :input) new-value)))
+   (if (nil? new-value)
+     (dissoc-in db (conj (seq data-ids) :input))
+     (assoc-in db (conj (seq data-ids) :input) new-value))))
 
 (def fancydate-presets
   ^{:doc "Ordered seq of maps with keys {:key :label :begin-dt
@@ -594,8 +596,13 @@
 
 (defn data-bound-input
   "Build an input element that binds into a chain `data-ids`. Props is a
-  map that goes into creating the element. Optional `textarea?` makes
-  this a textarea."
+  map that goes into creating the element.
+
+  `props` can have an optional key `:clearable?` that will incorporate
+  hacks to make the input text or search clearable in firefox via a
+  button.
+
+  Optional `textarea?` makes this a textarea."
   [data-ids props & textarea?]
   (let [checkbox? (= :checkbox (:type props))
         bound @(re-frame/subscribe [:input data-ids])
@@ -608,14 +615,25 @@
                                        (if checkbox?
                                          (not bound)
                                          (-> % .-target .-value))])
-        props (assoc props
-                     :on-change change-fn
-                     :value bound)
+        ;; Hack to make firefox render a "Clear input" button
+        clearable? (and (#{:input :search} (:type props))
+                        (:clearable? props))
+        props (-> props
+                  (assoc :on-change change-fn
+                         :value bound)
+                  (dissoc :clearable?))
         ;; more checkbox handling
         props (if checkbox?
                 (assoc props :checked bound)
                 props)]
-    [(if textarea? :textarea :input) props]))
+    [:div
+     {:class (if clearable? "input-outer-clearable" "input-outer")}
+     [(if textarea? :textarea :input) props]
+     (when clearable?
+       [:div.input-clear
+        {:title "Clear input"
+         :on-click #(re-frame/dispatch [:change-input data-ids nil])}
+        "X"])]))
 
 (defn data-bound-select
   "Build a select element that binds into a chain `data-ids`. Options is
@@ -679,12 +697,14 @@
      [:h1 "Filter options"]
      [:div
       [data-bound-input [:filter :camera]
-       {:type "search"
+       {:type :search
+        :clearable? true
         :list "camera-list"
         :title "Filter by camera make or model"
         :placeholder "Camera"}]
       [data-bound-input [:filter :lens]
-       {:type "search"
+       {:type :search
+        :clearable? true
         :list "lens-list"
         :title "Filter by lens make or model"
         :placeholder "Lens"}]]
@@ -779,7 +799,7 @@
        [data-bound-input [:tag :tag/name]
         {:type :text
          :placeholder "Name"
-         :autocomplete "off"
+         :auto-complete "off"
          :name "tag-name"}]
        (when incomplete-form?
          " * required")
