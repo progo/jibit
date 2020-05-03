@@ -773,6 +773,7 @@
        [data-bound-input [:tag :tag/name]
         {:type :text
          :placeholder "Name"
+         :autocomplete "off"
          :name "tag-name"}]
        (when incomplete-form?
          " * required")
