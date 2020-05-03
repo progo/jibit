@@ -37,6 +37,19 @@
   []
   (first (array-seq (js/document.querySelectorAll ".pswp"))))
 
+(defn rgb->rgba
+  "Given hex string #RRGGBB turn it into #RRGGBBAA. Opacity is a decimal
+  between [0, 1]"
+  [rgb opacity]
+  (let [op (int (* 255 opacity))]
+    (cl-format nil "~a~2'0x" rgb op)))
+
+(defn modal-state?
+  "Is this state a modal one?"
+  [state]
+  ;; All non-nil states are modal, for now.
+  state)
+
 (defn i
   "{debug} Inspect DB."
   [& ks]
@@ -491,13 +504,44 @@
 
 ;;; Tags
 
+(defn tag-view
+  "Render a small element that visually represents a clickable tag."
+  [tag]
+  (let [tag-id (:tag/id tag)
+        photos-selected? (pos? @(re-frame/subscribe [:selected-photos#]))
+        selections (re-frame/subscribe [:selected-tags])
+        selected? (@selections tag-id)]
+    ^{:key tag-id}
+    [:li {:on-click #(when photos-selected?
+                       (re-frame/dispatch [:toggle-tag-on-selected tag-id]))
+          :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
+          :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
+          :class (str
+                  (if photos-selected? "" "not-taggable")
+                  \space
+                  (if selected? "selected" ""))
+          :style (if-let [color (:tag/computed_color tag)]
+                   {:background-color (rgb->rgba color 0.20)
+                    :border-color color})
+          :title (or (:tag/description tag) "")}
+     (:tag/name tag)]))
+
+(defn tags-view []
+  [:ul.tags-bar-big
+   (doall
+    (for [t @(re-frame/subscribe [:tags])]
+      (tag-view t)))
+   [:div#create-tag.button
+    {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
+    "+"]])
+
 (defn render-tags-from-ids
-  [tags-db tags]
-  [:div.inline-tags
-   (for [t tags]
-     ^{:key (str "small-tag-" t)}
-     [:span (-> t tags-db :tag/name)]
-     )])
+  [tags-db tag-ids]
+  [:ul.inline-tags
+   (doall
+    (for [tid tag-ids]
+      ^{:key (str "inline-tag-" tid)}
+      (tag-view (tags-db tid))))])
 
 ;;; Views and components
 
@@ -678,50 +722,6 @@
     [:a#filter-btn.button
      {:on-click #(re-frame/dispatch [:get-photos])}
      "Filter"]]])
-
-(defn rgb->rgba
-  "Given hex string #RRGGBB turn it into #RRGGBBAA. Opacity is a decimal
-  between [0, 1]"
-  [rgb opacity]
-  (let [op (int (* 255 opacity))]
-    (cl-format nil "~a~2'0x" rgb op)))
-
-(defn tag-view
-  "Render a small element that visually represents a clickable tag."
-  [tag]
-  (let [tag-id (:tag/id tag)
-        photos-selected? (pos? @(re-frame/subscribe [:selected-photos#]))
-        selections (re-frame/subscribe [:selected-tags])
-        selected? (@selections tag-id)]
-    ^{:key tag-id}
-    [:li {:on-click #(when photos-selected?
-                       (re-frame/dispatch [:toggle-tag-on-selected tag-id]))
-          :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
-          :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
-          :class (str
-                  (if photos-selected? "" "not-taggable")
-                  \space
-                  (if selected? "selected" ""))
-          :style (if-let [color (:tag/computed_color tag)]
-                   {:background-color (rgb->rgba color 0.20)
-                    :border-color color})
-          :title (or (:tag/description tag) "")}
-     (:tag/name tag)]))
-
-(defn tags-view []
-  [:ul#tags
-   (doall
-    (for [t @(re-frame/subscribe [:tags])]
-      (tag-view t)))
-   [:div#create-tag.button
-    {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
-    "+"]])
-
-(defn modal-state?
-  "Is this state a modal one?"
-  [state]
-  ;; All non-nil states are modal, for now.
-  state)
 
 (defn modal-prompt
   []

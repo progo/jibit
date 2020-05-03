@@ -262,7 +262,7 @@ h1#head {
 
 /* Tags */
 
-#tags {
+.tags-bar-big {
     padding: 5px;
     margin-left: 25px;
     margin-right: 25px;
@@ -273,7 +273,7 @@ h1#head {
     min-height: 28px;
 }
 
-#tags li {
+.tags-bar-big li {
     display: inline-block;
     padding: 4px 8px 4px 8px;
     margin: 0;
@@ -290,37 +290,46 @@ h1#head {
     cursor: pointer;
 }
 
-#tags li.not-taggable {
+.tags-bar-big li.not-taggable {
     cursor: not-allowed;
 }
 
-#tags li.selected {
+.tags-bar-big li.selected {
     color: #333;
     background-color: yellow;
 }
 
-#tags li:hover {
+.tags-bar-big li:hover {
     color: #333;
     background-color: #ffec64;
 }
 
-#tags #create-tag {
+.tags-bar-big #create-tag {
     float: right;
     padding: 4px 12px;
 }
 
+/** Inline tags are close to real tags but compacter. */
+
 .inline-tags {
     display: inline-block;
+    padding: 0 0 0 3px;
 }
 
-.inline-tags > span {
-    margin-right: 2px;
+.inline-tags li {
+    display: inline-block;
+    margin: 0;
     padding: 1px;
+    /* margin-right: 2px; */
+
     font-size: smaller;
     cursor: pointer;
+
     user-select: none;
-    background-color: #ffaa00;
-    color: black;
+
+    /* background-color: #ffaa00; */
+    border: 1px orange dotted;
+    color: #aaa;
     border-radius: 5px;
 }
 
