@@ -561,6 +561,16 @@ CLOSED: [2020-05-03 Sun 14:40]
 - Firefox can't
   
 That's now somewhat done using css and shit.
+* DONE [#A] Is tagging working at the moment?
+CLOSED: [2020-05-03 Sun 14:52]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-03 Sun 14:52]
+:END:
+
+Reagent components and closures are a bit confusing, hence the issue.
+Should study more about them, and subscriptions. Apparently there's a
+good amount of things that don't work quite out of the box as one'd
+hope.
 
 * DONE Fancy date selector
 CLOSED: [2020-05-01 Fri 13:57]

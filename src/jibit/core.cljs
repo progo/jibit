@@ -564,35 +564,33 @@
      label]))
 
 (defn slide [photo]
-  (let [tags-map (re-frame/subscribe [:tags-map])]
-    (fn []
-      [:div.slide-wrapper
-       [:div.slide
-        {:on-context-menu #(dispatch-preventing-default-action
-                            %
-                            [:select-photo (:photo/id photo)])
-         :class (if @(re-frame/subscribe [:selected-photo? (:photo/id photo)])
-                  "selected-slide"
-                  "")}
-        [:img {:class (when (:photo/is_raw photo)
-                        "raw-image")
-               :on-click #(re-frame/dispatch [:show-photo photo])
-               :src (photo-thumbnail-uri photo)}]
-        [:ul.info
-         [:li (human/datestamp (:photo/taken_ts photo))]
-         [:li (:camera/exif_model photo)]
-         [:li (:lens/exif_model photo)]
-         [:li (human/focal-length (:photo/focal_length_35 photo)) " mm"]
-         [:li (human/aperture (:photo/aperture photo))]
-         [:li (human/shutter-speed (:photo/shutter_speed photo)) " s"]
-         (when-not (zero? (:photo/exposure_comp photo))
-           [:li (human/exp-comp (:photo/exposure_comp photo)) " EV"])
-         [:li "ISO " (:photo/iso photo)]
-         (when (:photo/is_raw photo)
-           [:li "RAW"])
-         (when-let [tags (seq (:tagged/ids photo))]
-           [:li (render-tags-from-ids @tags-map tags)])
-         ]]])))
+  (let [tags-map (re-frame/subscribe [:tags-map])
+        selected? @(re-frame/subscribe [:selected-photo? (:photo/id photo)])]
+    [:div.slide-wrapper
+     [:div.slide
+      {:on-context-menu #(dispatch-preventing-default-action
+                          %
+                          [:select-photo (:photo/id photo)])
+       :class (when selected? "selected-slide")}
+      [:img {:class (when (:photo/is_raw photo)
+                      "raw-image")
+             :on-click #(re-frame/dispatch [:show-photo photo])
+             :src (photo-thumbnail-uri photo)}]
+      [:ul.info
+       [:li (human/datestamp (:photo/taken_ts photo))]
+       [:li (:camera/exif_model photo)]
+       [:li (:lens/exif_model photo)]
+       [:li (human/focal-length (:photo/focal_length_35 photo)) " mm"]
+       [:li (human/aperture (:photo/aperture photo))]
+       [:li (human/shutter-speed (:photo/shutter_speed photo)) " s"]
+       (when-not (zero? (:photo/exposure_comp photo))
+         [:li (human/exp-comp (:photo/exposure_comp photo)) " EV"])
+       [:li "ISO " (:photo/iso photo)]
+       (when (:photo/is_raw photo)
+         [:li "RAW"])
+       (when-let [tags (seq (:tagged/ids photo))]
+         [:li (render-tags-from-ids @tags-map tags)])
+       ]]]))
 
 (defn data-bound-input
   "Build an input element that binds into a chain `data-ids`. Props is a
