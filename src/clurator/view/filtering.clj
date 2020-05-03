@@ -77,8 +77,8 @@
          (clean-input-as :imported-end "imported-ts[end]")
          (clean-input :order-by
               (case input
-                "random" :%random
-                "taken" :taken_ts
+                "rating" :rating
+                "taken_ts" :taken_ts
                 :taken_ts))
          (clean-input :camera)
          (clean-input :lens)))

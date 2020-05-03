@@ -642,7 +642,7 @@
      "Order by "
      [data-bound-select [:filter :order-by]
       [{:name "Taken" :value "taken_ts"}
-       {:name "Random" :value "random"}]]]
+       {:name "Rating" :value "rating"}]]]
 
     [:div.filter-column
      "Only untitled "
