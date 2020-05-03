@@ -1,15 +1,28 @@
 /** Fonts and stuff */
 
+/* Heavy, all-caps font for not much */
 @font-face {
     font-family: 'Bebas Neue Regular';
     src: url('/fonts/BebasNeue-Regular.ttf');
+}
+
+/** Pretty round sans-serif one */
+@font-face {
+    font-family: 'Poppins Regular';
+    src: url('/fonts/Poppins-Regular.ttf');
+}
+
+/** Adorable script font for tag labels maybe?  Or maybe overlaid texts on images? */
+@font-face {
+    font-family: 'Permanent Marker';
+    src: url('/fonts/PermanentMarker-Regular.ttf');
 }
 
 
 body {
     margin: 0;
     padding: 0;
-    font-family: "Bebas Neue Regular";
+    font-family: "Poppins Regular";
 }
 
 html {
@@ -279,9 +292,9 @@ h1#head {
     margin: 0;
     margin-right: 2px;
 
-    font-family: 'monospace';
-    font-size: 13px;
-    font-weight: bolder;
+    font-family: 'Permanent Marker';
+    font-size: 15px;
+    /* font-weight: bolder; */
 
     user-select: none;
     border-radius: 6px;
@@ -438,8 +451,10 @@ div#modal-bg {
 }
 
 .modal-dialog h1 .tag-edit {
-    text-decoration: underline;
     color: silver;
+    font-size: larger;
+    font-weight: normal;
+    font-family: 'Permanent Marker';
 }
 
 ul.problem-list {
