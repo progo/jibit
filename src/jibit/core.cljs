@@ -761,8 +761,8 @@
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 (if new?
-            "Create"
-            "Modify")
+            "Create tag"
+            "Modify tag")
       \space
       [:span.tag-edit
        (:tag/name tag)]]
