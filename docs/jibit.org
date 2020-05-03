@@ -875,7 +875,8 @@ https://stuartsierra.com/2015/06/01/clojure-donts-optional-arguments-with-vararg
 What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
 spend a moment to see if re-frame event handlers allow for a better
 way.
-* TODO Tags as a map in db?                                  :small:refactor:
+
+* TODO Tags as a map in db?                               :small:refactor:ui:
 
 It's a smart format for tags to be in anyway, maybe we should store
 them as an ID:TAG map in the first place?
