@@ -679,9 +679,15 @@
      [:h1 "Filter options"]
      [:div
       [data-bound-input [:filter :camera]
-       {:type "text" :list "camera-list" :placeholder "Camera"}]
+       {:type "search"
+        :list "camera-list"
+        :title "Filter by camera make or model"
+        :placeholder "Camera"}]
       [data-bound-input [:filter :lens]
-       {:type "text" :list "lens-list" :placeholder "Lens"}]]
+       {:type "search"
+        :list "lens-list"
+        :title "Filter by lens make or model"
+        :placeholder "Lens"}]]
 
      [:div
       "Taken "
