@@ -608,8 +608,36 @@ These should work on the selection.
 
 Search/replace kind of a deal?
 
-* TODO Gear editor
+* STARTED Gear editor
 SCHEDULED: <2020-05-04 Mon>
+:LOGBOOK:
+- State "STARTED"    from "TODO"       [2020-05-04 Mon 12:23]
+:END:
+
+# Let's do a handcrafted grid table editor for starters. Something like
+# what ExtJS does would be fine but quick search didn't result in a
+# handy standalone library.
+
+Or first let's have a look-see about [[http://tabulator.info/][Tabulator]]. This thing could be
+used for other things as well in the future!
+
+The idea is to present a dumb dumb list of gear from database as such:
+
+| Type   | Exif Make        | Exif Model    | Label            |   |
+|--------+------------------+---------------+------------------+---|
+| Lens   | Canon            | EF4028        | EF 40mm f/2.8    |   |
+| Lens   | Canon            | EF17-40f4     | Sigma 20mm       |   |
+| Camera | CANON CAMERA INC | EOS5D MARK II | Canon 5D Mark II |   |
+| Camera | FUJIFILM         | FUJIFILM X-T1 | Fujifilm X-T1    |   |
+
+Exif make, model come from the exiftool's data and cannot be changed.
+But this data can be ugly and it's not uniform across manufacturers,
+hence we let the user name the gear in that "Label" column which is
+editable.
+
+In the future maybe allow lenses to have aperture and FL information
+too.
+
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:
