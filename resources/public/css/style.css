@@ -515,3 +515,8 @@ ul.problem-list {
 #gear-table {
     height: 480px;
 }
+
+/** previous input styling (orange-on-black) overrides the white-bg editing */
+.modal-dialog #gear-table input {
+    color: #333 !important;
+}

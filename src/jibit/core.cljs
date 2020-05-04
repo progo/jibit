@@ -120,10 +120,11 @@
   [status]
   (= status :ok))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  :on-get-gear
- (fn [db [_ {status :status response :response}]]
-   (assoc db :gear response)))
+ (fn [{db :db} [_ {status :status response :response}]]
+   {:db (assoc db :gear response)
+    :populate-gear-table "#gear-table"}))
 
 (re-frame/reg-event-db
  :on-get-tags
@@ -349,14 +350,19 @@
 (re-frame/reg-event-fx
  :show-gear-dlg
  (fn [{db :db} _]
-   ;; This approach could very well suffer from race conditions perhaps?
+   ;; We have to be careful with the data and race conditions. We
+   ;; could be showing old data or show nothing. See how things are
+   ;; when we do and redo that population when we retrieve gear from
+   ;; server.
    {:db (update db :state conj :gear-dialog)
-    :populate-gear-table "#gear-table"}))
+    ;; :populate-gear-table "#gear-table"
+    }))
 
-(re-frame/reg-event-db
+(re-frame/reg-event-fx
  :close-gear-dlg
- (fn [db _]
-   (update db :state pop)))
+ (fn [{db :db} _]
+   {:db (update db :state pop)
+    :dispatch [:reload-gear]}))
 
 (re-frame/reg-event-db
  :show-edit-tag-dlg
