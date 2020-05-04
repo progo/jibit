@@ -508,3 +508,10 @@ input[type="search"]::-webkit-search-results-decoration {
 ul.problem-list {
     line-height: 150%;
 }
+
+
+/** Gear editor / Tabulator tables **/
+
+#gear-table {
+    height: 480px;
+}

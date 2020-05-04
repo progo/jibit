@@ -638,6 +638,33 @@ editable.
 In the future maybe allow lenses to have aperture and FL information
 too.
 
+** In JS
+
+Define sample data. (Tabulator doesn't like constants so =let= is not
+working here: it is after all updating the data on the fly as the user
+modifies cells.)
+
+#+BEGIN_EXAMPLE
+var D = [{ id: 1, gear_type: "Camera", exif_make: "Canon", exif_model: "5D Mark 2" }
+        ,{ id: 2, gear_type: "Camera", exif_make: "Canon", exif_model: "6D" }
+        ,{ id: 3, gear_type: "Lens",   exif_make: "Canon", exif_model: "EF35mm f/1.4L USM" }
+        ,{ id: 4, gear_type: "Camera", exif_make: "Fujifilm", exif_model: "X-Pro2" }
+        ,{ id: 5, gear_type: "Lens",   exif_make: "LEICA CAMERA AG", exif_model: "Summicron 35 mm f/2 ASPH" }
+        ,{ id: 6, gear_type: "Camera", exif_make: "Leica Camera AG", exif_model: "Leica Q (Typ 116)" }
+        ,{ id: 7, gear_type: "Camera", exif_make: "LEICA CAMERA AG", exif_model: "Leica M (Typ 240)" }
+];
+#+END_EXAMPLE
+
+Define table generation code
+
+#+BEGIN_EXAMPLE
+new Tabulator ( "#gear-table", {  data: D, height: 256, columns: [
+  { title: "Type", field: "gear_type", width: 80 }
+, { title: "EXIF Make", field: "exif_make", width: 200 }
+, { title: "EXIF Model", field: "exif_model", width: 200 }
+, { title: "Label", field: "user_label", width: 200, editor:"input" }]});
+#+END_EXAMPLE
+
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:

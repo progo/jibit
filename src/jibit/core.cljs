@@ -312,6 +312,52 @@
                                               :photos sel}
                                      :response :on-tag)})))
 
+(def gear-table-columns
+  [{:title "Type" :field "gear_type", :width 80}
+   {:title "EXIF Make" :field "exif_make" :width 200}
+   {:title "EXIF Model" :field "exif_model" :width 200}
+   {:title "Label" :field "user_label" :width 200 :editor "input"}])
+
+;; TODO terrible. Can we get rid of the namescaped keywords maybe.
+(defn flatten-gear-list
+  []
+  (let [gear (-> @re-frame.db/app-db :gear)
+        cams (:camera gear)
+        lenses (:lens gear)]
+    (concat
+     (for [cam cams]
+       {:gear_type "Camera"
+        :exif_make (:camera/exif_make cam)
+        :exif_model (:camera/exif_model cam)
+        :user_label (:camera/user_label cam)
+        :id (:camera/id cam)})
+     (for [lens lenses]
+       {:gear_type "Lens"
+        :exif_make (:lens/exif_make lens)
+        :exif_model (:lens/exif_model lens)
+        :user_label (:lens/user_label lens)
+        :id (:lens/id lens)}))))
+
+(re-frame/reg-fx
+ :populate-gear-table
+ (fn [table-id]
+   (js/Tabulator.
+    table-id
+    (clj->js {:data (flatten-gear-list)
+              :columns gear-table-columns}))))
+
+(re-frame/reg-event-fx
+ :show-gear-dlg
+ (fn [{db :db} _]
+   ;; This approach could very well suffer from race conditions perhaps?
+   {:db (update db :state conj :gear-dialog)
+    :populate-gear-table "#gear-table"}))
+
+(re-frame/reg-event-db
+ :close-gear-dlg
+ (fn [db _]
+   (update db :state pop)))
+
 (re-frame/reg-event-db
  :show-edit-tag-dlg
  (fn [db [_ tag-id]]
@@ -769,6 +815,20 @@
   (let [enabled? (modal-state? @(re-frame/subscribe [:current-state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
+(defn gear-edit-dialog []
+  (let [enabled? (some #{:gear-dialog} @(re-frame/subscribe [:state-stack]))]
+    [:div.modal-dialog
+     {:class (when enabled? "modal-shown")}
+     [:h1 "Gear"]
+     [:div
+      [:table#gear-table]]
+     [:div.footer
+      [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
+       "Save"]
+      [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
+       "Close"]
+      ]]))
+
 (defn tag-edit-dialog []
   (let [enabled? (some #{:tag-dialog} @(re-frame/subscribe [:state-stack]))
         tag @(re-frame/subscribe [:input [:tag]])
@@ -892,7 +952,13 @@
        [:span.selection-count "Selected " sc \space
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
-             :href "#"} "Clear"]])]))
+             :href "#"} "Clear"]])
+     ;; BTW this darktable-esque button thing could work, initally
+     ;; thought of this launcher as a dev-time thing but could work.
+     [:a {:style {:float :right :color :silver :margin-right "20px"}
+          :on-click #(re-frame/dispatch [:show-gear-dlg])
+          :href "#"}
+      "Gear"]]))
 
 (defn user-interface []
   [:div
@@ -915,6 +981,7 @@
    ;; needed.
    [modal-background]
    [tag-edit-dialog]
+   [gear-edit-dialog]
 
    ;; Prompt downmost
    [modal-prompt]])
