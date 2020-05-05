@@ -123,8 +123,7 @@
 (re-frame/reg-event-fx
  :on-get-gear
  (fn [{db :db} [_ {status :status response :response}]]
-   {:db (assoc db :gear response)
-    :populate-gear-table "#gear-table"}))
+   {:db (assoc db :gear response)}))
 
 (re-frame/reg-event-db
  :on-get-tags
@@ -339,24 +338,10 @@
         :user_label (:lens/user_label lens)
         :id (:lens/id lens)}))))
 
-(re-frame/reg-fx
- :populate-gear-table
- (fn [table-id]
-   (js/Tabulator.
-    table-id
-    (clj->js {:data (flatten-gear-list)
-              :columns gear-table-columns}))))
-
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
  :show-gear-dlg
- (fn [{db :db} _]
-   ;; We have to be careful with the data and race conditions. We
-   ;; could be showing old data or show nothing. See how things are
-   ;; when we do and redo that population when we retrieve gear from
-   ;; server.
-   {:db (update db :state conj :gear-dialog)
-    ;; :populate-gear-table "#gear-table"
-    }))
+ (fn [db _]
+   (update db :state conj :gear-dialog)))
 
 (re-frame/reg-event-fx
  :close-gear-dlg
@@ -821,19 +806,38 @@
   (let [enabled? (modal-state? @(re-frame/subscribe [:current-state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
+;; Let's experiment with form-3 components, now that we need to hack
+;; something around component display.
 (defn gear-edit-dialog []
-  (let [enabled? (some #{:gear-dialog} @(re-frame/subscribe [:state-stack]))]
-    [:div.modal-dialog
-     {:class (when enabled? "modal-shown")}
-     [:h1 "Gear"]
-     [:div
-      [:table#gear-table]]
-     [:div.footer
-      [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
-       "Save"]
-      [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
-       "Close"]
-      ]]))
+  (let [tabulator-instance (atom nil)]
+    (reagent/create-class
+     {:component-did-mount (fn [cmp]
+                             (reset! tabulator-instance
+                                     (js/Tabulator.
+                                      "#gear-table"
+                                      (clj->js {:data []
+                                                :initialSort [{:column "gear_type"
+                                                               :dir "asc"}]
+                                                :columns gear-table-columns}))))
+      ;; This update is called whenever we open or close gear dialog.
+      :component-did-update (fn [cmp]
+                              (debug "Redrawing gear table!")
+                              (.setData @tabulator-instance (clj->js (flatten-gear-list))))
+      :display-name "gear-edit-dialog"
+      :reagent-render
+      (fn []
+        (let [enabled? (some #{:gear-dialog} @(re-frame/subscribe [:state-stack]))]
+          [:div.modal-dialog
+           {:class (when enabled? "modal-shown")}
+           [:h1 "Gear"]
+           [:div
+            [:table#gear-table]]
+           [:div.footer
+            [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
+             "Save"]
+            [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
+             "Close"]
+            ]]))})))
 
 (defn tag-edit-dialog []
   (let [enabled? (some #{:tag-dialog} @(re-frame/subscribe [:state-stack]))
