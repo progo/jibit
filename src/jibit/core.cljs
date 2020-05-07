@@ -330,18 +330,27 @@
         :exif_make (:camera/exif_make cam)
         :exif_model (:camera/exif_model cam)
         :user_label (:camera/user_label cam)
-        :id (:camera/id cam)})
+        :id (str "cam-" (:camera/id cam))})
      (for [lens lenses]
        {:gear_type "Lens"
         :exif_make (:lens/exif_make lens)
         :exif_model (:lens/exif_model lens)
         :user_label (:lens/user_label lens)
-        :id (:lens/id lens)}))))
+        :id (str "lens-" (:lens/id lens))}))))
 
 (re-frame/reg-event-db
  :show-gear-dlg
  (fn [db _]
    (update db :state conj :gear-dialog)))
+
+(re-frame/reg-event-fx
+ :save-gear-dlg
+ (fn [{db :db} [_ gear-data]]
+   (let [data (map #(select-keys % ["id" "user_label"]) gear-data)]
+     {:http-xhrio (build-edn-request :method :post
+                                     :uri "/gear"
+                                     :params {:gear-data data}
+                                     :response :on-save-gear)})))
 
 (re-frame/reg-event-fx
  :close-gear-dlg
@@ -833,7 +842,11 @@
            [:div
             [:table#gear-table]]
            [:div.footer
-            [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
+            [:a.button {:on-click (fn []
+                                    (let [current-data (-> @tabulator-instance
+                                                           .getData
+                                                           js->clj)]
+                                      (re-frame/dispatch [:save-gear-dlg current-data])))}
              "Save"]
             [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
              "Close"]

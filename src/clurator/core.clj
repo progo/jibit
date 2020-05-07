@@ -56,11 +56,15 @@
 (def list-gear
   (make-req-handler #'clurator.view.gear/list-gear))
 
+(def update-gear
+  (make-req-handler #'clurator.view.gear/update-gear))
+
 (comp/defroutes app
   (GET "/" [] index)
   (POST    "/tag-photo" [] tag-photos)
   (POST    "/tag" [] create-update-new-tag)
   (DELETE  "/tag" [] delete-tag)
+  (POST "/gear" [] update-gear)
   (GET "/tags" [] list-tags)
   (GET "/gear" [] list-gear)
   (GET "/photos" [] list-photos)
