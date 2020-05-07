@@ -664,8 +664,17 @@ new Tabulator ( "#gear-table", {  data: D, height: 256, columns: [
 , { title: "Label", field: "user_label", width: 200, editor:"input" }]});
 #+END_EXAMPLE
 
-** TODO Implement saving of user labels
-** TODO Make a view unifying the gear on DB level and issue queries against that
+** DONE Implement saving of user labels
+CLOSED: [2020-05-07 Thu 20:25]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-07 Thu 20:25]
+:END:
+** DONE Make a view unifying the gear on DB level and issue queries against that
+CLOSED: [2020-05-07 Thu 19:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-07 Thu 19:47]
+:END:
+** TODO One might still question whether separate tables for Camera, Lens make sense
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]
 :LOGBOOK:

@@ -1,17 +1,20 @@
 (ns clurator.view.gear
-  (:require [clurator.db :as db]
-            [next.jdbc.result-set :as rs]
+  (:require [clurator.model.gear :as model.gear]
             [taoensso.timbre :as timbre :refer [debug spy]]
             [clurator.view.filtering :as filtering]))
 
-(defn unqualify [kw]
-  (keyword (name kw)))
+(defn keywordify-map
+  "Map `m` that has string keys, make them keyworded"
+  [m]
+  (into {} (map (fn [[k v]] [(keyword k) v]) m)))
 
 (defn list-gear
   [req]
-  {:resp {:gear (db/query! {:select [:*] :from [:vw_gear]})}})
+  {:resp {:gear (model.gear/list-all-gear)}})
 
 (defn update-gear
   [req]
-  (debug (filtering/read-edn req))
-  {:resp :ok})
+  (let [new-gear (for [item (:gear-data (filtering/read-edn req))]
+                   (keywordify-map (select-keys item ["id" "user_label"])))]
+    (model.gear/update-gear! new-gear)
+    {:resp :ok}))

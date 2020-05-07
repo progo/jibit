@@ -130,6 +130,11 @@
  (fn [db [_ {status :status response :response}]]
    (assoc db :tags response)))
 
+(re-frame/reg-event-fx
+ :on-save-gear
+ (fn [_ [_ {status :status response :response}]]
+   (debug "Gear updated I guess")))
+
 (re-frame/reg-event-db
  :on-get-photos
  (fn [db [_ {status :status new-photos :response}]]
@@ -317,6 +322,9 @@
    {:title "EXIF Make" :field "exif_make" :width 200}
    {:title "EXIF Model" :field "exif_model" :width 200}
    {:title "Label" :field "user_label" :width 200 :editor "input"}])
+
+(def gear-table-column-sort
+  [{:column "gear_type" :dir "asc"}])
 
 ;; TODO terrible. Can we get rid of the namescaped keywords maybe.
 ;; Also terrible in that we are bypassing the sub model
@@ -811,8 +819,7 @@
                                      (js/Tabulator.
                                       "#gear-table"
                                       (clj->js {:data []
-                                                :initialSort [{:column "gear_type"
-                                                               :dir "asc"}]
+                                                :initialSort gear-table-column-sort
                                                 :columns gear-table-columns}))))
       ;; This update is called whenever we open or close gear dialog.
       :component-did-update (fn [cmp]
@@ -948,6 +955,7 @@
   (let [gear @(re-frame/subscribe [:gear-raw])]
     [:datalist
      {:id id}
+     ;; TODO could also build that into the subscription
      (for [g gear :when (= (name gear-type) (:gear_type g))]
        ^{:key (str "gear-" (:id g))}
        [:option {:value (:exif_model g)}])]))
