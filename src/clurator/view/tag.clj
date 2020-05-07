@@ -17,7 +17,7 @@
         ;; remove any color info if user wants not to reset it
         tag (if use-color?
               tag
-              (dissoc tag :tag/style_color))
+              (dissoc tag :style_color))
 
         status (if (model.tag/create-edit-tag tag)
                  :ok
@@ -47,6 +47,6 @@
                   :problems {:photos# (when (pos? tagged-photos#)
                                         tagged-photos#)
                              :children (when (seq children)
-                                         (map :tag/name children))}}}))
+                                         (map :name children))}}}))
       {:status :ok
        :resp (model.tag/delete-tag* tag-id)})))

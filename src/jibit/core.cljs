@@ -27,11 +27,11 @@
 
 (defn photo-image-uri
   [photo]
-  (str server-uri "/photo/" (:photo/uuid photo)))
+  (str server-uri "/photo/" (:uuid photo)))
 
 (defn photo-thumbnail-uri
   [photo]
-  (str server-uri "/thumbnail/" (:photo/uuid photo)))
+  (str server-uri "/thumbnail/" (:uuid photo)))
 
 (defn get-photoswipe-elt
   []
@@ -81,7 +81,7 @@
   [db tag-id]
   (->> db
        :tags
-       (filter #(= tag-id (-> % :tag/id)))
+       (filter #(= tag-id (-> % :id)))
        first))
 
 ;; Defining client/server conversations
@@ -105,7 +105,7 @@
 (defn photo-ids
   "Get a set of photo/ids from a collection of photo maps."
   [p]
-  (set (map :photo/id p)))
+  (set (map :id p)))
 
 ;;;; Our ajax responses from server.
 ;; Events come with a map with keys [:status :response], where status
@@ -123,7 +123,7 @@
 (re-frame/reg-event-fx
  :on-get-gear
  (fn [{db :db} [_ {status :status response :response}]]
-   {:db (assoc db :gear response)}))
+   {:db (assoc db :gear (:gear response))}))
 
 (re-frame/reg-event-db
  :on-get-tags
@@ -155,7 +155,7 @@
   [:ul.problem-list
    (when-let [photos# (:photos# problems)]
      [:li photos# " photos have been tagged with "
-      (:tag/name tag) ". They will be untagged."])
+      (:name tag) ". They will be untagged."])
    (when-let [children (:children problems)]
      [:li "The following subtags will be lifted one level up."
       [:ul
@@ -172,7 +172,7 @@
        :ok {:dispatch-n [[:reload-tags]
                          [:close-and-clear-tag-dlg]]}
        :user {:dispatch [:show-prompt
-                         {:title (str "Confirm deletion of " (:tag/name tag))
+                         {:title (str "Confirm deletion of " (:name tag))
                           :text (format-tag-delete-problems tag (:problems response))
                           :label-yes "Go ahead!"
                           :callback-yes [:delete-tag tag-id true]}]}
@@ -190,8 +190,8 @@
 
 (re-frame/reg-fx
  :show-photo-on-lightbox
- (fn [{width :photo/width
-       height :photo/height
+ (fn [{width :width
+       height :height
        :as photo}]
    (let [thumbnail-uri (photo-thumbnail-uri photo)
          full-uri (photo-image-uri photo)]
@@ -319,24 +319,10 @@
    {:title "Label" :field "user_label" :width 200 :editor "input"}])
 
 ;; TODO terrible. Can we get rid of the namescaped keywords maybe.
+;; Also terrible in that we are bypassing the sub model
 (defn flatten-gear-list
   []
-  (let [gear (-> @re-frame.db/app-db :gear)
-        cams (:camera gear)
-        lenses (:lens gear)]
-    (concat
-     (for [cam cams]
-       {:gear_type "Camera"
-        :exif_make (:camera/exif_make cam)
-        :exif_model (:camera/exif_model cam)
-        :user_label (:camera/user_label cam)
-        :id (str "cam-" (:camera/id cam))})
-     (for [lens lenses]
-       {:gear_type "Lens"
-        :exif_make (:lens/exif_make lens)
-        :exif_model (:lens/exif_model lens)
-        :user_label (:lens/user_label lens)
-        :id (str "lens-" (:lens/id lens))}))))
+  (-> @re-frame.db/app-db :gear))
 
 (re-frame/reg-event-db
  :show-gear-dlg
@@ -362,9 +348,9 @@
  :show-edit-tag-dlg
  (fn [db [_ tag-id]]
    ;; omg a linear search
-   (let [tag (first (filter #(= tag-id (-> % :tag/id)) (:tags db)))
+   (let [tag (first (filter #(= tag-id (-> % :id)) (:tags db)))
          ;; apply the checkbox if there's color present.
-         tag (assoc tag :tag-color? (-> tag :tag/style_color boolean))]
+         tag (assoc tag :tag-color? (-> tag :style_color boolean))]
      (-> db
          (update :state conj :tag-dialog)
          (assoc-in [:input :tag] tag)))))
@@ -375,7 +361,7 @@
  :clear-tag-color
  (fn [db _]
    (if (-> db :input :tag :tag-color?)
-     (assoc-in db [:input :tag :tag/style_color] nil)
+     (assoc-in db [:input :tag :style_color] nil)
      db)))
 
 (re-frame/reg-event-db
@@ -474,7 +460,7 @@
 (re-frame/reg-event-fx
  :show-photo
  (fn [_ [_ photo]]
-   (if-not (:photo/is_raw photo)
+   (if-not (:is_raw photo)
      {:show-photo-on-lightbox photo}
      {})))
 
@@ -509,7 +495,7 @@
 (re-frame/reg-sub
  :tags-map
  (fn [db _]
-   (into {} (map (juxt :tag/id identity) (-> db :tags)))))
+   (into {} (map (juxt :id identity) (-> db :tags)))))
 
 (re-frame/reg-sub
  :selected-photos#
@@ -555,7 +541,7 @@
 (defn tag-view
   "Render a small element that visually represents a clickable tag."
   [tag]
-  (let [tag-id (:tag/id tag)
+  (let [tag-id (:id tag)
         photos-selected? (pos? @(re-frame/subscribe [:selected-photos#]))
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
@@ -568,11 +554,11 @@
                   (if photos-selected? "" "not-taggable")
                   \space
                   (if selected? "selected" ""))
-          :style (if-let [color (:tag/computed_color tag)]
+          :style (if-let [color (:computed_color tag)]
                    {:background-color (rgb->rgba color 0.20)
                     :border-color color})
-          :title (or (:tag/description tag) "")}
-     (:tag/name tag)]))
+          :title (or (:description tag) "")}
+     (:name tag)]))
 
 (defn tags-view []
   [:ul.tags-bar-big
@@ -611,28 +597,28 @@
 
 (defn slide [photo]
   (let [tags-map (re-frame/subscribe [:tags-map])
-        selected? @(re-frame/subscribe [:selected-photo? (:photo/id photo)])]
+        selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
     [:div.slide-wrapper
      [:div.slide
       {:on-context-menu #(dispatch-preventing-default-action
                           %
-                          [:select-photo (:photo/id photo)])
+                          [:select-photo (:id photo)])
        :class (when selected? "selected-slide")}
-      [:img {:class (when (:photo/is_raw photo)
+      [:img {:class (when (:is_raw photo)
                       "raw-image")
              :on-click #(re-frame/dispatch [:show-photo photo])
              :src (photo-thumbnail-uri photo)}]
       [:ul.info
-       [:li (human/datestamp (:photo/taken_ts photo))]
-       [:li (:camera/exif_model photo)]
-       [:li (:lens/exif_model photo)]
-       [:li (human/focal-length (:photo/focal_length_35 photo)) " mm"]
-       [:li (human/aperture (:photo/aperture photo))]
-       [:li (human/shutter-speed (:photo/shutter_speed photo)) " s"]
-       (when-not (zero? (:photo/exposure_comp photo))
-         [:li (human/exp-comp (:photo/exposure_comp photo)) " EV"])
-       [:li "ISO " (:photo/iso photo)]
-       (when (:photo/is_raw photo)
+       [:li (human/datestamp (:taken_ts photo))]
+       [:li 'todo (:camera/exif_model photo)]
+       [:li 'todo (:lens/exif_model photo)]
+       [:li (human/focal-length (:focal_length_35 photo)) " mm"]
+       [:li (human/aperture (:aperture photo))]
+       [:li (human/shutter-speed (:shutter_speed photo)) " s"]
+       (when-not (zero? (:exposure_comp photo))
+         [:li (human/exp-comp (:exposure_comp photo)) " EV"])
+       [:li "ISO " (:iso photo)]
+       (when (:is_raw photo)
          [:li "RAW"])
        (when-let [tags (seq (:tagged/ids photo))]
          [:li (render-tags-from-ids @tags-map tags)])
@@ -855,15 +841,15 @@
 (defn tag-edit-dialog []
   (let [enabled? (some #{:tag-dialog} @(re-frame/subscribe [:state-stack]))
         tag @(re-frame/subscribe [:input [:tag]])
-        new? (-> tag :tag/id nil?)
+        new? (-> tag :id nil?)
         tag-sub-level (fn [tag]
-                        (-> tag :tag/nested_label count dec))
+                        (-> tag :nested_label count dec))
         tags (->> @(re-frame/subscribe [:tags])
-                  (map (juxt :tag/id :tag/name tag-sub-level)))
-        incomplete-form? (-> tag :tag/name empty?)
-        parent-id-invalid? (and (-> tag :tag/id)
-                                (= (-> tag :tag/id)
-                                   (-> tag :tag/parent_id)))
+                  (map (juxt :id :name tag-sub-level)))
+        incomplete-form? (-> tag :name empty?)
+        parent-id-invalid? (and (-> tag :id)
+                                (= (-> tag :id)
+                                   (-> tag :parent_id)))
         prevent-saving? (or incomplete-form? parent-id-invalid?)]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
@@ -872,12 +858,12 @@
             "Modify tag")
       \space
       [:span.tag-edit
-       (:tag/name tag)]]
+       (:name tag)]]
 
      [:div.dialog-row
       [:div.dialog-column
        [:label {:for "tag-name"} "Name"] [:br]
-       [data-bound-input [:tag :tag/name]
+       [data-bound-input [:tag :name]
         {:type :text
          :placeholder "Name"
          :auto-complete "off"
@@ -886,7 +872,7 @@
          " * required")
        [:br]
        [:label {:for "tag-description"} "Description"] [:br]
-       [data-bound-input [:tag :tag/description]
+       [data-bound-input [:tag :description]
         {:type :text
          :placeholder "Description"
          :name "tag-description"}
@@ -894,7 +880,7 @@
 
       [:div.dialog-column
        [:label "Parent tag"] [:br]
-       [data-bound-select [:tag :tag/parent_id]
+       [data-bound-select [:tag :parent_id]
         (concat [{:name "--" :value "nil"}]
                 (for [[tag-id tag-name sub-level] tags]
                   {:name (str (apply str (repeat sub-level "—")) " " tag-name)
@@ -903,7 +889,7 @@
          " !!")
        [:br]
        [:label "Tag color"] [:br]
-       [data-bound-input [:tag :tag/style_color]
+       [data-bound-input [:tag :style_color]
         {:type :color
          :on-click #(re-frame/dispatch [:activate-tag-use-color])}]
        "  "
@@ -923,9 +909,9 @@
       (when-not new?
         [:a.button.red.right
          {:on-click #(re-frame/dispatch [:show-prompt
-                                         {:title (str "Confirm deletion of " (:tag/name tag))
+                                         {:title (str "Confirm deletion of " (:name tag))
                                           :label-yes "Delete!"
-                                          :callback-yes [:delete-tag (-> tag :tag/id)]}])}
+                                          :callback-yes [:delete-tag (-> tag :id)]}])}
          "Delete..."])]]))
 
 (defn projector []
@@ -956,7 +942,7 @@
     (fn []
       [:div#lighttable
        (for [photo @photos]
-         ^{:key (:photo/uuid photo)} [slide photo])])))
+         ^{:key (:uuid photo)} [slide photo])])))
 
 (defn gear-datalists [id gear-type]
   (let [gear @(re-frame/subscribe [:gear-raw gear-type])]

@@ -28,14 +28,14 @@
   "Make a query-1. Take a map Honeysql understands."
   [query-map]
   (let [formatted-sql (sql/format query-map)]
-    (jdbc/execute-one! db formatted-sql {:builder-fn jdbc.rs/as-unqualified-maps})))
+    (jdbc/execute-one! db formatted-sql {:builder-fn jdbc.rs/as-unqualified-lower-maps})))
 
 (defn query!
   "Make a query. Take a map HoneySQL understands."
   [query-map]
   (let [formatted-sql (sql/format query-map)]
     ;; (timbre/debugf "DB QUERY %s => %s" query-map formatted-sql)
-    (jdbc/execute! db formatted-sql {:builder-fn jdbc.rs/as-unqualified-maps})))
+    (jdbc/execute! db formatted-sql {:builder-fn jdbc.rs/as-unqualified-lower-maps})))
 
 (defn query-count!
   "Make a counting query and extract the resulting integer"

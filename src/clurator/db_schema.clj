@@ -135,6 +135,24 @@
       FROM photo p
       LEFT JOIN camera c ON p.camera_id = c.id
       LEFT JOIN lens l ON p.lens_id = l.id;"
+
+      "create view vw_gear
+       as
+       select
+        'lens-' || L.id as ID,
+        L.exif_make,
+        L.exif_model,
+        L.user_label,
+        'lens' as gear_type
+        from lens L
+       union
+       select
+        'cam-' || C.id as ID,
+        C.exif_make,
+        C.exif_model,
+        C.user_label,
+        'camera' as gear_type
+        from camera C;"
       ]
    })
 

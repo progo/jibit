@@ -60,10 +60,10 @@
 
 (defn get-tag-ids-for-photo
   [photo]
-  (mapv :photo_tag/tag_id
+  (mapv :tag_id
         (db/query! {:select [:tag_id]
                     :from [:photo_tag]
-                    :where [:= :photo_id (:photo/id photo)]})))
+                    :where [:= :photo_id (:id photo)]})))
 
 (defn tag-children
   "Return basic things about a tag's children."
@@ -85,7 +85,7 @@
   (->> {:select [:id :parent_id]
         :from [:tag]}
        db/query!
-       (map (juxt :tag/id :tag/parent_id))))
+       (map (juxt :id :parent_id))))
 
 (defn ->parent-children-map
   "From a tp-pair produce an inverse map of {tag: its-children}. All
@@ -118,23 +118,23 @@
   [tag tag-db]
   (cond
     ;; If tag has own color, use it.
-    (:tag/style_color tag) (:tag/style_color tag)
+    (:style_color tag) (:style_color tag)
     ;; Otherwise check if parent possibly has color, it will be
     ;; inherited.
-    (:tag/parent_id tag) (recur (tag-db (:tag/parent_id tag)) tag-db)
+    (:parent_id tag) (recur (tag-db (:parent_id tag)) tag-db)
     :t nil))
 
 (defn nested-label-tag
   "Give tag a nested name label like [Supertag1 Supertag2 Subtag]. It's
   a vector."
   [tag tag-db]
-  (if-let [parent-tag (tag-db (:tag/parent_id tag))]
+  (if-let [parent-tag (tag-db (:parent_id tag))]
     ;; Tag has a parent...
     (conj (nested-label-tag parent-tag tag-db)
-          (:tag/name tag))
+          (:name tag))
 
     ;; ...or not.
-    [(:tag/name tag)]))
+    [(:name tag)]))
 
 (defn query-tags
   "Get all tags from DB, processed and ordered."
@@ -142,21 +142,21 @@
   (let [all-tags (-> {:select [:*]
                       :from [:tag]}
                      (db/query!))
-        tag-db (into {} (map (juxt :tag/id identity) all-tags))]
+        tag-db (into {} (map (juxt :id identity) all-tags))]
     (->> all-tags
          (map #(assoc %
-                      :tag/computed_color (find-color-for-tag % tag-db)
-                      :tag/nested_label (nested-label-tag % tag-db)))
+                      :computed_color (find-color-for-tag % tag-db)
+                      :nested_label (nested-label-tag % tag-db)))
          (sort-by #(->> %
-                        :tag/nested_label
+                        :nested_label
                         (join "/"))))))
 
 (defn create-edit-tag
-  [{id :tag/id
-    name :tag/name
-    desc :tag/description
-    parent :tag/parent_id
-    color :tag/style_color}]
+  [{id :id
+    name :name
+    desc :description
+    parent :parent_id
+    color :style_color}]
   (let [value-map {:id id
                    :name name
                    :description desc
@@ -184,7 +184,7 @@
 (defn delete-tag
   [tag-id]
   (db/query! {:delete-from :tag
-              :where [:= :tag.id tag-id]}))
+              :where [:= :id tag-id]}))
 
 (defn delete-tag*
   "Deletes a tag like `delete-tag` does but this will clean any model
@@ -198,10 +198,10 @@
   (let [parent-id (-> (db/query-1! {:select [:parent_id]
                                     :from [:tag]
                                     :where [:= :id tag-id]})
-                      :tag/parent_id)]
+                      :parent_id)]
     (db/query! {:update :tag
                 :set {:parent_id parent-id}
-                :where [:= :tag.parent_id tag-id]}))
+                :where [:= :parent_id tag-id]}))
   (db/query! {:delete-from :photo_tag
               :where [:= :tag_id tag-id]})
   (delete-tag tag-id))

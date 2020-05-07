@@ -18,6 +18,5 @@
 
 (defn serve-full-by-uuid
   [uuid]
-  (let [storage (-> (clurator.model.photo/get-by-uuid uuid)
-                    :photo/storage_filename)]
+  (let [storage (-> uuid clurator.model.photo/get-by-uuid :storage_filename)]
     (java.io.File. (str clurator.settings/storage-directory "/" storage))))

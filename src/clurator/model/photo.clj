@@ -97,7 +97,7 @@
 (defn massage-content
   "Turn some integers into booleans etc"
   [photo]
-  (update photo :photo/is_raw #(if (zero? %) false true)))
+  (update photo :is_raw #(if (zero? %) false true)))
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
@@ -125,7 +125,10 @@
          offset 0
          limit 1234}}]
 
-  (-> {:select [:photo.* :camera.* :lens.*]
+  (-> {:select [:photo.*
+                :camera.*
+                :lens.*
+                [:photo.id :id]]
        :from [:photo]
        :left-join [:camera [:= :camera.id :photo.camera_id]
                    :lens [:= :lens.id :photo.lens_id]]
