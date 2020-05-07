@@ -488,8 +488,8 @@
 
 (re-frame/reg-sub
  :gear-raw
- (fn [db [_ gear-type]]
-   (-> db :gear gear-type)))
+ (fn [db _]
+   (-> db :gear)))
 
 ;; Tags but in a map of (tag-id -> tag)
 (re-frame/reg-sub
@@ -945,12 +945,12 @@
          ^{:key (:uuid photo)} [slide photo])])))
 
 (defn gear-datalists [id gear-type]
-  (let [gear @(re-frame/subscribe [:gear-raw gear-type])]
+  (let [gear @(re-frame/subscribe [:gear-raw])]
     [:datalist
      {:id id}
-     (for [g gear]
-       ^{:key (str "gear-" id ((keyword gear-type :id) g))}
-       [:option {:value ((keyword gear-type :exif_model) g)}])]))
+     (for [g gear :when (= (name gear-type) (:gear_type g))]
+       ^{:key (str "gear-" (:id g))}
+       [:option {:value (:exif_model g)}])]))
 
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
