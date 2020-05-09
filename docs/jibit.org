@@ -145,13 +145,8 @@ more normalised form later on. Or it'll be difficult, but if so, it'll
 be difficult to maintain the relations.
 
 - id
-- lens_make :: (String) Lens manufacturer. Not very reliable.
-- lens_model :: (String) Exif info about the lens used. Can be empty
-  for compact cameras but should otherwise always be populated.
-- lens_min_fl :: (Num) zoom lens's widest FL. Prime populated both
-  with same.
-- lens_max_fl :: (Num) zoom lens's narrowest FL. Prime populated both
-  with same.
+- lens_id :: (Num) fk to Gear
+- camera_id :: (Num) FK to Gear
 - focal_length :: (Num) FL used for this shot.
 - focal_length_35 :: (Num) for convenience reasons normalized FL in
   35mm equiv.
@@ -159,8 +154,6 @@ be difficult to maintain the relations.
   inverse, meaning that "4" means the aperture of "1/4".
 - exposure_comp :: (Num) exposure compensation value if used camera's
   metering.
-- camera_make :: (String) manufacturer of the Camera body.
-- camera_model :: (String) model of the Camera body.
 - iso :: (Num) ISO speed used to take this shot.
 - shutter_speed :: (Num) exposure time, or shutter speed in seconds.
   "0.025" means "1/40" and so on.
@@ -383,6 +376,22 @@ properly, so rotation things too.
 
 These are all valid things to manage but we probably have to leave
 these for later.
+
+** TODO original_raw
+
+My raws right now:
+
+: ~/pics/digikuvat/xyz/foo.raw
+
+Darktable can export files as
+
+: ~/pics/inbox/xyz/foo.jpg
+
+Original raw location can be thus traced via =:original-dir= and
+=:original-filename=.
+
+But this requires cooperation from darktable/whatever to work
+smoothly. Very specific for my usecase.
 
 * EXIF parsers
 ** NOTSURE Drew Noakes: metadata-extractor
@@ -674,6 +683,9 @@ CLOSED: [2020-05-07 Thu 19:47]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-07 Thu 19:47]
 :END:
+
+Terrible thing, writing legacy code from the beginning. Let's do better.
+
 ** TODO Make user_label used everywhere
 ** TODO One might still question whether separate tables for Camera, Lens make sense
 
@@ -860,6 +872,11 @@ it.
 
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
+
+* TODO "keywordify" is twice implemented
+
+Once in =exif.clj= and more recently in CLJS(?)
+
 * NOTSURE Automatic tags on import and "system tags"?
 CLOSED: [2020-04-27 Mon 18:32]
 

@@ -82,26 +82,29 @@
    (into {})))
 
 ;;;;; Gear is camera or lens
+;; TODO move to model.gear
 
 (defn lookup-gear
-  [gear make model]
+  [gear-type make model]
   (query! {:select [:id]
-           :from [gear]
+           :from [:gear]
            :where [:and
+                   [:= :gear_type gear-type]
                    [:= :exif_make make]
                    [:= :exif_model model]]}))
 
 (defn create-gear
-  [gear make model]
-  (query! {:insert-into gear
-           :values [{:exif_make make
+  [gear-type make model]
+  (query! {:insert-into :gear
+           :values [{:gear_type gear-type
+                     :exif_make make
                      :exif_model model}]}))
 
 (defn get-or-create-gear
   "Get or create gear with these specs. Return ID as integer. If multiple found,
   we can't do anything and return nil."
-  [gear make model]
-  (let [found (lookup-gear gear make model)
+  [gear-type make model]
+  (let [found (lookup-gear gear-type make model)
         cnt (count found)]
     (cond
       (every? nil? [make model]) nil
@@ -110,15 +113,15 @@
                     first
                     second)
       (= 0 cnt) (do
-                  (create-gear gear make model)
-                  (get-or-create-gear gear make model))
+                  (create-gear gear-type make model)
+                  (get-or-create-gear gear-type make model))
       :else nil)))
 
 (defn add-entry!
   "Take an Emap and insert it into DB normalised."
   [e]
-  (let [camera-id (get-or-create-gear :camera (:exif/Make e) (:exif/Model e))
-        lens-id (get-or-create-gear :lens (:exif/LensMake e) (:exif/LensModel e))]
+  (let [camera-id (get-or-create-gear "camera" (:exif/Make e) (:exif/Model e))
+        lens-id (get-or-create-gear "lens" (:exif/LensMake e) (:exif/LensModel e))]
     (jdbc/execute!
      db
      (-> (s/insert-into :photo)

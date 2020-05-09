@@ -62,19 +62,17 @@
   [inbox-path]
   (fs/mkdir clurator.settings/storage-directory)
   (fs/mkdir clurator.settings/thumbnail-dir)
-  (when clurator.settings/inbox-processed-path)
-    (fs/mkdir clurator.settings/inbox-processed-path)
   (doseq [f (eligible-files inbox-path)]
     (let [emap (gather-file-info f)]
-      (println "gonna process" f "into" (:meta/storage emap))
-
-      ;; copy/move file
-      (fs/copy f (str clurator.settings/storage-directory
-                      "/"
-                      (:meta/storage emap)))
+      (println "Processing" f "into" (:meta/storage emap))
 
       ;; make thumbnail
       (thumbnails/create-thumbnail! f (:meta/uuid emap))
+
+      ;; move file under new storage
+      (fs/rename f (str clurator.settings/storage-directory
+                        "/"
+                        (:meta/storage emap)))
 
       ;; make a record in db
       (db/add-entry! emap))))

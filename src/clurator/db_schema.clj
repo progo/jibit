@@ -3,31 +3,21 @@
   (:require [next.jdbc :as jdbc]))
 
 (def schema-sql
-  {1 ["create table camera
-      ( id              integer primary key autoincrement
-      , exif_make       text
-      , exif_model      text
-      , user_label      text
+  {1 ["create table gear
+      ( id         integer primary key autoincrement
+      , gear_type  text
+      , exif_make  text
+      , exif_model text
+      , user_make  text
+      , user_model text
+      , user_label text
+      , extra_info text
       , unique (exif_make, exif_model)
-      );"
-      "create index ix_camera_make on camera(exif_make);"
-      "create index ix_camera_model on camera(exif_model);"
-
-      "create table lens
-      ( id              integer primary key autoincrement
-      , exif_make       text
-      , exif_model      text
-      , exif_lens_info  text
-      , user_label      text
-      , min_fl          real
-      , max_fl          real
-      , min_apt         real
-      , max_apt         real
-      , unique (exif_make, exif_model)
-      );"
-      "create index ix_lens_make on lens(exif_make);"
-      "create index ix_lens_model on lens(exif_model);"
-      "create index ix_lens_linfo on lens(exif_lens_info);"
+      );
+      create index ix_gear_gear_type on gear(gear_type);
+      create index ix_gear_exif_make on gear(exif_make);
+      create index ix_gear_exif_mode on gear(exif_model);
+      create index ix_gear_user_label on gear(user_label);"
 
       "create table photo
       ( id              integer primary key autoincrement
@@ -58,8 +48,8 @@
       , is_raw          boolean
       , uuid            text
       , storage_filename text
-      , foreign key (lens_id)   references lens(id)   on delete restrict on update cascade
-      , foreign key (camera_id) references camera(id) on delete restrict on update cascade
+      , foreign key (lens_id)   references gear(id) on delete restrict on update cascade
+      , foreign key (camera_id) references gear(id) on delete restrict on update cascade
       );"
       "create index ix_photo_lens_id on photo(lens_id);"
       "create index ix_photo_camera_id on photo(camera_id);"
@@ -118,41 +108,6 @@
       "create index ix_phototag_photo_id on photo_tag (photo_id);"
       "create index ix_phototag_tag_id on photo_tag (tag_id);"
 
-      "CREATE VIEW vw_photo AS SELECT
-      ifnull(c.exif_make, 'N/A') || ' ' || ifnull(c.exif_model, 'N/A') AS Camera,
-      ifnull(l.exif_make, 'N/A') || ' ' || ifnull(l.exif_model, 'N/A') AS Lens,
-      p.focal_length_35 AS FL,
-      p.aperture,
-      p.iso,
-      p.exposure_comp,
-      p.shutter_speed,
-      p.light_value,
-      p.rating,
-      p.orig_rating,
-      p.taken_ts,
-      p.megapixels,
-      p.storage_filename
-      FROM photo p
-      LEFT JOIN camera c ON p.camera_id = c.id
-      LEFT JOIN lens l ON p.lens_id = l.id;"
-
-      "create view vw_gear
-       as
-       select
-        'lens-' || L.id as ID,
-        L.exif_make,
-        L.exif_model,
-        L.user_label,
-        'lens' as gear_type
-        from lens L
-       union
-       select
-        'cam-' || C.id as ID,
-        C.exif_make,
-        C.exif_model,
-        C.user_label,
-        'camera' as gear_type
-        from camera C;"
       ]
    })
 
