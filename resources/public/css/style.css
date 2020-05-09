@@ -275,6 +275,12 @@ h1#head {
 
 /* Tags */
 
+#no-tags {
+    color: silver;
+    font-style: italic;
+    padding-left: 1em;
+}
+
 .tags-bar-big {
     padding: 5px;
     margin-left: 25px;

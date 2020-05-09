@@ -569,9 +569,12 @@
 
 (defn tags-view []
   [:ul.tags-bar-big
-   (doall
-    (for [t @(re-frame/subscribe [:tags])]
-      (tag-view t)))
+   (let [tags @(re-frame/subscribe [:tags])]
+     (if (seq tags)
+       (doall
+        (for [t tags]
+          (tag-view t)))
+       [:span#no-tags "Tags will appear here."]))
    [:div#create-tag.button
     {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
     "+"]])
