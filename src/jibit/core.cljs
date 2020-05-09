@@ -326,8 +326,7 @@
 (def gear-table-column-sort
   [{:column "gear_type" :dir "asc"}])
 
-;; TODO terrible. Can we get rid of the namescaped keywords maybe.
-;; Also terrible in that we are bypassing the sub model
+;; TODO Terrible that we are bypassing the sub model!
 (defn flatten-gear-list
   []
   (-> @re-frame.db/app-db :gear))
