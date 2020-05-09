@@ -28,15 +28,15 @@
     :else [:between :photo.taken_ts taken-begin taken-end]))
 
 (defn build-gear-criteria
-  "Gear is :camera or :lens"
-  [gear make+model]
+  "Gear-type is :camera or :lens"
+  [gear-type make+model]
   (when make+model
     [:or
      [:like
-      (keyword (str (name gear) ".exif_make"))
+      (keyword (str (name gear-type) ".exif_make"))
       (str \% make+model \%)]
      [:like
-      (keyword (str (name gear) ".exif_model"))
+      (keyword (str (name gear-type) ".exif_model"))
       (str \% make+model \%)]]))
 
 (defn build-tags-criteria
@@ -97,7 +97,7 @@
 (defn massage-content
   "Turn some integers into booleans etc"
   [photo]
-  (update photo :is_raw #(if (zero? %) false true)))
+  (update photo :is_raw (complement nil?)))
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
@@ -130,8 +130,8 @@
                 :lens.*
                 [:photo.id :id]]
        :from [:photo]
-       :left-join [:camera [:= :camera.id :photo.camera_id]
-                   :lens [:= :lens.id :photo.lens_id]]
+       :left-join [[:gear :camera] [:= :camera.id :photo.camera_id]
+                   [:gear :lens]   [:= :lens.id   :photo.lens_id]]
        :where [:and true
                (build-taken-criteria taken-begin taken-end)
                (build-imported-criteria imported-begin imported-end)

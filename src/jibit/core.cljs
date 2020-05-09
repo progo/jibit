@@ -457,7 +457,7 @@
  :get-photos
  (fn [{db :db} _]
    (let [filter-criteria (-> db :input :filter
-                             (assoc :tags (:selected-tags db)))]
+                             (assoc :tags (or (:selected-tags db) #{})))]
      (debug "Get photos with:" filter-criteria)
      {:http-xhrio (build-edn-request :method :get
                                      :uri "/photos"
