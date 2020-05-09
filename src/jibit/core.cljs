@@ -617,8 +617,8 @@
              :src (photo-thumbnail-uri photo)}]
       [:ul.info
        [:li (human/datestamp (:taken_ts photo))]
-       [:li 'todo (:camera/exif_model photo)]
-       [:li 'todo (:lens/exif_model photo)]
+       [:li (:camera_exif_model photo)]
+       [:li (:lens_exif_model photo)]
        [:li (human/focal-length (:focal_length_35 photo)) " mm"]
        [:li (human/aperture (:aperture photo))]
        [:li (human/shutter-speed (:shutter_speed photo)) " s"]

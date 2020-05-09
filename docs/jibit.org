@@ -512,6 +512,13 @@ Other tools we need or benefit from:
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
 * TODO After import, clean empty and "empty" directories from inbox :inbox:backend:
+* TODO =photo.is_raw= should be a boolean 1/0, not a string   :inbox:backend:
+
+Currently it is a string against the schema and we check its
+booleanness by checking with =nil?=.
+
+But it should be 0/1 in the first place.
+
 * DONE Round up all configuration in one EDN file or something
 CLOSED: [2020-03-15 Sun 19:08]
 :LOGBOOK:
@@ -687,9 +694,17 @@ CLOSED: [2020-05-07 Thu 19:47]
 Terrible thing, writing legacy code from the beginning. Let's do better.
 
 ** TODO Make user_label used everywhere
-** TODO One might still question whether separate tables for Camera, Lens make sense
 
-Let's do this.
+There's also now user_make, user_model if we want to allow structured
+modifications.
+
+** DONE One might still question whether separate tables for Camera, Lens make sense
+CLOSED: [2020-05-09 Sat 13:04]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-09 Sat 13:04]
+:END:
+
+Let's do this. They're now combined.
 
 ** TODO Bypassing the sub model in =(flatten-gear-list)= is a terrible offense
 

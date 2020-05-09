@@ -126,9 +126,12 @@
          limit 1234}}]
 
   (-> {:select [:photo.*
-                :camera.*
-                :lens.*
-                [:photo.id :id]]
+                [:camera.exif_make      :camera_exif_make]
+                [:camera.exif_model     :camera_exif_model]
+                [:camera.user_label     :camera_user_label]
+                [:lens.exif_make        :lens_exif_make]
+                [:lens.exif_model       :lens_exif_model]
+                [:lens.user_label       :lens_user_label]]
        :from [:photo]
        :left-join [[:gear :camera] [:= :camera.id :photo.camera_id]
                    [:gear :lens]   [:= :lens.id   :photo.lens_id]]
