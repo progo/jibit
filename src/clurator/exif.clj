@@ -1,6 +1,7 @@
 (ns clurator.exif
   "Exif analysis and related tools."
-  (:require [java-time :as time])
+  (:require [java-time :as time]
+            clurator.utils)
   (:import [com.thebuzzmedia.exiftool ExifToolBuilder Tag]
            [com.thebuzzmedia.exiftool.core StandardTag]))
 
@@ -123,13 +124,6 @@
   [s]
   (time/local-date-time "yyyy:MM:dd HH:mm:ss" s))
 
-(defn keywordify
-  "Turn a map of string keys into keywords, with ns prefix."
-  [m ns]
-  (->> m
-       (map (fn [[k v]] [(keyword ns k) v]))
-       (into {})))
-
 (defn get-exif-parsed
   "Get a collection of exif tags parsed into appropriate types. Map of
   keywords into strings or numbers."
@@ -148,4 +142,4 @@
         (update "ImageWidth" str->int)
         (update "ImageHeight" str->int)
         (update "Megapixels" str->double)
-        (keywordify "exif"))))
+        (clurator.utils/keywordify-map :exif))))

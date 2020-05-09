@@ -511,7 +511,7 @@ Other tools we need or benefit from:
 
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
-
+* TODO After import, clean empty and "empty" directories from inbox :inbox:backend:
 * DONE Round up all configuration in one EDN file or something
 CLOSED: [2020-03-15 Sun 19:08]
 :LOGBOOK:
@@ -873,9 +873,13 @@ it.
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
 
-* TODO "keywordify" is twice implemented
+* DONE "keywordify" is twice implemented
+CLOSED: [2020-05-09 Sat 12:14]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-09 Sat 12:14]
+:END:
 
-Once in =exif.clj= and more recently in CLJS(?)
+Once in =exif.clj= and more recently in =view.gear=
 
 * NOTSURE Automatic tags on import and "system tags"?
 CLOSED: [2020-04-27 Mon 18:32]
