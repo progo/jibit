@@ -706,11 +706,20 @@ CLOSED: [2020-05-09 Sat 13:04]
 
 Let's do this. They're now combined.
 
-** TODO Bypassing the sub model in =(flatten-gear-list)= is a terrible offense
+** DONE Bypassing the sub model in =(flatten-gear-list)= is a terrible offense
+CLOSED: [2020-05-10 Sun 10:53]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-10 Sun 10:53]
+:END:
 
 Experiment with the inner/outer pattern:
 
 https://github.com/day8/re-frame/blob/master/docs/Using-Stateful-JS-Components.md
+
+Luckily it played ball quite easily.
+
+Not sure why the =(reagent/argv cmp)= is necessary but it only worked
+intermittently when passing the data directly as an argument.
 
 * DONE Tagging photos [100%]
 CLOSED: [2020-04-20 Mon 18:03]

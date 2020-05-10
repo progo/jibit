@@ -326,11 +326,6 @@
 (def gear-table-column-sort
   [{:column "gear_type" :dir "asc"}])
 
-;; TODO Terrible that we are bypassing the sub model!
-(defn flatten-gear-list
-  []
-  (-> @re-frame.db/app-db :gear))
-
 (re-frame/reg-event-db
  :show-gear-dlg
  (fn [db _]
@@ -813,7 +808,11 @@
 
 ;; Let's experiment with form-3 components, now that we need to hack
 ;; something around component display.
-(defn gear-edit-dialog []
+(defn gear-edit-dialog*
+  "Inner comp, gets values as props. I'm not sure why it sometimes works
+  with this function and sometimes not. But using (reagent/argv cmp)
+  seems to work all the time."
+  []
   (let [tabulator-instance (atom nil)]
     (reagent/create-class
      {:component-did-mount (fn [cmp]
@@ -825,8 +824,10 @@
                                                 :columns gear-table-columns}))))
       ;; This update is called whenever we open or close gear dialog.
       :component-did-update (fn [cmp]
-                              (debug "Redrawing gear table!")
-                              (.setData @tabulator-instance (clj->js (flatten-gear-list))))
+                              (let [gear (second (reagent/argv cmp))]
+                                (timbre/debugf "Redrawing gear table with %d items!"
+                                               (count gear))
+                                (.setData @tabulator-instance (clj->js gear))))
       :display-name "gear-edit-dialog"
       :reagent-render
       (fn []
@@ -846,6 +847,10 @@
             [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
              "Close"]
             ]]))})))
+
+(defn gear-edit-dialog []
+  (let [gear (re-frame/subscribe [:gear-raw])]
+    [gear-edit-dialog* @gear]))
 
 (defn tag-edit-dialog []
   (let [enabled? (some #{:tag-dialog} @(re-frame/subscribe [:state-stack]))
