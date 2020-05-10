@@ -111,8 +111,12 @@
      imported-begin
      imported-end
 
+     ;; string search gear
      camera
      lens
+     ;; exact search by id, trumps string search if not nil
+     camera-id
+     lens-id
 
      tags
      tags-union?
@@ -138,8 +142,12 @@
        :where [:and true
                (build-taken-criteria taken-begin taken-end)
                (build-imported-criteria imported-begin imported-end)
-               (build-gear-criteria :camera camera)
-               (build-gear-criteria :lens lens)
+               (if camera-id
+                 [:= :photo.camera_id camera-id]
+                 (build-gear-criteria :camera camera))
+               (if lens-id
+                 [:= :photo.lens_id lens-id]
+                 (build-gear-criteria :lens lens))
                (build-tags-criteria tags tags-union? show-only-untagged?)
                (build-rated-criterion show-only-unrated?)
                (build-cooked-criterion show-only-uncooked?)

@@ -448,11 +448,47 @@
       :dispatch [:get-photos]
       })))
 
+(defn match-human-label->gear-id
+  "Do a linear search over human labeled gear, return an ID or nil if
+  not found."
+  [label gear-list & {:keys [label-fn] :or {label-fn human/gear-label}}]
+  (if (empty? label)
+    nil
+    ;; we build a seq of [human-label {gear-map}] tuples
+    (->> (map (juxt label-fn identity) gear-list)
+         (filter #(= label (first %)))
+         first
+         second
+         :id)))
+
+(defn clean-nil-values
+  "Remove those keys from map `m` where value is nil."
+  [m]
+  (into {}
+        (filter (fn [[k v]]
+                  (not (nil? v)))
+                m)))
+
 (re-frame/reg-event-fx
  :get-photos
  (fn [{db :db} _]
-   (let [filter-criteria (-> db :input :filter
-                             (assoc :tags (or (:selected-tags db) #{})))]
+   (let [filter-criteria (-> db
+                             :input
+                             :filter
+
+                             ;; add currently selected tags to the mix
+                             (assoc :tags (:selected-tags db))
+
+                             ;; if gear is something preselected we
+                             ;; want to filter by id
+                             (assoc :lens-id (match-human-label->gear-id
+                                              (-> db :input :filter :lens)
+                                              (-> db :gear)))
+                             (assoc :camera-id (match-human-label->gear-id
+                                                (-> db :input :filter :camera)
+                                                (-> db :gear)))
+
+                             clean-nil-values)]
      (debug "Get photos with:" filter-criteria)
      {:http-xhrio (build-edn-request :method :get
                                      :uri "/photos"
@@ -975,7 +1011,9 @@
      {:id id}
      (for [g gear]
        ^{:key (str "gear-" (:id g))}
-       [:option {:value (human/gear-label g)}])]))
+       [:option {:data-value (:id g)}
+        (human/gear-label g)
+        ])]))
 
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])

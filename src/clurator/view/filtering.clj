@@ -52,8 +52,10 @@
 (defn handle-filter-criteria
   [criteria]
   ;; order-by            enum
-  ;; camera-make         text
-  ;; camera-model        text
+  ;; camera              text
+  ;; lens                text
+  ;; camera-id           num
+  ;; lens-id             num
   ;; tags-union?         boolean
   ;; show-only-untitled? boolean
   ;; show-only-untagged? boolean
@@ -81,4 +83,6 @@
                 "taken_ts" :taken_ts
                 :taken_ts))
          (clean-input :camera)
-         (clean-input :lens)))
+         (clean-input :lens)
+         (clean-edn-input :camera-id)
+         (clean-edn-input :lens-id)))
