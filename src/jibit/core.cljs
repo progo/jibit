@@ -490,10 +490,20 @@
 
 (re-frame/reg-sub
  :gear-raw
- (fn [db _]
-   (-> db :gear)))
+ (fn [db [_ gear-type]]
+   (if (nil? gear-type)
+     ;; Give them everything
+     (:gear db)
+     ;; Or filter by type...
+     (filter #(= (name gear-type) (:gear_type %)) (:gear db)))))
 
-;; Tags but in a map of (tag-id -> tag)
+;; All gear in a map of {id -> gear}
+(re-frame/reg-sub
+ :gear-db
+ (fn [db _]
+   (into {} (map (juxt :id identity) (-> db :gear)))))
+
+;; All tags in a map of {id -> tag}
 (re-frame/reg-sub
  :tags-map
  (fn [db _]
@@ -602,6 +612,7 @@
 
 (defn slide [photo]
   (let [tags-map (re-frame/subscribe [:tags-map])
+        gear-db @(re-frame/subscribe [:gear-db])
         selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
     [:div.slide-wrapper
      [:div.slide
@@ -615,8 +626,8 @@
              :src (photo-thumbnail-uri photo)}]
       [:ul.info
        [:li (human/datestamp (:taken_ts photo))]
-       [:li (:camera_exif_model photo)]
-       [:li (:lens_exif_model photo)]
+       [:li (-> photo :camera_id gear-db human/gear-label)]
+       [:li (-> photo :lens_id gear-db human/gear-label)]
        [:li (human/focal-length (:focal_length_35 photo)) " mm"]
        [:li (human/aperture (:aperture photo))]
        [:li (human/shutter-speed (:shutter_speed photo)) " s"]
@@ -959,13 +970,12 @@
          ^{:key (:uuid photo)} [slide photo])])))
 
 (defn gear-datalists [id gear-type]
-  (let [gear @(re-frame/subscribe [:gear-raw])]
+  (let [gear @(re-frame/subscribe [:gear-raw gear-type])]
     [:datalist
      {:id id}
-     ;; TODO could also build that into the subscription
-     (for [g gear :when (= (name gear-type) (:gear_type g))]
+     (for [g gear]
        ^{:key (str "gear-" (:id g))}
-       [:option {:value (:exif_model g)}])]))
+       [:option {:value (human/gear-label g)}])]))
 
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])

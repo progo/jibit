@@ -698,6 +698,16 @@ Terrible thing, writing legacy code from the beginning. Let's do better.
 There's also now user_make, user_model if we want to allow structured
 modifications.
 
+** NOTSURE Photo map -> gear map
+CLOSED: [2020-05-10 Sun 11:36]
+
+Backing out of qualified-keyworded maps means some extra work for us
+now, better keep this in mind later on.
+
+Let's instead join things in frontend as we have full gear in browser.
+Photo query no longer needs to send this information in the query.
+
+** TODO Don't send gear data in get-photos?
 ** DONE One might still question whether separate tables for Camera, Lens make sense
 CLOSED: [2020-05-09 Sat 13:04]
 :LOGBOOK:
@@ -896,6 +906,10 @@ it.
 
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
+
+* TODO Human shutter speed of "1 sec" shows wrong
+
+Probably  all times >= 1 sec are shown incorrectly.
 
 * DONE "keywordify" is twice implemented
 CLOSED: [2020-05-09 Sat 12:14]

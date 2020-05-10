@@ -17,18 +17,15 @@
     (cl-format nil "~,1f" fl)
     (cl-format nil "~0d" (Math/round fl))))
 
-
 (defn aperture
   "Aperture values in concise human-readable format. 1/2 and 1/3 stops
   are plenty to support. Round others into these increments."
   [f]
   (cl-format nil "ƒ/~,1f" f))
 
-
 (defn shutter-speed
   [ss]
   (cl-format nil "1/~D" (Math/round (/ ss))))
-
 
 (defn exp-comp
   [ec]
@@ -36,6 +33,12 @@
     "0"
     (cl-format nil "~,2@f" ec)))
 
+(defn gear-label
+  [gear]
+  (cond
+    (:user_label gear) (:user_label gear)
+    :else (str (:exif_make gear) \space (:exif_model gear))
+    ))
 
 #?(:cljs
    (do
