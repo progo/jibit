@@ -624,8 +624,10 @@ These should work on the selection.
 
 Search/replace kind of a deal?
 
-* STARTED Gear editor
+* DONE Gear editor
+CLOSED: [2020-05-11 Mon 16:52]
 :LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-05-11 Mon 16:52]
 - State "STARTED"    from "TODO"       [2020-05-04 Mon 12:23]
 :END:
 
@@ -693,7 +695,11 @@ CLOSED: [2020-05-07 Thu 19:47]
 
 Terrible thing, writing legacy code from the beginning. Let's do better.
 
-** TODO Make user_label used everywhere
+** DONE Make user_label used everywhere
+CLOSED: [2020-05-11 Mon 16:51]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-11 Mon 16:51]
+:END:
 
 There's also now user_make, user_model if we want to allow structured
 modifications.
@@ -707,7 +713,11 @@ now, better keep this in mind later on.
 Let's instead join things in frontend as we have full gear in browser.
 Photo query no longer needs to send this information in the query.
 
-** TODO Don't send gear data in get-photos?
+** DONE Don't send gear data in get-photos?
+CLOSED: [2020-05-11 Mon 16:50]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-11 Mon 16:50]
+:END:
 ** DONE One might still question whether separate tables for Camera, Lens make sense
 CLOSED: [2020-05-09 Sat 13:04]
 :LOGBOOK:

@@ -6,8 +6,7 @@
   []
   (db/query! {:select [:*]
               :from [:gear]
-              :order-by [:user_label :exif_make :exif_model]
-              }))
+              :order-by [:user_label :exif_make :exif_model]}))
 
 (defn update-gear!
   "We are getting a seq of maps {:id :user_label} that denote new user
