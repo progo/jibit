@@ -355,8 +355,7 @@
 (re-frame/reg-event-db
  :show-edit-tag-dlg
  (fn [db [_ tag-id]]
-   ;; omg a linear search
-   (let [tag (first (filter #(= tag-id (-> % :id)) (:tags db)))
+   (let [tag (-> db :tags-map (get tag-id))
          ;; apply the checkbox if there's color present.
          tag (assoc tag :tag-color? (-> tag :style_color boolean))]
      (-> db
