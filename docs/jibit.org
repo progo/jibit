@@ -917,9 +917,21 @@ it.
 This inherited color is stored separately as =:tag/computed_color= to
 avoid mixing user-given and computed data.
 
-* TODO Human shutter speed of "1 sec" shows wrong
+* DONE Human shutter speed of "1 sec" shows wrong
+CLOSED: [2020-05-11 Mon 16:57]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-11 Mon 16:57]
+:END:
 
 Probably  all times >= 1 sec are shown incorrectly.
+
+* TODO Some shutter speeds probably don't render too well.
+
+Leica does what it does but there are some other manufacturers with
+more flexible speeds...
+
+Study what some of the cameras (Oly, Pana, Nikon, Canon) allow to do
+and see how they are expressed in fractions.
 
 * DONE "keywordify" is twice implemented
 CLOSED: [2020-05-09 Sat 12:14]

@@ -19,13 +19,15 @@
 
 (defn aperture
   "Aperture values in concise human-readable format. 1/2 and 1/3 stops
-  are plenty to support. Round others into these increments."
+  are plenty accurate. (Round others into these increments.)"
   [f]
   (cl-format nil "ƒ/~,1f" f))
 
 (defn shutter-speed
   [ss]
-  (cl-format nil "1/~D" (Math/round (/ ss))))
+  (cond
+    (>= ss 1) (str ss)
+    (< ss 1) (cl-format nil "1/~D" (Math/round (/ ss)))))
 
 (defn exp-comp
   [ec]
