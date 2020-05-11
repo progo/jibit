@@ -1030,12 +1030,10 @@
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
-     ;; BTW this darktable-esque button thing could work, initally
-     ;; thought of this launcher as a dev-time thing but could work.
-     [:a {:style {:float :right :color :silver :margin-right "20px"}
-          :on-click #(re-frame/dispatch [:show-gear-dlg])
-          :href "#"}
-      "Gear"]]))
+     [:div#menu
+      [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+           :href "#"}
+       "Gear"]]]))
 
 (defn user-interface []
   [:div

@@ -11,6 +11,10 @@
     font-family: 'Poppins Regular';
     src: url('/fonts/Poppins-Regular.ttf');
 }
+@font-face {
+    font-family: 'Poppins Light';
+    src: url('/fonts/Poppins-Thin.ttf');
+}
 
 /** Adorable script font for tag labels maybe?  Or maybe overlaid texts on images? */
 @font-face {
@@ -39,7 +43,6 @@ button {
     float: right;
 }
 
-
 h1#head {
     padding-left: 10px;
 }
@@ -67,6 +70,24 @@ h1#head {
 .selection-count a.clear:hover{
     border-color: pink;
 }
+
+/** Menu controls, somewhat like darktable style. **/
+
+#menu {
+    font-family: "Poppins Light";
+    float: right;
+    margin-right: 20px;
+}
+#menu > a {
+    color: silver;
+    text-decoration: none;
+}
+#menu > a:hover {
+    color: pink;
+    text-decoration: underline;
+}
+
+/*** Lighttable and slides ***/
 
 #lighttable {
     margin-left: 25px;
