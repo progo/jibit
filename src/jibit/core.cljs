@@ -76,14 +76,6 @@
   (. evt preventDefault)
   (re-frame/dispatch event))
 
-(defn get-tag-by-id
-  "Linear search from db"
-  [db tag-id]
-  (->> db
-       :tags
-       (filter #(= tag-id (-> % :id)))
-       first))
-
 ;; Defining client/server conversations
 
 (defn build-edn-request
@@ -186,7 +178,7 @@
  :on-delete-tag
  (fn [{db :db} [_ {status :status response :response}]]
    (let [tag-id (:tag-id response)
-         tag (get-tag-by-id db tag-id)]
+         tag (-> db :tags-map (get tag-id))]
      (case status
        :ok {:dispatch-n [[:reload-tags]
                          [:close-and-clear-tag-dlg]]}

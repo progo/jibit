@@ -1061,6 +1061,8 @@ CLOSED: [2020-05-11 Mon 17:06]
 
 It's a smart format for tags to be in anyway, maybe we should store
 them as an ID:TAG map in the first place?
+
+** We can get rid of a few linear searches now
 * TODO Photo insert things from db to model.photo          :backend:refactor:
 
 And we have this bipolar difference in terminology... can we simplify
