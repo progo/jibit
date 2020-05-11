@@ -116,19 +116,33 @@
 ;;   because of ambiguous data or similar -- we want to ask the user
 ;;   about how to proceed.
 
+(defn mapify-seq
+  "Given a seq of elts (maps) that have a unique key under id-key (for
+  example, :id or :photo/id), build a map of {id -> elt}"
+  [coll & {:keys [id-key] :or {id-key :id}}]
+  (->> coll
+       (map (juxt id-key identity))
+       (into {})))
+
 (defn ok?
   [status]
   (= status :ok))
 
-(re-frame/reg-event-fx
+(re-frame/reg-event-db
  :on-get-gear
- (fn [{db :db} [_ {status :status response :response}]]
-   {:db (assoc db :gear (:gear response))}))
+ (fn [db [_ {status :status response :response}]]
+   ;; We'll build two data structures from the same data.
+   (-> db
+       (assoc :gear (:gear response))
+       (assoc :gear-map (mapify-seq (:gear response))))))
 
 (re-frame/reg-event-db
  :on-get-tags
- (fn [db [_ {status :status response :response}]]
-   (assoc db :tags response)))
+ (fn [db [_ {status :status tags :response}]]
+   ;; We'll build two data structures from the same data.
+   (-> db
+       (assoc :tags tags)
+       (assoc :tags-map (mapify-seq tags)))))
 
 (re-frame/reg-event-fx
  :on-save-gear
@@ -537,13 +551,13 @@
 (re-frame/reg-sub
  :gear-db
  (fn [db _]
-   (into {} (map (juxt :id identity) (-> db :gear)))))
+   (-> db :gear-map)))
 
 ;; All tags in a map of {id -> tag}
 (re-frame/reg-sub
  :tags-map
  (fn [db _]
-   (into {} (map (juxt :id identity) (-> db :tags)))))
+   (-> db :tags-map)))
 
 (re-frame/reg-sub
  :selected-photos#

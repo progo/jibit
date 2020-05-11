@@ -1053,7 +1053,11 @@ What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
 spend a moment to see if re-frame event handlers allow for a better
 way.
 
-* TODO Tags as a map in db?                               :small:refactor:ui:
+* DONE Tags as a map in db?                               :small:refactor:ui:
+CLOSED: [2020-05-11 Mon 17:06]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-11 Mon 17:06]
+:END:
 
 It's a smart format for tags to be in anyway, maybe we should store
 them as an ID:TAG map in the first place?
