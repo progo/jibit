@@ -564,6 +564,7 @@ CLOSED: [2020-05-03 Sun 14:40]
 - Firefox can't
   
 That's now somewhat done using css and shit.
+* TODO Photo model: UUID as the only ID?
 * TODO Tag creation: Enter on Tag name to create it immediately
 * DONE Projector: load up all photos on the table to allow browsing
 CLOSED: [2020-05-13 Wed 18:25]
@@ -932,6 +933,15 @@ If a tag is being treated as an album, some albums may be of the sort
 that are finished by some time and then never altered. Contests and
 whatnot. If that's the case we might do well if we can mark a tag so
 that no more photos can be tagged with it.
+
+* TODO Mark kebab-case words as full words                            :emacs:
+
+Searches using * or # are not satisfactory because Emacs selects only
+one part of the identifier. This is a solved problem so get looking.
+
+* TODO Code tags, go to definition?                                   :emacs:
+
+Does CIDER help us with this? I want to jump to function definitions.
 
 * DONE "keywordify" is twice implemented
 CLOSED: [2020-05-09 Sat 12:14]
