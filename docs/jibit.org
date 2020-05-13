@@ -519,19 +519,6 @@ booleanness by checking with =nil?=.
 
 But it should be 0/1 in the first place.
 
-* DONE Round up all configuration in one EDN file or something
-CLOSED: [2020-03-15 Sun 19:08]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-03-15 Sun 19:08]
-:END:
-
-We have stuff in =clurator.inbox=  for starters.
-
-- db
-  
-We'll ideally want to have this stuff specified either via env or an
-edn file. In this case we can skip CLI arguments.
-
 * TODO Configuration rounded up
 
 Keep EDN in considerations though.
@@ -964,68 +951,6 @@ You'd have a good view of pics that haven't been processed by you.
 
 Then again, we have "unrated", "untagged", "untitled" so.
 
-* DONE On click, show image FS
-CLOSED: [2020-04-24 Fri 18:34]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-24 Fri 18:34]
-:END:
-
-Let's take that good image gallery plugin into the mix. PhotoSwipe is
-the name.
-
-** Problems with setting this up
-
-Could be something about React's nature. Separate little things with
-CLJS but they're somewhat solved.
-
-This is the current problem:
-
-#+BEGIN_EXAMPLE
-  Uncaught DOMException: Failed to execute 'insertBefore' on 'Node': The
-  node before which the new node is to be inserted is not a child of
-  this node.
-
-    at PhotoSwipe._applyNavBarGaps (http://localhost:9500/cljs-out/dev/cljsjs/photoswipe/development/photoswipe-ui-default.inc.js:351:17)
-#+END_EXAMPLE
-
-The line of code in question:
-
-#+BEGIN_SRC js
-  _controls.insertBefore(_fakeCaptionContainer, _captionContainer);
-#+END_SRC
-
-Where =_controls= points to the div with classes =pswp__ui
-pswp__ui--hidden pswp__ui--one-slide=.
-
-This line of error is usually attributed to ReactJS.
-
-*** DONE Bypassed this problem by bypassing making it a React component
-
-So it's plain elements in =index.html= now. Maybe not as elegant but
-it's working seamlessly. This is because this library behaves
-functionally and very well, doesn't cause distractions. Especially in
-my use currently when I don't need that slide show capability.
-
-We /may/ need to revisit this thing later on, but I don't think
-current bypassed "hack" is particularly ugly in isolation, nor will
-cause trouble.
-
-*** DONE Google about PhotoSwipe + ReactJS 
-
-Nothing interesting
-
-* DONE Image show: disallow raw files                                    :ui:
-CLOSED: [2020-04-25 Sat 11:41]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-25 Sat 11:41]
-:END:
-
-We are not going to render raw files by ourselves right now, so what
-should happen is that the interface should know photo being
-cooked/uncooked (raw).
-
-We should also mark it in the slide if photo is a raw.
-
 * TODO Image name, rating, description fields
 
 We have to think about the UI for this.
@@ -1053,16 +978,6 @@ What we used in =:delete-tag= is an antipattern to Stu Sierra so let's
 spend a moment to see if re-frame event handlers allow for a better
 way.
 
-* DONE Tags as a map in db?                               :small:refactor:ui:
-CLOSED: [2020-05-11 Mon 17:06]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-11 Mon 17:06]
-:END:
-
-It's a smart format for tags to be in anyway, maybe we should store
-them as an ID:TAG map in the first place?
-
-** We can get rid of a few linear searches now
 * TODO Photo insert things from db to model.photo          :backend:refactor:
 
 And we have this bipolar difference in terminology... can we simplify
@@ -1131,37 +1046,6 @@ and we won't do it. (event =:show-photo=)
 - Alternative view that takes more space might be cool: tree form
   where subtags are indented off from the supertag 
 
-* DONE Selections
-CLOSED: [2020-04-11 Sat 17:40]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-11 Sat 17:40]
-:END:
-
-Mousedown selection with a small hold time to select a photo, and then
-you should be able to continue selecting by dragging.
-
-But first things first, mousedown activates on a click and now we have
-to time how long the user holds.
-
-This is now done but the implementation leaves much to be desired.
-
-** Mouse down, up, click
-
-These three always occur in this order, on an element. Unless you make
-it into a drag event...
-
-** DONE When already having selections, make it faster to select more
-CLOSED: [2020-04-10 Fri 11:07]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-10 Fri 11:07]
-:END:
-** DONE Clear selection only if photo set changes
-CLOSED: [2020-04-11 Sat 17:30]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-11 Sat 17:30]
-:END:
-
-Should we perhaps keep the intersection of photos selected? Yes...
 * TODO Streamline photo filtering?                                  :backend:
 
 Tags per photo are currently subqueries (and there's that interesting
@@ -1414,6 +1298,122 @@ CLOSED: [2020-02-22 Sat 17:00]
 - M240: dt, rt, dng, sidecars xmp + pp3
 ** NOTSURE Check out if Metosin muuntaja is useful
 CLOSED: [2020-03-15 Sun 18:45]
+** DONE On click, show image FS
+CLOSED: [2020-04-24 Fri 18:34]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-24 Fri 18:34]
+:END:
+
+Let's take that good image gallery plugin into the mix. PhotoSwipe is
+the name.
+
+*** Problems with setting this up
+
+Could be something about React's nature. Separate little things with
+CLJS but they're somewhat solved.
+
+This is the current problem:
+
+#+BEGIN_EXAMPLE
+  Uncaught DOMException: Failed to execute 'insertBefore' on 'Node': The
+  node before which the new node is to be inserted is not a child of
+  this node.
+
+    at PhotoSwipe._applyNavBarGaps (http://localhost:9500/cljs-out/dev/cljsjs/photoswipe/development/photoswipe-ui-default.inc.js:351:17)
+#+END_EXAMPLE
+
+The line of code in question:
+
+#+BEGIN_SRC js
+  _controls.insertBefore(_fakeCaptionContainer, _captionContainer);
+#+END_SRC
+
+Where =_controls= points to the div with classes =pswp__ui
+pswp__ui--hidden pswp__ui--one-slide=.
+
+This line of error is usually attributed to ReactJS.
+
+**** DONE Bypassed this problem by bypassing making it a React component
+
+So it's plain elements in =index.html= now. Maybe not as elegant but
+it's working seamlessly. This is because this library behaves
+functionally and very well, doesn't cause distractions. Especially in
+my use currently when I don't need that slide show capability.
+
+We /may/ need to revisit this thing later on, but I don't think
+current bypassed "hack" is particularly ugly in isolation, nor will
+cause trouble.
+
+**** DONE Google about PhotoSwipe + ReactJS 
+
+Nothing interesting
+
+** DONE Image show: disallow raw files                                  :ui:
+CLOSED: [2020-04-25 Sat 11:41]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-25 Sat 11:41]
+:END:
+
+We are not going to render raw files by ourselves right now, so what
+should happen is that the interface should know photo being
+cooked/uncooked (raw).
+
+We should also mark it in the slide if photo is a raw.
+
+** DONE Tags as a map in db?                             :small:refactor:ui:
+CLOSED: [2020-05-11 Mon 17:06]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-11 Mon 17:06]
+:END:
+
+It's a smart format for tags to be in anyway, maybe we should store
+them as an ID:TAG map in the first place?
+
+*** We can get rid of a few linear searches now
+** DONE Selections
+CLOSED: [2020-04-11 Sat 17:40]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-11 Sat 17:40]
+:END:
+
+Mousedown selection with a small hold time to select a photo, and then
+you should be able to continue selecting by dragging.
+
+But first things first, mousedown activates on a click and now we have
+to time how long the user holds.
+
+This is now done but the implementation leaves much to be desired.
+
+*** Mouse down, up, click
+
+These three always occur in this order, on an element. Unless you make
+it into a drag event...
+
+*** DONE When already having selections, make it faster to select more
+CLOSED: [2020-04-10 Fri 11:07]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-10 Fri 11:07]
+:END:
+*** DONE Clear selection only if photo set changes
+CLOSED: [2020-04-11 Sat 17:30]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-11 Sat 17:30]
+:END:
+
+Should we perhaps keep the intersection of photos selected? Yes...
+** DONE Round up all configuration in one EDN file or something
+CLOSED: [2020-03-15 Sun 19:08]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-15 Sun 19:08]
+:END:
+
+We have stuff in =clurator.inbox=  for starters.
+
+- db
+  
+We'll ideally want to have this stuff specified either via env or an
+edn file. In this case we can skip CLI arguments.
+
 * Setting up the dev environment                                :emacs:cider:
 
 System:
