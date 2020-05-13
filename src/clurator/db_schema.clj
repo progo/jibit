@@ -46,6 +46,7 @@
       , original_raw    text
       , original_dir    text
       , is_raw          boolean
+                        check (is_raw in (0, 1))
       , uuid            text
       , storage_filename text
       , foreign key (lens_id)   references gear(id) on delete restrict on update cascade

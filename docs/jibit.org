@@ -512,12 +512,27 @@ Other tools we need or benefit from:
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
 * TODO After import, clean empty and "empty" directories from inbox :inbox:backend:
-* TODO =photo.is_raw= should be a boolean 1/0, not a string   :inbox:backend:
+* DONE =photo.is_raw= should be a boolean 1/0, not a string   :inbox:backend:
+CLOSED: [2020-05-13 Wed 18:57]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-13 Wed 18:57]
+:END:
 
 Currently it is a string against the schema and we check its
 booleanness by checking with =nil?=.
 
 But it should be 0/1 in the first place.
+
+Quick fix in sql
+
+#+BEGIN_EXAMPLE
+  update photo
+  set is_raw = case when is_raw is null then 0 else 1 end;
+#+END_EXAMPLE
+
+Yep, currently the whole filter is broken.
+
+SQLite constraint check would be cool here.
 
 * TODO Configuration rounded up
 

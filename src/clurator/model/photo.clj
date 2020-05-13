@@ -97,7 +97,9 @@
 (defn massage-content
   "Turn some integers into booleans etc"
   [photo]
-  (update photo :is_raw (complement nil?)))
+  (update photo :is_raw #(case %
+                           0 false
+                           1 true)))
 
 (defn filter-photos
   "Take user's input (parsed in some way) and build/execute a SQL query."
@@ -151,4 +153,5 @@
        :limit limit}
       db/query!
       (#(map fetch-tags %))
-      (#(map massage-content %))))
+      (#(map massage-content %))
+      ))
