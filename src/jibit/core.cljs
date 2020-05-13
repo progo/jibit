@@ -11,16 +11,6 @@
    [cljsjs.photoswipe-ui-default]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
-;;; events and handlers -- update db
-
-;; OBS: Variations
-;; reg-event-fx
-;; reg-event-db
-
-;; This is something we don't need in production. It can be left empty
-;; there. This could also be something we don't need in figwheel
-;; rounds if we can fix things in some end, but I don't know.
-
 ;; Remember to specify protocol. And no trailing slash.
 ;; (def server-uri "http://localhost:8088")
 (def server-uri "")
