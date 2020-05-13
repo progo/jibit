@@ -190,19 +190,29 @@
 ;;;; Ajax end
 
 (re-frame/reg-fx
+ ;; We take a photo and a coll of photos, we look up the index of the
+ ;; photo in the mix (linear time) and build a JSON object for
+ ;; PhotoSwipe to show around.
  :show-photo-on-lightbox
- (fn [{width :width
-       height :height
-       :as photo}]
-   (let [thumbnail-uri (photo-thumbnail-uri photo)
-         full-uri (photo-image-uri photo)]
+ (fn [[photo photos]]
+   (let [cooked-photos (filter #(not (:is_raw %)) photos)
+
+         ;; Find the index of photo among the cooked photos
+         [index _] (first
+                    (filter (fn [[ind phot]] (= photo phot))
+                            (map-indexed vector cooked-photos)))
+
+         ;; build a minimal data structure for PhotoSwipe
+         projected-photos (map (fn [p]
+                                 {:src (photo-image-uri p)
+                                  :msrc (photo-thumbnail-uri p)
+                                  :w (:width p)
+                                  :h (:height p)})
+                               cooked-photos)]
      (doto (js/PhotoSwipe. (get-photoswipe-elt)
                            js/PhotoSwipeUI_Default
-                           (clj->js [{:src full-uri
-                                      :msrc thumbnail-uri
-                                      :w width
-                                      :h height}])
-                           #js {:index 0})
+                           (clj->js projected-photos)
+                           #js {:index index})
        (.init)))))
 
 (re-frame/reg-fx
@@ -492,9 +502,9 @@
 
 (re-frame/reg-event-fx
  :show-photo
- (fn [_ [_ photo]]
+ (fn [{db :db} [_ photo]]
    (if-not (:is_raw photo)
-     {:show-photo-on-lightbox photo}
+     {:show-photo-on-lightbox [photo (-> db :photos)]}
      {})))
 
 ;;; queries from db
