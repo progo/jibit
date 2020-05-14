@@ -415,52 +415,6 @@ CLOSED: [2020-04-03 Fri 13:56]
 - Exiv2 is a C++ tool and quickly googling around it seems there are
   no hugely popular java bindings available.
 
-* NOTSURE Parse images on import for width/height?
-CLOSED: [2020-03-01 Sun 19:54]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-03-01 Sun 19:54]
-:END:
-
-Pure exiftool output isn't enough. Raw files have funky resolutions
-sometimes and do we dare to f.ex round up Leica M's 23.85 megapixels
-up to 24?
-
-Probably yes, but also no.
-
-On JPEG files exif tags "ImageWidth" and "ImageHeight" seem to be
-correct. Since we don't want to concern us with raw files (and the
-whole resolution concept is not super clear) let's trust Phil on this
-analysis.
-
-* On accuracy of measurements ISO/Aperture/SS/EC
-
-I would say that if we handle 1/3-stops and 1/2-stops decently from
-floating point numbers it's accurate enough to be also statistically
-useful.
-
-After all, the DOF differences between f/2.76 and f/2.8 aren't going
-to be visible. And movement at 1/28 seconds and 1/30 seconds is
-equally blurry.
-
-Light value is probably something we can just show with rounded to two
-decimal places.
-
-* DONE Our backend API should be stricter with Access-Control-Allow-Origin
-CLOSED: [2020-04-26 Sun 13:05]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-04-26 Sun 13:05]
-:END:
-
-Limit it to localhost? And this is naturally something the production
-shouldn't need... Since the same URI serves the JS and the API.
-
-Using a wildcard on local dev setup is not a problem. The header
-should not be set in "production" to ensure only local same-host
-queries get through.
-
-Now that we combined servers this is unnecessary and extra headers
-have been removed.
-
 * NOTSURE Fix import inaccuracies
 CLOSED: [2020-03-07 Sat 17:21]
 
@@ -966,14 +920,6 @@ one part of the identifier. This is a solved problem so get looking.
 
 Does CIDER help us with this? I want to jump to function definitions.
 
-* DONE "keywordify" is twice implemented
-CLOSED: [2020-05-09 Sat 12:14]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-09 Sat 12:14]
-:END:
-
-Once in =exif.clj= and more recently in =view.gear=
-
 * NOTSURE Automatic tags on import and "system tags"?
 CLOSED: [2020-04-27 Mon 18:32]
 
@@ -1459,6 +1405,60 @@ We have stuff in =clurator.inbox=  for starters.
   
 We'll ideally want to have this stuff specified either via env or an
 edn file. In this case we can skip CLI arguments.
+
+** DONE "keywordify" is twice implemented
+CLOSED: [2020-05-09 Sat 12:14]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-09 Sat 12:14]
+:END:
+
+Once in =exif.clj= and more recently in =view.gear=
+
+** DONE Our backend API should be stricter with Access-Control-Allow-Origin
+CLOSED: [2020-04-26 Sun 13:05]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-04-26 Sun 13:05]
+:END:
+
+Limit it to localhost? And this is naturally something the production
+shouldn't need... Since the same URI serves the JS and the API.
+
+Using a wildcard on local dev setup is not a problem. The header
+should not be set in "production" to ensure only local same-host
+queries get through.
+
+Now that we combined servers this is unnecessary and extra headers
+have been removed.
+
+** NOTSURE Parse images on import for width/height?
+CLOSED: [2020-03-01 Sun 19:54]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-03-01 Sun 19:54]
+:END:
+
+Pure exiftool output isn't enough. Raw files have funky resolutions
+sometimes and do we dare to f.ex round up Leica M's 23.85 megapixels
+up to 24?
+
+Probably yes, but also no.
+
+On JPEG files exif tags "ImageWidth" and "ImageHeight" seem to be
+correct. Since we don't want to concern us with raw files (and the
+whole resolution concept is not super clear) let's trust Phil on this
+analysis.
+
+** On accuracy of measurements ISO/Aperture/SS/EC
+
+I would say that if we handle 1/3-stops and 1/2-stops decently from
+floating point numbers it's accurate enough to be also statistically
+useful.
+
+After all, the DOF differences between f/2.76 and f/2.8 aren't going
+to be visible. And movement at 1/28 seconds and 1/30 seconds is
+equally blurry.
+
+Light value is probably something we can just show with rounded to two
+decimal places.
 
 * Setting up the dev environment                                :emacs:cider:
 
