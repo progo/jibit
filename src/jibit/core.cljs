@@ -820,24 +820,24 @@
          {:name "Rating" :value "rating"}]]]
 
       [:div.filter-column
-       "Only untitled "
        [data-bound-toggle-button [:filter :show-only-untitled?] {}]
+       " Only untitled"
        [:br]
-       "Only untagged "
        [data-bound-toggle-button [:filter :show-only-untagged?] {}]
+       " Only untagged"
        [:br]
-       "Only unrated "
        [data-bound-toggle-button [:filter :show-only-unrated?] {}]
+       " Only unrated"
        [:br]
-       "Only developed "
        [data-bound-toggle-button [:filter :show-only-uncooked?] {}]
+       " Only developed"
        [:br]
-       "Filter by selected tags "
        [data-bound-toggle-button [:filter :tags-union?]
         {:label-on "ANY"
          :label-off "ALL"
          :class-on "btn-any-tag"
-         :class-off "btn-all-tags"}]]]
+         :class-off "btn-all-tags"}]
+       " Filter by selected tags"]]
 
      [:div.filter-row
       [:a#filter-btn.button

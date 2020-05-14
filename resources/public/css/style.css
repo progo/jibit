@@ -16,7 +16,8 @@
     src: url('/fonts/Poppins-Thin.ttf');
 }
 
-/** Adorable script font for tag labels maybe?  Or maybe overlaid texts on images? */
+/** Adorable script font for tag labels. */
+/** And maybe for overlaid texts on images? */
 @font-face {
     font-family: 'Permanent Marker';
     src: url('/fonts/PermanentMarker-Regular.ttf');
@@ -244,6 +245,10 @@ h1#head {
 }
 
 #filter-btn {}
+
+#filter .button {
+    min-width: 34px;
+}
 
 
 /** Fancy date component **/
