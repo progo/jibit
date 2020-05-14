@@ -197,24 +197,24 @@ h1#head {
 /** Default toggle styling */
 
 .button.button-toggle-on {
-    background: linear-gradient(to left, #82b77e 80%, black);
+    background: linear-gradient(to left, #82b77e 84%, #006b12 90%, black);
     border: 1px solid #666;
 }
 
 .button.button-toggle-off {
-    background: linear-gradient(to right, #e4ca90 80%, black);
+    background: linear-gradient(to right, #e4ca90 84%, #ffab23 90%, black);
     border: 1px solid #666;
 }
 
 /*** Toggle tag union/intersect **/
 
 .button.btn-any-tag {
-    background: linear-gradient(to left, #b78e7e 80%, black);
+    background: linear-gradient(to left, #b78e7e 84%, #8c2323 90%, black);
     border: 1px #666 solid;
 }
 
 .button.btn-all-tags {
-    background: linear-gradient(to right, #e5ca90 80%, black);
+    background: linear-gradient(to right, #e4ca90 84%, #ffab23 90%, black);
     border: 1px #666 solid;
 }
 
