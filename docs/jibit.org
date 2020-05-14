@@ -539,7 +539,7 @@ SQLite constraint check would be cool here.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [6/7]
+* TODO Filter panel enhancements [7/7]
 ** DONE Imported "today/yesterday/this week/all time"
 CLOSED: [2020-04-26 Sun 11:17]
 :LOGBOOK:
@@ -568,7 +568,11 @@ CLOSED: [2020-04-25 Sat 14:47]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-04-25 Sat 14:47]
 :END:
-** TODO Enter to launch search
+** DONE Enter to launch search
+CLOSED: [2020-05-14 Thu 17:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-14 Thu 17:47]
+:END:
 ** DONE Can inputs have a "clear" field natively?
 CLOSED: [2020-05-03 Sun 14:40]
 :LOGBOOK:
@@ -580,7 +584,11 @@ CLOSED: [2020-05-03 Sun 14:40]
   
 That's now somewhat done using css and shit.
 * TODO Photo model: UUID as the only ID?
-* TODO Tag creation: Enter on Tag name to create it immediately
+* DONE Tag creation: Enter on Tag name to create it immediately
+CLOSED: [2020-05-14 Thu 17:47]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-14 Thu 17:47]
+:END:
 * DONE Projector: load up all photos on the table to allow browsing
 CLOSED: [2020-05-13 Wed 18:25]
 :LOGBOOK:

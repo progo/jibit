@@ -685,12 +685,15 @@
   "Build an input element that binds into a chain `data-ids`. Props is a
   map that goes into creating the element.
 
-  `props` can have an optional key `:clearable?` that will incorporate
-  hacks to make the input text or search clearable in firefox via a
-  button.
+  The map `props` goes to the DOM element as-is.
 
-  Optional `textarea?` makes this a textarea."
-  [data-ids props & textarea?]
+  Optional named arguments:
+  - `textarea?` makes this a textarea.
+  - `:clearable?` that will incorporate hacks to make the input text
+     or search clearable in firefox via a button.
+  - `on-enter` (fn) function to call when user hits RET
+  "
+  [data-ids props & {:keys [clearable? textarea? on-enter]}]
   (let [checkbox? (= :checkbox (:type props))
         bound @(re-frame/subscribe [:input data-ids])
         ;; Checkboxes (thus react) won't accept nils as false
@@ -702,13 +705,15 @@
                                        (if checkbox?
                                          (not bound)
                                          (-> % .-target .-value))])
+        keyup-fn (when on-enter
+                   #(when (= "Enter" (.-key %))
+                      (on-enter)))
         ;; Hack to make firefox render a "Clear input" button
-        clearable? (and (#{:input :search} (:type props))
-                        (:clearable? props))
-        props (-> props
-                  (assoc :on-change change-fn
-                         :value bound)
-                  (dissoc :clearable?))
+        clearable? (and (#{:input :search} (:type props)) clearable?)
+        props (assoc props
+                     :on-change change-fn
+                     :on-key-up keyup-fn
+                     :value bound)
         ;; more checkbox handling
         props (if checkbox?
                 (assoc props :checked bound)
@@ -778,63 +783,66 @@
        ]]]))
 
 (defn filter-panel []
-  [:div#filter
-   [:div.filter-row
-    [:div.filter-column
-     [:h1 "Filter options"]
-     [:div
-      [data-bound-input [:filter :camera]
-       {:type :search
-        :clearable? true
-        :list "camera-list"
-        :title "Filter by camera make or model"
-        :placeholder "Camera"}]
-      [data-bound-input [:filter :lens]
-       {:type :search
-        :clearable? true
-        :list "lens-list"
-        :title "Filter by lens make or model"
-        :placeholder "Lens"}]]
+  (let [get-photos #(re-frame/dispatch [:get-photos])]
+    [:div#filter
+     [:div.filter-row
+      [:div.filter-column
+       [:h1 "Filter options"]
+       [:div
+        [data-bound-input [:filter :camera]
+         {:type :search
+          :list "camera-list"
+          :title "Filter by camera make or model"
+          :placeholder "Camera"}
+         :on-enter get-photos
+         :clearable? true]
+        [data-bound-input [:filter :lens]
+         {:type :search
+          :list "lens-list"
+          :title "Filter by lens make or model"
+          :placeholder "Lens"}
+         :on-enter get-photos
+         :clearable? true]]
 
-     [:div
-      "Taken "
-      (data-bound-fancydate [:filter :taken-ts]
-                            {:style {:width "50%"}})]
-     [:div
-      "Imported "
-      (data-bound-fancydate [:filter :imported-ts]
-                            {:style {:width "50%"}})]
+       [:div
+        "Taken "
+        (data-bound-fancydate [:filter :taken-ts]
+                              {:style {:width "50%"}})]
+       [:div
+        "Imported "
+        (data-bound-fancydate [:filter :imported-ts]
+                              {:style {:width "50%"}})]
 
-     [:h1 "Order options"]
-     "Order by "
-     [data-bound-select [:filter :order-by]
-      [{:name "Taken" :value "taken_ts"}
-       {:name "Rating" :value "rating"}]]]
+       [:h1 "Order options"]
+       "Order by "
+       [data-bound-select [:filter :order-by]
+        [{:name "Taken" :value "taken_ts"}
+         {:name "Rating" :value "rating"}]]]
 
-    [:div.filter-column
-     "Only untitled "
-     [data-bound-toggle-button [:filter :show-only-untitled?] {}]
-     [:br]
-     "Only untagged "
-     [data-bound-toggle-button [:filter :show-only-untagged?] {}]
-     [:br]
-     "Only unrated "
-     [data-bound-toggle-button [:filter :show-only-unrated?] {}]
-     [:br]
-     "Only developed "
-     [data-bound-toggle-button [:filter :show-only-uncooked?] {}]
-     [:br]
-     "Filter by selected tags "
-     [data-bound-toggle-button [:filter :tags-union?]
-     {:label-on "ANY"
-      :label-off "ALL"
-      :class-on "btn-any-tag"
-      :class-off "btn-all-tags"}]]]
+      [:div.filter-column
+       "Only untitled "
+       [data-bound-toggle-button [:filter :show-only-untitled?] {}]
+       [:br]
+       "Only untagged "
+       [data-bound-toggle-button [:filter :show-only-untagged?] {}]
+       [:br]
+       "Only unrated "
+       [data-bound-toggle-button [:filter :show-only-unrated?] {}]
+       [:br]
+       "Only developed "
+       [data-bound-toggle-button [:filter :show-only-uncooked?] {}]
+       [:br]
+       "Filter by selected tags "
+       [data-bound-toggle-button [:filter :tags-union?]
+        {:label-on "ANY"
+         :label-off "ALL"
+         :class-on "btn-any-tag"
+         :class-off "btn-all-tags"}]]]
 
-   [:div.filter-row
-    [:a#filter-btn.button
-     {:on-click #(re-frame/dispatch [:get-photos])}
-     "Filter"]]])
+     [:div.filter-row
+      [:a#filter-btn.button
+       {:on-click get-photos}
+       "Filter"]]]))
 
 (defn modal-prompt
   []
@@ -933,7 +941,8 @@
         {:type :text
          :placeholder "Name"
          :auto-complete "off"
-         :name "tag-name"}]
+         :name "tag-name"}
+        :on-enter #(re-frame/dispatch [:create-new-tag])]
        (when incomplete-form?
          " * required")
        [:br]
@@ -942,7 +951,7 @@
         {:type :text
          :placeholder "Description"
          :name "tag-description"}
-        :yes-do-a-textarea]]
+        :textarea? true]]
 
       [:div.dialog-column
        [:label "Parent tag"] [:br]
