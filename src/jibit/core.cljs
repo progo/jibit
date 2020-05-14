@@ -924,7 +924,9 @@
         parent-id-invalid? (and (-> tag :id)
                                 (= (-> tag :id)
                                    (-> tag :parent_id)))
-        prevent-saving? (or incomplete-form? parent-id-invalid?)]
+        prevent-saving? (or incomplete-form? parent-id-invalid?)
+        do-save #(when-not prevent-saving?
+                   (re-frame/dispatch [:create-new-tag]))]
     [:div.modal-dialog
      {:class (if enabled? "modal-shown" "")}
      [:h1 (if new?
@@ -942,7 +944,7 @@
          :placeholder "Name"
          :auto-complete "off"
          :name "tag-name"}
-        :on-enter #(re-frame/dispatch [:create-new-tag])]
+        :on-enter do-save]
        (when incomplete-form?
          " * required")
        [:br]
@@ -975,8 +977,7 @@
        "Use color"]]
 
      [:div.footer
-      [:a.button {:on-click #(when-not prevent-saving?
-                               (re-frame/dispatch [:create-new-tag]))
+      [:a.button {:on-click do-save
                   :class (when prevent-saving? "btn-disabled")}
        (if new? "Create" "Save")]
       [:a.button {:on-click #(re-frame/dispatch [:close-and-clear-tag-dlg])}
