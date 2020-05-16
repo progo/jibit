@@ -6,7 +6,10 @@
             clurator.view.gear
             clurator.view.tag
             clurator.view.photo
-            clurator.settings))
+            [clojure.tools.cli :refer [parse-opts]]
+            [clojure.string :as string]
+            clurator.settings)
+  (:gen-class))
 
 ;; We will serve jibit here, and provide an API, with websockets
 ;; probably.
@@ -73,7 +76,57 @@
   (compojure.route/resources "/fonts" {:root "/public/fonts"})
   (compojure.route/not-found "not found"))
 
-(defn -main [& args]
-  (let [port 8088]
-    (timbre/info "Running server at port" port)
-    (run-server #'app {:port port})))
+(def cli-options
+  [["-v" "--verbose"]
+   ["-h" "--help"]
+   ["-p" "--port PORT" "Run the server on this port"
+    :default 8088
+    :parse-fn #(Integer/parseInt %)]])
+
+(defn usage [summary]
+  (->> ["JIBIT"
+        ""
+        "Options:"
+        summary
+        ""
+        "Actions:"
+        "  import [DIR [DIR...]]   Import photos from specified DIR(s)"
+        (str "                          (default: " clurator.settings/inbox-path ")")
+        "  server                  Launch the server to use Jibit in browser"]
+       (string/join \newline)))
+
+(defn parse-arguments
+  [argv]
+  (let [{:keys [options arguments errors summary]} (parse-opts argv cli-options)]
+    (cond
+      (:help options)
+      {:exit-message (usage summary)}
+
+      errors
+      {:exit-message errors}
+
+      (and (seq arguments)
+           (#{"import" "server"} (first arguments)))
+      {:action (first arguments)
+       :args (rest arguments)
+       :options options}
+
+      :else
+      {:exit-message (usage summary)})))
+
+(defn -main [& argv]
+  (let [{:keys [exit-message action args options]} (parse-arguments argv)]
+    (cond
+      exit-message
+      (println exit-message)
+
+      (= action "server")
+      (let [port (:port options)]
+        (when (seq args)
+          (timbre/warn "Ignoring extraneous crap:" args))
+        (timbre/info "Running server at port" port)
+        (run-server #'app {:port port}))
+
+      (= action "import")
+      (doseq [dir (or (seq args) [clurator.settings/inbox-path])]
+        (println (format "Importing from %s" dir))))))

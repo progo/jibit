@@ -32,6 +32,7 @@
                  [clojure.java-time "0.3.2"]
 
                  ;; Clurator, server ops
+                 [org.clojure/tools.cli "1.0.194"]
                  [http-kit "2.3.0"]
                  [compojure "1.6.1"]]
 

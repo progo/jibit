@@ -896,6 +896,22 @@ CLOSED: [2020-05-11 Mon 16:57]
 
 Probably  all times >= 1 sec are shown incorrectly.
 
+* TODO Move http server parts of =clurator.core= elsewhere
+* TODO Work on Import [0/6]                                          :import:
+SCHEDULED: <2020-05-16 Sat>
+
+- [ ] CLI interaction/launcher to start import
+- [ ] Clean the empty dirs on inbox after import
+- [ ] Notify / mark DB during import
+  Then UI can be notified.
+- [ ] Import logs
+  When imports have happened, what / how many files were imported
+- [ ] Set up listening/polling system (inotify)
+- [ ] Manual import button on UI side
+
+  DnD target of course makes sense but we have to make it halfway
+  without ability to test right away.
+
 * TODO Some shutter speeds probably don't render too well.
 
 Leica does what it does but there are some other manufacturers with
