@@ -897,10 +897,11 @@ CLOSED: [2020-05-11 Mon 16:57]
 Probably  all times >= 1 sec are shown incorrectly.
 
 * TODO Move http server parts of =clurator.core= elsewhere
-* TODO Work on Import [0/6]                                          :import:
-SCHEDULED: <2020-05-16 Sat>
+* TODO Work on Import [1/7]                                          :import:
+SCHEDULED: <2020-05-17 Sun>
 
-- [ ] CLI interaction/launcher to start import
+- [X] CLI interaction/launcher to start import
+- [ ] Speedy shutdown after CLI invocation has processed everything
 - [ ] Clean the empty dirs on inbox after import
 - [ ] Notify / mark DB during import
   Then UI can be notified.
@@ -911,6 +912,11 @@ SCHEDULED: <2020-05-16 Sat>
 
   DnD target of course makes sense but we have to make it halfway
   without ability to test right away.
+
+* TODO Date filters aren't working
+
+At least "import" is not working correctly anything right now,
+resulting in an empty qs.
 
 * TODO Some shutter speeds probably don't render too well.
 
