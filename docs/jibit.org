@@ -929,6 +929,12 @@ Moved both parts outside, core has the CLI handling right now.
   DnD target of course makes sense but we have to make it halfway
   without ability to test right away.
 
+* TODO When tag is deleted, phantom little divs remain
+
+Deletion of a tag is not a commonly occuring case so perhaps we can
+work around this apparent bug by redoing the lighttable contents
+altogether?
+
 * DONE Date filters aren't working
 CLOSED: [2020-05-17 Sun 17:03]
 :LOGBOOK:
@@ -957,11 +963,13 @@ whatnot. If that's the case we might do well if we can mark a tag so
 that no more photos can be tagged with it.
 
 * TODO Mark kebab-case words as full words                            :emacs:
+SCHEDULED: <2020-05-18 Mon>
 
 Searches using * or # are not satisfactory because Emacs selects only
 one part of the identifier. This is a solved problem so get looking.
 
 * TODO Code tags, go to definition?                                   :emacs:
+SCHEDULED: <2020-05-18 Mon>
 
 Does CIDER help us with this? I want to jump to function definitions.
 
@@ -992,7 +1000,12 @@ Then again, we have "unrated", "untagged", "untitled" so.
 
 We have to think about the UI for this.
 
-* TODO Inspect lighttable/slide performance                     :performance:
+* TODO Inspect lighttable/slide performance [1/2]               :performance:
+** DONE Issue #1: Selections delay
+CLOSED: [2020-05-17 Sun 18:42]
+:LOGBOOK:
+- State "DONE"       from              [2020-05-17 Sun 18:42]
+:END:
 
 Selecting a slide makes about 100 ms or 80 ms optimized and that's
 quite a bit. Our render is only 55 slides at the moment so expect a
@@ -1005,7 +1018,12 @@ The large problem was the selection model: make one selection and the
 entire grid is redrawn.
 
 I introduced a new selection sub that listens to one particular photo
-ID being selected, now the delay is reduced.
+ID being selected, now the delay is greatly reduced.
+
+** TODO Issue #2: Big populations take a long while
+
+A queryset of >500 photos can introduce a 1+ second delay during which
+things appear to be hanging. Very un-HTML-like behavior.
 
 * TODO re-frame and multi-arity event handlers?
 
