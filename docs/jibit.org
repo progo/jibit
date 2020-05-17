@@ -542,6 +542,12 @@ CLOSED: [2020-05-03 Sun 14:40]
   
 That's now somewhat done using css and shit.
 * TODO Photo model: UUID as the only ID?
+* TODO Exif on Panasonic GX80
+
+It isn't conveying lens info. Let's see what's what.
+
+The aperture is also incorrectly rounded "5.5" exact.
+
 * DONE Tag creation: Enter on Tag name to create it immediately
 CLOSED: [2020-05-14 Thu 17:47]
 :LOGBOOK:
