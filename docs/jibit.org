@@ -896,7 +896,14 @@ CLOSED: [2020-05-11 Mon 16:57]
 
 Probably  all times >= 1 sec are shown incorrectly.
 
-* TODO Move http server parts of =clurator.core= elsewhere
+* DONE Move http server parts of =clurator.core= elsewhere
+CLOSED: [2020-05-17 Sun 16:28]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 16:28]
+:END:
+
+Moved both parts outside, core has the CLI handling right now.
+
 * TODO Work on Import [4/7]                                          :import:
 
 - [X] CLI interaction/launcher to start import
