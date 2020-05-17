@@ -17,6 +17,9 @@
     s))
 
 (defn subdirectory-under-inbox
+  "Take a file denoted by `path` and match it against `basedir` to
+  return a meaningful subdirectory under it. If file resides directly
+  under `basedir` we return `basename basedir`."
   [basedir path]
   (let [path (remove-common-prefix (str path) (str basedir))
         ;; remove leading /
@@ -24,8 +27,14 @@
                (subs path 1)
                path)
         comps (fs/split path)]
-    (if (> (count comps) 1)
+    (cond
+      (> (count comps) 1)
       (first comps)
+
+      (= (count comps) 1)
+      (fs/base-name basedir)
+
+      :else
       "")))
 
 ;; Notes on =fs/delete=: It behaves like "rm" or "rmdir" depending on
