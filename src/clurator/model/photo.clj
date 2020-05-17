@@ -16,8 +16,7 @@
     (and (not imported-begin) (not imported-end)) nil
     (and (not imported-begin) imported-end)       [:< :photo.import_ts imported-end]
     (and imported-begin       (not imported-end)) [:> :photo.import_ts imported-begin]
-    :else [:between :photo.import_ts imported-begin imported-end]))
-
+    :else [:between :%date.photo.import_ts imported-begin imported-end]))
 
 (defn build-taken-criteria
   [taken-begin taken-end]
