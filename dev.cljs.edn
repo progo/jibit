@@ -1,6 +1,6 @@
 ^{:watch-dirs ["test" "src"]
   :css-dirs ["resources/public/css"]
-  :ring-handler clurator.core/app
+  :ring-handler clurator.server/app
   :auto-testing true}
 {:main jibit.core
  :npm-deps {}}

@@ -465,7 +465,11 @@ Other tools we need or benefit from:
 
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
-* TODO After import, clean empty and "empty" directories from inbox :inbox:backend:
+* DONE After import, clean empty and "empty" directories from inbox :inbox:backend:
+CLOSED: [2020-05-17 Sun 16:41]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 16:41]
+:END:
 * DONE =photo.is_raw= should be a boolean 1/0, not a string   :inbox:backend:
 CLOSED: [2020-05-13 Wed 18:57]
 :LOGBOOK:
@@ -929,6 +933,9 @@ Moved both parts outside, core has the CLI handling right now.
 
 At least "import" is not working correctly anything right now,
 resulting in an empty qs.
+
+We use date granularity; since sqlite has these values down to the
+millisecond they aren't included in any resultset for this reason.
 
 * TODO Some shutter speeds probably don't render too well.
 
