@@ -5,7 +5,9 @@
 
 (defn format
   [fmt dt]
-  (-> dt moment (.format fmt)))
+  (if (not (empty? dt))
+    (-> dt moment (.format fmt))
+    ""))
 
 ;; moment.js's own .toISOString is cool and performant also, it is TZ
 ;; aware though. Disable that with passing argument `true`.
