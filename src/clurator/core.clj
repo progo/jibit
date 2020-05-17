@@ -8,6 +8,7 @@
             clurator.view.photo
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.string :as string]
+            clurator.inbox
             clurator.settings)
   (:gen-class))
 
@@ -129,4 +130,7 @@
 
       (= action "import")
       (doseq [dir (or (seq args) [clurator.settings/inbox-path])]
-        (println (format "Importing from %s" dir))))))
+        (println (format "Importing from %s... " dir))
+        (println (format "*** %d imported."
+                         (-> (clurator.inbox/process-inbox! dir)
+                             :total-files)))))))

@@ -17,9 +17,8 @@
     s))
 
 (defn subdirectory-under-inbox
-  [path]
-  (let [path (remove-common-prefix (str path)
-                                   (str clurator.settings/inbox-path))
+  [basedir path]
+  (let [path (remove-common-prefix (str path) (str basedir))
         ;; remove leading /
         path (if (= (first path) \/)
                (subs path 1)
@@ -42,7 +41,7 @@
 
 (defn gather-file-info
   "Produce an Emap from file `f'."
-  [f]
+  [basedir f]
   (let [exif-tags (exif/get-exif-parsed f)
         extension (.toLowerCase (fs/extension f))
         uuid (java.util.UUID/randomUUID)
@@ -52,7 +51,7 @@
             :import-date (time/local-date-time)
             :development-date (file-modification-time f)
             :original-filename (fs/base-name f)
-            :original-dir (subdirectory-under-inbox f)
+            :original-dir (subdirectory-under-inbox basedir f)
             :original-raw nil
             :raw? (boolean (futils/raw-file? f))
             :storage filename}
@@ -62,20 +61,22 @@
   [inbox-path]
   (fs/mkdir clurator.settings/storage-directory)
   (fs/mkdir clurator.settings/thumbnail-dir)
-  (doseq [f (eligible-files inbox-path)]
-    (let [emap (gather-file-info f)]
-      (println "Processing" f "into" (:meta/storage emap))
+  (let [files (eligible-files inbox-path)]
+    (doseq [f files]
+      (let [emap (gather-file-info inbox-path f)]
+        (println "Importing" (str f) "...")
 
-      ;; make thumbnail
-      (thumbnails/create-thumbnail! f (:meta/uuid emap))
+        ;; make thumbnail
+        (thumbnails/create-thumbnail! f (:meta/uuid emap))
 
-      ;; move file under new storage
-      (fs/rename f (str clurator.settings/storage-directory
-                        "/"
-                        (:meta/storage emap)))
+        ;; move file under new storage
+        (fs/rename f (str clurator.settings/storage-directory
+                          "/"
+                          (:meta/storage emap)))
 
-      ;; make a record in db
-      (db/add-entry! emap))))
+        ;; make a record in db
+        (db/add-entry! emap)))
+    {:total-files (count files)}))
 
 ;; Debug stuffs
 (comment
