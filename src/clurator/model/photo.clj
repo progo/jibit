@@ -10,21 +10,17 @@
                 :from [:photo]
                 :where [:= :uuid uuid]}))
 
-(defn build-imported-criteria
-  [imported-begin imported-end]
-  (cond
-    (and (not imported-begin) (not imported-end)) nil
-    (and (not imported-begin) imported-end)       [:< :photo.import_ts imported-end]
-    (and imported-begin       (not imported-end)) [:> :photo.import_ts imported-begin]
-    :else [:between :%date.photo.import_ts imported-begin imported-end]))
-
-(defn build-taken-criteria
-  [taken-begin taken-end]
-  (cond
-    (and (not taken-begin) (not taken-end)) nil
-    (and (not taken-begin) taken-end)       [:< :photo.taken_ts taken-end]
-    (and taken-begin       (not taken-end)) [:> :photo.taken_ts taken-begin]
-    :else [:between :photo.taken_ts taken-begin taken-end]))
+(defn build-date-range-criteria
+  "For a photo table column `column` and dt values `begin` and `end`
+  build a suitable filter predicate."
+  [column begin end]
+  ;; SQL: date(col) truncates hours,minutes,seconds off
+  (let [col (keyword (str "%date.photo." (name column)))]
+    (cond
+      (and (not begin) (not end)) nil
+      (and (not begin) end)       [:<= col end]
+      (and begin       (not end)) [:>= col begin]
+      :else [:between col begin end])))
 
 (defn build-gear-criteria
   "Gear-type is :camera or :lens"
@@ -135,8 +131,8 @@
        :left-join [[:gear :camera] [:= :camera.id :photo.camera_id]
                    [:gear :lens]   [:= :lens.id   :photo.lens_id]]
        :where [:and true
-               (build-taken-criteria taken-begin taken-end)
-               (build-imported-criteria imported-begin imported-end)
+               (build-date-range-criteria :taken_ts taken-begin taken-end)
+               (build-date-range-criteria :import_ts imported-begin imported-end)
                (if camera-id
                  [:= :photo.camera_id camera-id]
                  (build-gear-criteria :camera camera))

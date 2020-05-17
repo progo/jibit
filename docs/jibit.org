@@ -929,7 +929,11 @@ Moved both parts outside, core has the CLI handling right now.
   DnD target of course makes sense but we have to make it halfway
   without ability to test right away.
 
-* TODO Date filters aren't working
+* DONE Date filters aren't working
+CLOSED: [2020-05-17 Sun 17:03]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 17:03]
+:END:
 
 At least "import" is not working correctly anything right now,
 resulting in an empty qs.
