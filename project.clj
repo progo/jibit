@@ -21,7 +21,7 @@
                  [cljsjs/photoswipe "4.1.1-0"]
 
                  ;; Clurator, file ops
-                 [me.raynes/fs "1.4.6"]
+                 [clj-commons/fs "1.5.2"]
                  [com.github.mjeanroy/exiftool-lib "2.5.0"]
 
                  ;; Database things

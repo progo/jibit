@@ -897,16 +897,21 @@ CLOSED: [2020-05-11 Mon 16:57]
 Probably  all times >= 1 sec are shown incorrectly.
 
 * TODO Move http server parts of =clurator.core= elsewhere
-* TODO Work on Import [1/7]                                          :import:
-SCHEDULED: <2020-05-17 Sun>
+* TODO Work on Import [4/7]                                          :import:
 
 - [X] CLI interaction/launcher to start import
-- [ ] Speedy shutdown after CLI invocation has processed everything
-- [ ] Clean the empty dirs on inbox after import
-- [ ] Notify / mark DB during import
-  Then UI can be notified.
-- [ ] Import logs
+- [X] Speedy shutdown after CLI invocation has processed everything
+- [X] Clean the empty dirs on inbox after import.
+
+  We'll move them under =inbox.processed=
+- [ ] Notify / mark DB during import. This way UI can be notified.
+  Doesn't have to be in DB, a simple atom will do perfectly fine as
+  well.
+- [X] Import logs
   When imports have happened, what / how many files were imported
+  
+  This is basically not very useful because those files are in DB,
+  ready for querying.
 - [ ] Set up listening/polling system (inotify)
 - [ ] Manual import button on UI side
 

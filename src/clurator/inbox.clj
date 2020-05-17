@@ -40,7 +40,34 @@
 ;; Notes on =fs/delete=: It behaves like "rm" or "rmdir" depending on
 ;; target. Will not touch occupied directories. Now =fs/delete-dir= is
 ;; your standard "rm -r" that will eat everything. And =fs/delete-dir=
-;; will traverse through symlinks so let's be careful.
+;; will traverse through symlinks (unless NOFOLLOW_LINKS is specified)
+;; so let's be careful.
+
+(defn clean-inbox!
+  [inbox]
+  (doseq [f (fs/list-dir inbox)
+          :when (not (= "README.txt" (fs/base-name f)))]
+    (println "Cleaning" (str f))
+
+    (cond
+      ;; Nonempty dirs move
+      (and (fs/directory? f)
+           (fs/list-dir f))
+      (do
+        (fs/copy-dir f clurator.settings/inbox-processed-path)
+        (fs/delete-dir f java.nio.file.LinkOption/NOFOLLOW_LINKS))
+
+      ;; Empty dirs deleted
+      (and (fs/directory? f)
+           (nil? (fs/list-dir f)))
+      (fs/delete f)
+
+      :else
+      (fs/move f clurator.settings/inbox-processed-path)))
+
+  ;; Finally try to delete the inbox. It should definitely quietly
+  ;; fail if there are files present.
+  (fs/delete inbox))
 
 (defn file-modification-time [f]
   (-> f
@@ -69,6 +96,7 @@
 (defn process-inbox!
   [inbox-path]
   (fs/mkdir clurator.settings/storage-directory)
+  (fs/mkdir clurator.settings/inbox-processed-path)
   (fs/mkdir clurator.settings/thumbnail-dir)
   (let [files (eligible-files inbox-path)]
     (doseq [f files]
@@ -79,12 +107,13 @@
         (thumbnails/create-thumbnail! f (:meta/uuid emap))
 
         ;; move file under new storage
-        (fs/rename f (str clurator.settings/storage-directory
-                          "/"
-                          (:meta/storage emap)))
+        (fs/move f (str clurator.settings/storage-directory
+                        "/"
+                        (:meta/storage emap)))
 
         ;; make a record in db
         (db/add-entry! emap)))
+    (clean-inbox! inbox-path)
     {:total-files (count files)}))
 
 ;; Debug stuffs

@@ -12,10 +12,8 @@
 (def inbox-path (fs/expand-home "~/pics/inbox"))
 
 ;; After importing and processing, inbox should be empty and
-;; everything should be moved here. If this path is not specified,
-;; assume deletion.
-;; Not implemented right now
-;; (def inbox-processed-path (fs/expand-home "~/pics/inbox.processed"))
+;; everything should be moved here.
+(def inbox-processed-path (fs/expand-home "~/pics/inbox.processed"))
 
 ;; Thumbnail max dimension in pixels
 (def thumbnail-size 400)
