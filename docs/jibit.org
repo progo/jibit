@@ -497,7 +497,7 @@ SQLite constraint check would be cool here.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [7/7]
+* TODO Filter panel enhancements [8/9]
 ** DONE Imported "today/yesterday/this week/all time"
 CLOSED: [2020-04-26 Sun 11:17]
 :LOGBOOK:
@@ -541,6 +541,15 @@ CLOSED: [2020-05-03 Sun 14:40]
 - Firefox can't
   
 That's now somewhat done using css and shit.
+** DONE Toggle filter panel visibility
+CLOSED: [2020-05-21 Thu 12:10]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-21 Thu 12:10]
+:END:
+** STARTED Indicate when filters are active
+:LOGBOOK:
+- State "STARTED"    from              [2020-05-21 Thu 12:10]
+:END:
 * TODO Photo model: UUID as the only ID?
 * TODO Exif on Panasonic GX80
 
@@ -961,6 +970,8 @@ more flexible speeds...
 Study what some of the cameras (Oly, Pana, Nikon, Canon) allow to do
 and see how they are expressed in fractions.
 
+* TODO Lens-id filter isn't working
+SCHEDULED: <2020-05-21 Thu>
 * TODO Mark tag as "final" 
 
 If a tag is being treated as an album, some albums may be of the sort
@@ -968,16 +979,24 @@ that are finished by some time and then never altered. Contests and
 whatnot. If that's the case we might do well if we can mark a tag so
 that no more photos can be tagged with it.
 
-* TODO Mark kebab-case words as full words                            :emacs:
-SCHEDULED: <2020-05-18 Mon>
+* DONE Mark kebab-case words as full words                            :emacs:
 
 Searches using * or # are not satisfactory because Emacs selects only
 one part of the identifier. This is a solved problem so get looking.
 
-* TODO Code tags, go to definition?                                   :emacs:
-SCHEDULED: <2020-05-18 Mon>
+People with the same issue: 
+- https://github.com/emacs-evil/evil/issues/360
+  
+So let's push =evil-symbol-word-search= to =t= either globally or in
+clojure mode.
+
+This has effects in f.ex org-mode as well, probably not very harmful.
+
+* DONE Code tags, go to definition?                                   :emacs:
 
 Does CIDER help us with this? I want to jump to function definitions.
+
+: cider-find-var
 
 * NOTSURE Automatic tags on import and "system tags"?
 CLOSED: [2020-04-27 Mon 18:32]
