@@ -540,6 +540,13 @@
    (-> db :show-filter-panel?)))
 
 (re-frame/reg-sub
+ :active-filters
+ (fn [db _]
+   ;; TODO check if certain elements are truthy: that means we have
+   ;; filters in place.
+   ))
+
+(re-frame/reg-sub
  :gear-raw
  (fn [db [_ gear-type]]
    (if (nil? gear-type)
