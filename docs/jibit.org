@@ -979,7 +979,9 @@ If a tag is being treated as an album, some albums may be of the sort
 that are finished by some time and then never altered. Contests and
 whatnot. If that's the case we might do well if we can mark a tag so
 that no more photos can be tagged with it.
+* TODO Move "filter/get photos" button to the top bar
 
+Something like "apply filters" or something.
 * DONE Mark kebab-case words as full words                            :emacs:
 
 Searches using * or # are not satisfactory because Emacs selects only
