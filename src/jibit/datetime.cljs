@@ -5,7 +5,7 @@
 
 (defn format
   [fmt dt]
-  (if (not (empty? dt))
+  (if (not (or (= "" dt) (nil? dt)))
     (-> dt moment (.format fmt))
     ""))
 
