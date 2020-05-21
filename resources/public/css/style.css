@@ -48,6 +48,12 @@ h1#head {
     padding-left: 10px;
 }
 
+#head img {
+    /* display: inline-block; */
+    height: 1.4em;
+    margin-bottom: -10px;
+}
+
 .photos-count {
     color: silver;
     font-size: smaller;
@@ -229,6 +235,10 @@ h1#head {
     /* margin-top: 15px; */
     /* margin-bottom: 5px; */
     border-radius: 10px;
+}
+
+#filter.hidden {
+    display: none;
 }
 
 #filter h1 {

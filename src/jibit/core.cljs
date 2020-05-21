@@ -230,6 +230,7 @@
                {:photos []
                 :tags []
                 :state ()
+                :show-filter-panel? true
                 :selected-tags #{}
                 :selected #{}
                 :init-done true})]
@@ -251,6 +252,10 @@
                                    :uri "/gear"
                                    :response :on-get-gear)}))
 
+(re-frame/reg-event-db
+ :toggle-show-filter-panel
+ (fn [db _]
+   (update db :show-filter-panel? not)))
 
 ;; Store changed input value under a chain of keys in db,
 ;; under :input.
@@ -530,6 +535,11 @@
    (-> db :tags)))
 
 (re-frame/reg-sub
+ :show-filter-panel?
+ (fn [db _]
+   (-> db :show-filter-panel?)))
+
+(re-frame/reg-sub
  :gear-raw
  (fn [db [_ gear-type]]
    (if (nil? gear-type)
@@ -783,8 +793,10 @@
        ]]]))
 
 (defn filter-panel []
-  (let [get-photos #(re-frame/dispatch [:get-photos])]
+  (let [get-photos #(re-frame/dispatch [:get-photos])
+        show-panel? @(re-frame/subscribe [:show-filter-panel?])]
     [:div#filter
+     {:class (when-not show-panel? "hidden")}
      [:div.filter-row
       [:div.filter-column
        [:h1 "Filter options"]
@@ -1035,6 +1047,8 @@
         sc @(re-frame/subscribe [:selected-photos#])]
     [:h1#head "Photos"
      [:span.photos-count \# pc]
+     [:img {:src "/img/filter-bw.svg"
+            :on-click #(re-frame/dispatch [:toggle-show-filter-panel])}]
      (when (pos? sc)
        [:span.selection-count "Selected " sc \space
         [:a {:class "clear"
