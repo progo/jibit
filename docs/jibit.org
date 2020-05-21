@@ -497,7 +497,7 @@ SQLite constraint check would be cool here.
 Keep EDN in considerations though.
 
 * TODO Unit tests
-* TODO Filter panel enhancements [8/9]
+* TODO Filter panel enhancements [9/9]
 ** DONE Imported "today/yesterday/this week/all time"
 CLOSED: [2020-04-26 Sun 11:17]
 :LOGBOOK:
@@ -546,12 +546,15 @@ CLOSED: [2020-05-21 Thu 12:10]
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-21 Thu 12:10]
 :END:
-** STARTED Indicate when filters are active
+** DONE Indicate when filters are active
+CLOSED: [2020-05-21 Thu 14:59]
 :LOGBOOK:
+- State "DONE"       from "STARTED"    [2020-05-21 Thu 14:59]
 - State "STARTED"    from              [2020-05-21 Thu 12:10]
 :END:
 * TODO Photo model: UUID as the only ID?
 * TODO Exif on Panasonic GX80
+SCHEDULED: <2020-05-23 Sat>
 
 It isn't conveying lens info. Let's see what's what.
 
