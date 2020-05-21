@@ -539,12 +539,37 @@
  (fn [db _]
    (-> db :show-filter-panel?)))
 
+(defn falsey?
+  "Python-like falsy check on values."
+  [x]
+  (case x
+    nil true
+    0 true
+    false true
+    "" true
+    {} true
+    [] true
+    () true
+    #{} true
+    false))
+
 (re-frame/reg-sub
  :active-filters
  (fn [db _]
-   ;; TODO check if certain elements are truthy: that means we have
-   ;; filters in place.
-   ))
+   (let [filters (or (-> db :input :filter) {})
+         ;; Would be cool to have these declared in a better way. This
+         ;; is duplicated, a second source of truth.
+         values-to-check #{:show-only-untitled?
+                           :show-only-untagged?
+                           :show-only-unrated?
+                           :show-only-uncooked?
+                           :imported-ts
+                           :taken-ts
+                           :camera
+                           :lens}]
+     (some (fn [k]
+             (not (falsey? (filters k))))
+           values-to-check))))
 
 (re-frame/reg-sub
  :gear-raw
@@ -1049,13 +1074,24 @@
         (human/gear-label g)
         ])]))
 
+(defn filter-button
+  []
+  (let [toggle-fn #(re-frame/dispatch [:toggle-show-filter-panel])
+        ;; panel-showing? (re-frame/subscribe [:show-filter-panel?])
+        filters-in-place? (re-frame/subscribe [:active-filters])]
+    (fn []
+      [:img {:src (if @filters-in-place?
+                    "/img/filter-color.svg"
+                    "/img/filter-bw.svg")
+             :on-click toggle-fn
+             }])))
+
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
         sc @(re-frame/subscribe [:selected-photos#])]
     [:h1#head "Photos"
      [:span.photos-count \# pc]
-     [:img {:src "/img/filter-bw.svg"
-            :on-click #(re-frame/dispatch [:toggle-show-filter-panel])}]
+     [filter-button]
      (when (pos? sc)
        [:span.selection-count "Selected " sc \space
         [:a {:class "clear"

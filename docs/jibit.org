@@ -950,6 +950,7 @@ Deletion of a tag is not a commonly occuring case so perhaps we can
 work around this apparent bug by redoing the lighttable contents
 altogether?
 
+* TODO Refactor :active-filters and :get-photos to use same basis
 * DONE Date filters aren't working
 CLOSED: [2020-05-17 Sun 17:03]
 :LOGBOOK:
@@ -971,7 +972,7 @@ Study what some of the cameras (Oly, Pana, Nikon, Canon) allow to do
 and see how they are expressed in fractions.
 
 * TODO Lens-id filter isn't working
-SCHEDULED: <2020-05-21 Thu>
+SCHEDULED: <2020-05-23 Sat>
 * TODO Mark tag as "final" 
 
 If a tag is being treated as an album, some albums may be of the sort
