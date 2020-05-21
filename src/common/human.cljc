@@ -7,6 +7,7 @@
 
             #?(:cljs jibit.datetime)
 
+            clojure.string
             [taoensso.timbre :as timbre :refer [debug spy]]))
 
 (defn focal-length
@@ -37,10 +38,10 @@
 
 (defn gear-label
   [gear]
-  (cond
-    (:user_label gear) (:user_label gear)
-    :else (str (:exif_make gear) \space (:exif_model gear))
-    ))
+  (clojure.string/trim
+   (cond
+     (:user_label gear) (:user_label gear)
+     :else (str (:exif_make gear) \space (:exif_model gear)))))
 
 #?(:cljs
    (do

@@ -971,8 +971,14 @@ more flexible speeds...
 Study what some of the cameras (Oly, Pana, Nikon, Canon) allow to do
 and see how they are expressed in fractions.
 
-* TODO Lens-id filter isn't working
-SCHEDULED: <2020-05-23 Sat>
+* DONE Lens-id filter isn't working
+CLOSED: [2020-05-21 Thu 14:58]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-21 Thu 14:58]
+:END:
+
+Space causes issues. Let's trim that away!
+
 * TODO Mark tag as "final" 
 
 If a tag is being treated as an album, some albums may be of the sort

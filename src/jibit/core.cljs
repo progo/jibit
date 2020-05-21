@@ -462,14 +462,16 @@
   "Do a linear search over human labeled gear, return an ID or nil if
   not found."
   [label gear-list & {:keys [label-fn] :or {label-fn human/gear-label}}]
-  (if (empty? label)
-    nil
-    ;; we build a seq of [human-label {gear-map}] tuples
-    (->> (map (juxt label-fn identity) gear-list)
-         (filter #(= label (first %)))
-         first
-         second
-         :id)))
+  (let [label (clojure.string/trim
+               (or label ""))]
+    (if (empty? label)
+      nil
+      ;; we build a seq of [human-label {gear-map}] tuples
+      (->> (map (juxt label-fn identity) gear-list)
+           (filter #(= label (first %)))
+           first
+           second
+           :id))))
 
 (defn clean-nil-values
   "Remove those keys from map `m` where value is nil."
