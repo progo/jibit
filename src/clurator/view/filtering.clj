@@ -79,7 +79,7 @@
          (clean-input-as :imported-end "imported-ts[end]")
          (clean-input :order-by
               (case input
-                "rating" :rating
+                "rating" [:rating :orig_rating]
                 "taken_ts" :taken_ts
                 :taken_ts))
          (clean-input :camera)
