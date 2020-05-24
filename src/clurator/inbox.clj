@@ -119,4 +119,5 @@
 ;; Debug stuffs
 (comment
   (defn randf [] (rand-nth (eligible-files clurator.settings/inbox-path)))
+  (defn randf' [] (exif/get-all-exif-data (randf)))
   )

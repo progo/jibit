@@ -22,7 +22,12 @@
 
                  ;; Clurator, file ops
                  [clj-commons/fs "1.5.2"]
+                 [popen "0.3.1"]
+                 [metosin/jsonista "0.2.6"]
                  [com.github.mjeanroy/exiftool-lib "2.5.0"]
+
+                 ;; having this will enable verbose debug output from exiftool-lib.
+                 ;; [log4j/log4j "1.2.16"]
 
                  ;; Database things
                  [seancorfield/next.jdbc "1.0.13"]

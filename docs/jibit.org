@@ -553,12 +553,44 @@ CLOSED: [2020-05-21 Thu 14:59]
 - State "STARTED"    from              [2020-05-21 Thu 12:10]
 :END:
 * TODO Photo model: UUID as the only ID?
-* TODO Exif on Panasonic GX80
-SCHEDULED: <2020-05-23 Sat>
+* DONE Exif on Panasonic GX80
+CLOSED: [2020-05-23 Sat 13:19] SCHEDULED: <2020-05-23 Sat>
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-23 Sat 13:19]
+:END:
 
 It isn't conveying lens info. Let's see what's what.
 
-The aperture is also incorrectly rounded "5.5" exact.
+The aperture is also 'incorrectly' rounded "5.5" exact.
+
+Standalone Exiftool 11.99 is giving good info about the lens. The java
+wrapper is not... Just to make sure, =(.getVersion exiftool)= gives
+the same.
+
+Mjeanroy's exiftool wrapper is well equipped with debug statements.
+Just have to enable them somehow.
+
+It was sufficient to write a log4j property file and also add any old
+version of "log4j" in lein deps...
+
+** Findings
+[2020-05-23 Sat]
+
+Panasonic uses field name "LensID" and Exiftool understands that.
+
+#+BEGIN_EXAMPLE
+  (~/panasonic-test-material) exiftool -j 2020-05-16-15-50-P1020617.jpg | grep LensID
+    "LensID": "Lumix G Vario 35-100mm F4.0-5.6 Asph. Mega OIS",
+#+END_EXAMPLE
+
+The same value comes as a numerical value in the wrapper:
+
+#+BEGIN_EXAMPLE
+  DEBUG com.thebuzzmedia.exiftool.core.handlers.BaseTagHandler - Read Tag [name=UnspecifiedTag{name: "LensID"}, value=2 23 10]
+#+END_EXAMPLE
+
+So does ExifTool in fact own a database of lenses that it queries
+things against? Huh. => Oh shit, it's true. Never would have guessed.
 
 * DONE Tag creation: Enter on Tag name to create it immediately
 CLOSED: [2020-05-14 Thu 17:47]

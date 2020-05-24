@@ -1,7 +1,7 @@
 (ns clurator.thumbnails
   "We're making thumbnails here."
-  (:require [me.raynes.fs :as fs]
-            [clurator.file-utils :as futils]
+  (:require [clurator.file-utils :as futils]
+            [clurator.exiftool :as exiftool]
             clurator.settings))
 
 (defn select-largest-file
@@ -28,10 +28,7 @@
   [f working-dir]
   (when-not (fs/list-dir working-dir)
     (prn "Extracting JPEG previews from a raw file")
-    (fs/exec "exiftool" "-a" "-b" "-W"
-             (str working-dir "/%t%-c.%s")
-             "-preview:all"
-             (str f))
+    (exiftool/extract-preview-files f working-dir)
     (select-largest-file working-dir)))
 
 (defn create-thumbnail!
