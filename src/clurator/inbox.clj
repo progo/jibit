@@ -78,7 +78,7 @@
 (defn gather-file-info
   "Produce an Emap from file `f'."
   [basedir f]
-  (let [exif-tags (exif/get-exif-parsed f)
+  (let [exif-tags (exif/get-exif-map f)
         extension (.toLowerCase (fs/extension f))
         uuid (java.util.UUID/randomUUID)
         filename (str uuid extension)]
@@ -119,5 +119,4 @@
 ;; Debug stuffs
 (comment
   (defn randf [] (rand-nth (eligible-files clurator.settings/inbox-path)))
-  (defn randf' [] (exif/get-all-exif-data (randf)))
   )

@@ -1,6 +1,11 @@
 (ns clurator.exiftool
-  "Minimal exiftool wrapper"
+  "Minimal Exiftool wrapper. The function you want is `get-exif-map`
+  which returns a full map of information that Exiftool would report
+  on a command-line invocation.
+
+  To extract thumbnails using Exiftool there's `extract-preview-files`."
   (:require [jsonista.core :as json]
+            clurator.utils
             popen))
 
 (def exiftool-args
@@ -37,13 +42,17 @@
          :while (not= line "{ready}")]
      line)))
 
-(defn get-exif-json
+;; NB: would work easily with multiple files, or a directoryful at a
+;; time. Exiftool is returning us an array of objects [{}, {}, ...].
+;; Since we currently only go one at a time, we call `first` to get
+;; into the map.
+(defn get-exif-map
   "Send a file parse request to the persistent exiftool process,
   blockingly read its response and convert it into a stringly keyed
   map."
   [file-path]
   (send-message! ["-j" file-path "-execute"])
-  (json/read-value (read-response!)))
+  (first (json/read-value (read-response!))))
 
 (defn extract-preview-files
   [file directory]
@@ -58,6 +67,6 @@
   (read-response!))
 
 (comment
-  (get-exif-json "/home/progo/panasonic-test-material/2020-05-16-15-50-P1020617.jpg")
+  (get-exif-map "/home/progo/panasonic-test-material/2020-05-16-15-50-P1020617.jpg")
   )
 

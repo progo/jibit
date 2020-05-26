@@ -649,6 +649,14 @@ These should work on the selection.
 
 Search/replace kind of a deal?
 
+* TODO Import multithreaded
+
+Currently on my old 4-core system where I run thing single-threaded,
+load average is around 2.3--2.7.
+
+Means we could easily double and get meaningful throughput. And this
+is also embarrassingly parallelizable stuff.
+
 * DONE Gear editor
 CLOSED: [2020-05-11 Mon 16:52]
 :LOGBOOK:
