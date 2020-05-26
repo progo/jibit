@@ -120,11 +120,25 @@
                   (get-or-create-gear gear-type make model))
       :else nil)))
 
+(defn determine-lens-information
+  "Take these three pieces of information Exiftool can provide, and
+  decide how to proceed. Input may have nils. Return a 2-tuple
+  make/model, where output can be nil."
+  [lens-id lens-make lens-model]
+  (cond
+    ;; When we have Lens ID let's go with that. Lens-make is not
+    ;; always present but that's okay.
+    lens-id [lens-make lens-id]
+    :else [lens-make lens-model]))
+
 (defn add-entry!
   "Take an Emap and insert it into DB normalised."
   [e]
   (let [camera-id (get-or-create-gear "camera" (:exif/Make e) (:exif/Model e))
-        lens-id (get-or-create-gear "lens" (:exif/LensMake e) (:exif/LensModel e))]
+        lens-id (apply get-or-create-gear "lens" (determine-lens-information
+                                                  (:exif/LensID e)
+                                                  (:exif/LensMake e)
+                                                  (:exif/LensModel e)))]
     (jdbc/execute!
      db
      (-> (s/insert-into :photo)

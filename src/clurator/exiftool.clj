@@ -14,6 +14,27 @@
    "-@" "-"                             ; Read from stdin
    ])
 
+(def exif-tags
+  "These are the tags we ask of Exiftool. We want human-friendly
+  formatting except for the tags with # at end."
+  ["-LensMake"
+   "-LensModel"
+   "-LensID"
+   "-ImageWidth"
+   "-ImageHeight"
+   "-Megapixels#"
+   "-ExposureTime#"
+   "-Aperture"
+   "-ISO#"
+   "-FocalLength#"
+   "-FocalLength35efl#"
+   "-ExposureCompensation#"
+   "-LightValue"
+   "-Rating#"
+   "-CreateDate#"
+   "-Make"
+   "-Model"])
+
 ;; TODO Wrap in an agent or something? Ideally we want multiprocess in
 ;; the future, restartability.
 
@@ -51,7 +72,7 @@
   blockingly read its response and convert it into a stringly keyed
   map."
   [file-path]
-  (send-message! ["-j" file-path "-execute"])
+  (send-message! (concat ["-json"] exif-tags [file-path "-execute"]))
   (first (json/read-value (read-response!))))
 
 (defn extract-preview-files

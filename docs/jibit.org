@@ -465,33 +465,6 @@ Other tools we need or benefit from:
 
 - Shift/correct taken_ts timezones 
 - mass-apply FL, lens info (leica lenses or other dead lenses)
-* DONE After import, clean empty and "empty" directories from inbox :inbox:backend:
-CLOSED: [2020-05-17 Sun 16:41]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-17 Sun 16:41]
-:END:
-* DONE =photo.is_raw= should be a boolean 1/0, not a string   :inbox:backend:
-CLOSED: [2020-05-13 Wed 18:57]
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-13 Wed 18:57]
-:END:
-
-Currently it is a string against the schema and we check its
-booleanness by checking with =nil?=.
-
-But it should be 0/1 in the first place.
-
-Quick fix in sql
-
-#+BEGIN_EXAMPLE
-  update photo
-  set is_raw = case when is_raw is null then 0 else 1 end;
-#+END_EXAMPLE
-
-Yep, currently the whole filter is broken.
-
-SQLite constraint check would be cool here.
-
 * TODO Configuration rounded up
 
 Keep EDN in considerations though.
@@ -591,6 +564,23 @@ The same value comes as a numerical value in the wrapper:
 
 So does ExifTool in fact own a database of lenses that it queries
 things against? Huh. => Oh shit, it's true. Never would have guessed.
+
+** Exiftool
+
+Exiftool makes the "join" from its own database when queried without
+"-n" (--printConv). But when prettyformat is applied (-n omitted) the
+lens database join is performed.
+
+We'll have to google and see what the Author has to say.
+
+** Findings cont'd
+[2020-05-26 Tue]
+
+From today's analysis I conclude that the Wrapper is doing a good job.
+It's calling Exiftool with =-n= but there are so many ways to neatly
+affect how the library invokes E, it wouldn't have been a big burden
+to implement custom behavior. Nevertheless, we are close to the
+"metal" (command-line) currently which is not too terrible either.
 
 * DONE Tag creation: Enter on Tag name to create it immediately
 CLOSED: [2020-05-14 Thu 17:47]
@@ -1599,6 +1589,33 @@ equally blurry.
 
 Light value is probably something we can just show with rounded to two
 decimal places.
+
+** DONE After import, clean empty and "empty" directories from inbox :inbox:backend:
+CLOSED: [2020-05-17 Sun 16:41]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 16:41]
+:END:
+** DONE =photo.is_raw= should be a boolean 1/0, not a string :inbox:backend:
+CLOSED: [2020-05-13 Wed 18:57]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-13 Wed 18:57]
+:END:
+
+Currently it is a string against the schema and we check its
+booleanness by checking with =nil?=.
+
+But it should be 0/1 in the first place.
+
+Quick fix in sql
+
+#+BEGIN_EXAMPLE
+  update photo
+  set is_raw = case when is_raw is null then 0 else 1 end;
+#+END_EXAMPLE
+
+Yep, currently the whole filter is broken.
+
+SQLite constraint check would be cool here.
 
 * Setting up the dev environment                                :emacs:cider:
 
