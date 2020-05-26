@@ -1,10 +1,12 @@
 (ns clurator.thumbnails
   "We're making thumbnails here."
-  (:require [clurator.file-utils :as futils]
+  (:require [me.raynes.fs :as fs]
+            [clurator.file-utils :as futils]
             [clurator.exiftool :as exiftool]
             clurator.settings))
 
 (defn select-largest-file
+  "In given directory, look up and return the largest file by size."
   [dir]
   (let [files (fs/list-dir dir)]
     (apply max-key (memfn length) files)))
@@ -19,11 +21,8 @@
     target-name))
 
 (defn extract-raw-preview
-  "Extract JPEG preview from a raw file using exiftool invocation. Slow
-  and bitter.
-
+  "Extract JPEG preview from a raw file using exiftool invocation.
   Returns a j.io.File instance of the most suitable candidate in JPEG.
-
   Caution: working-dir must be clean and must be cleaned after use."
   [f working-dir]
   (when-not (fs/list-dir working-dir)
