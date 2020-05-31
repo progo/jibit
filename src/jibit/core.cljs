@@ -1126,6 +1126,7 @@
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
+     ;; [:img {:src "/img/film-spinner-sq-orange.gif"}]
      [:div#menu
       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
            :title "Open gear data editor"
