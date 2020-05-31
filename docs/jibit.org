@@ -1046,6 +1046,12 @@ Deletion of a tag is not a commonly occuring case so perhaps we can
 work around this apparent bug by redoing the lighttable contents
 altogether?
 
+* TODO Spinner
+
+When spinner gets disabled make sure we show it for at least 500 ms.
+
+A quick flashing of the spinner is not that user friendly.
+
 * TODO Refactor :active-filters and :get-photos to use same basis
 * DONE Date filters aren't working
 CLOSED: [2020-05-17 Sun 17:03]

@@ -148,7 +148,7 @@
    (let [get-photos? (and (ok? status)
                           (-> response :total-files pos?))]
      (into {}
-           [[:db db]  ; TODO disable spinner, show message about count
+           [[:db (assoc db :activity nil)]  ; TODO show message about count
             (when get-photos?
               [:dispatch [:get-photos]])]))))
 
@@ -242,6 +242,7 @@
                {:photos []
                 :tags []
                 :state ()
+                :activity nil
                 :show-filter-panel? true
                 :selected-tags #{}
                 :selected #{}
@@ -497,7 +498,7 @@
  :do-sync-inbox
  (fn [{db :db} _]
    (debug "Going to check for new photos in the inbox")
-   {:db db                              ;  TODO enable a spinner or some such
+   {:db (assoc db :activity "Syncing...")
     :http-xhrio (build-edn-request :method :post
                                    :uri "/inbox/sync"
                                    :timeout (* 30 60 1000)
@@ -538,6 +539,11 @@
      {})))
 
 ;;; queries from db
+
+(re-frame/reg-sub
+ :activity
+ (fn [db _]
+   (:activity db)))
 
 (re-frame/reg-sub
  :current-state
@@ -1115,6 +1121,16 @@
              :on-click toggle-fn
              }])))
 
+(defn activity-indicator
+  "Nonmodal spinner in top right corner."
+  []
+  (let [activity-msg @(re-frame/subscribe [:activity])]
+    [:div#activity
+     {:class (when (nil? activity-msg) "hidden")}
+     (str activity-msg)
+     \space
+     [:img {:src "/img/film-spinner-sq-orange.gif"}]]))
+
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
         sc @(re-frame/subscribe [:selected-photos#])]
@@ -1126,7 +1142,7 @@
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
-     ;; [:img {:src "/img/film-spinner-sq-orange.gif"}]
+     [activity-indicator]
      [:div#menu
       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
            :title "Open gear data editor"

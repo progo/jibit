@@ -237,7 +237,7 @@ h1#head {
     border-radius: 10px;
 }
 
-#filter.hidden {
+.hidden {
     display: none;
 }
 
@@ -312,6 +312,20 @@ h1#head {
 
 .fd-dropdown li:hover {
     color: white;
+}
+
+/** non-modal activity **/
+
+#activity {
+    background-color: black;
+    opacity: 0.8;
+
+    border-radius: 10px;
+    padding: 10px;
+
+    position: fixed;
+    right: 25px;
+    top: 10px;
 }
 
 /* Tags */
