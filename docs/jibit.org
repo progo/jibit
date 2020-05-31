@@ -956,7 +956,7 @@ CLOSED: [2020-05-17 Sun 16:28]
 
 Moved both parts outside, core has the CLI handling right now.
 
-* TODO Work on Import [4/7]                                          :import:
+* TODO Work on Import [5/7]                                          :import:
 
 - [X] CLI interaction/launcher to start import
 - [X] Speedy shutdown after CLI invocation has processed everything
@@ -971,11 +971,70 @@ Moved both parts outside, core has the CLI handling right now.
   
   This is basically not very useful because those files are in DB,
   ready for querying.
-- [ ] Set up listening/polling system (inotify)
+- [X] Set up listening/polling system (inotify)
+  
+  =juxt/dirwatch= seems appropriate. But the appearance of a file in
+  the inbox is not atomic when it comes to Darktable export.
+
 - [ ] Manual import button on UI side
 
   DnD target of course makes sense but we have to make it halfway
   without ability to test right away.
+
+** NOTSURE Watch realtime modifications
+CLOSED: [2020-05-31 Sun 12:33]
+
+: juxt/dirwatcher
+
+is pretty alright. It uses callbacks and the function receives
+following kinds of maps.
+
+#+BEGIN_EXAMPLE
+  ;; touch
+  {:file #object[java.io.File 0x6c263ab "/home/progo/pics/inbox/HelloWorld.txt"], :count 1, :action :modify}
+
+  ;; rm
+  {:file #object[java.io.File 0x32d58a08 "/home/progo/pics/inbox/HelloWorld.txt"], :count 1, :action :delete}
+#+END_EXAMPLE
+
+Darktable export while watching. I exported two pics and this is the
+amount of callbacks generated.
+
+#+BEGIN_EXAMPLE
+  {:file #object[java.io.File 0x2d90a1e8 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 1, :action :create}
+  {:file #object[java.io.File 0x6cadabd3 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 1, :action :modify}
+  {:file #object[java.io.File 0x61f8ca28 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 1, :action :modify}
+  {:file #object[java.io.File 0x75bc756f "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 4, :action :modify}
+  {:file #object[java.io.File 0x65c752cf "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 6, :action :modify}
+  {:file #object[java.io.File 0x5d8b05d1 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 2, :action :modify}
+  {:file #object[java.io.File 0x20c5c013 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 1, :action :modify}
+  {:file #object[java.io.File 0xd7085d2 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 3, :action :modify}
+  {:file #object[java.io.File 0x36a1e775 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 9, :action :modify}
+  {:file #object[java.io.File 0xc82549c "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 17, :action :modify}
+  {:file #object[java.io.File 0x112fc203 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 14, :action :modify}
+  {:file #object[java.io.File 0xc301f7f "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-15-47-MP009016.jpg"], :count 2, :action :modify}
+  
+  -- another file
+
+  {:file #object[java.io.File 0x4ea1bbc3 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 1, :action :create}
+  {:file #object[java.io.File 0x7d9dedfa "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 1, :action :modify}
+  {:file #object[java.io.File 0x40ea3f5c "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 2, :action :modify}
+  {:file #object[java.io.File 0x479ded2a "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 4, :action :modify}
+  {:file #object[java.io.File 0x7949e27b "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 4, :action :modify}
+  {:file #object[java.io.File 0x3980f86a "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 4, :action :modify}
+  {:file #object[java.io.File 0x1619088b "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 5, :action :modify}
+  {:file #object[java.io.File 0x2be0309d "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 2, :action :modify}
+  {:file #object[java.io.File 0x55a5d628 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 1, :action :modify}
+  {:file #object[java.io.File 0xc6b4f76 "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 1, :action :modify}
+  {:file #object[java.io.File 0x44a4031f "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 12, :action :modify}
+  {:file #object[java.io.File 0x2437076c "/home/progo/pics/inbox/2020-05-30(Sat)-munkkiniemi/2020-05-30-16-15-MP009019.jpg"], :count 43, :action :modify}
+#+END_EXAMPLE
+
+For one action of 'create' a multitude of 'modify' actions follow. Now
+what? A tough export might take seconds to complete.
+
+Let's leave this thing on the backburner for now. Let's instead make
+sure that import routines are easily called from the UI by the user.
 
 * TODO When tag is deleted, phantom little divs remain
 

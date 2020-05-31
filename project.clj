@@ -22,6 +22,7 @@
 
                  ;; Clurator, file ops
                  [clj-commons/fs "1.5.2"]
+                 [juxt/dirwatch "0.2.5"]
                  [popen "0.3.1"]
                  [metosin/jsonista "0.2.6"]
                  [com.github.mjeanroy/exiftool-lib "2.5.0"]
