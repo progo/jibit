@@ -956,7 +956,7 @@ CLOSED: [2020-05-17 Sun 16:28]
 
 Moved both parts outside, core has the CLI handling right now.
 
-* TODO Work on Import [5/7]                                          :import:
+* TODO Work on Import [6/8]                                          :import:
 
 - [X] CLI interaction/launcher to start import
 - [X] Speedy shutdown after CLI invocation has processed everything
@@ -975,6 +975,8 @@ Moved both parts outside, core has the CLI handling right now.
   
   =juxt/dirwatch= seems appropriate. But the appearance of a file in
   the inbox is not atomic when it comes to Darktable export.
+
+- [X] Manual sync inbox button
 
 - [ ] Manual import button on UI side
 

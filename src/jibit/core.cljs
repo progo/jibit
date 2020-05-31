@@ -142,6 +142,18 @@
               :selected ids)))))
 
 (re-frame/reg-event-fx
+ :on-sync-inbox
+ (fn [{db :db} [_ {status :status response :response}]]
+   (debug status response)
+   (let [get-photos? (and (ok? status)
+                          (-> response :total-files pos?))]
+     (into {}
+           [[:db db]  ; TODO disable spinner, show message about count
+            (when get-photos?
+              [:dispatch [:get-photos]])]))))
+
+
+(re-frame/reg-event-fx
  :on-tag
  (fn [cofx [_ {status :status response :response}]]
    ;; We've just tagged images
@@ -480,6 +492,17 @@
         (filter (fn [[k v]]
                   (not (nil? v)))
                 m)))
+
+(re-frame/reg-event-fx
+ :do-sync-inbox
+ (fn [{db :db} _]
+   (debug "Going to check for new photos in the inbox")
+   {:db db                              ;  TODO enable a spinner or some such
+    :http-xhrio (build-edn-request :method :post
+                                   :uri "/inbox/sync"
+                                   :timeout (* 30 60 1000)
+                                   :params []
+                                   :response :on-sync-inbox)}))
 
 (re-frame/reg-event-fx
  :get-photos
@@ -1101,8 +1124,20 @@
              :href "#"} "Clear"]])
      [:div#menu
       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+           :title "Open gear data editor"
            :href "#"}
-       "Gear"]]]))
+       "Gear"]
+      \space
+      [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
+           :title "Sync inbox"
+           :href "#"}
+       "Inbox"]
+      \space
+      [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+           :title "Select or drop photos to import"
+           :href "#"}
+       "Import"]
+      ]]))
 
 (defn user-interface []
   [:div

@@ -59,12 +59,16 @@
 (def update-gear
   (make-req-handler #'clurator.view.gear/update-gear))
 
+(def sync-inbox
+  (make-req-handler #'clurator.view.operations/sync-inbox))
+
 (comp/defroutes app
   (GET "/" [] index)
   (POST    "/tag-photo" [] tag-photos)
   (POST    "/tag" [] create-update-new-tag)
   (DELETE  "/tag" [] delete-tag)
   (POST "/gear" [] update-gear)
+  (POST "/inbox/sync" [] sync-inbox)
   (GET "/tags" [] list-tags)
   (GET "/gear" [] list-gear)
   (GET "/photos" [] list-photos)
