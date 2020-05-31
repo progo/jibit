@@ -817,8 +817,9 @@
   element (a div)."
   [data-ids props]
   (let [{:keys [begin end]} @(re-frame/subscribe [:input data-ids])
+        not-selected? (and (empty? begin) (empty? end))
         repr (cond
-               (and (empty? begin) (empty? end))
+               not-selected?
                "Not selected"
 
                (= begin end)
@@ -828,7 +829,10 @@
                (str (jibit.datetime/org-format begin)
                     " ⟶ "
                     (jibit.datetime/org-format end)))
-        props' props]
+        props' (update props
+                       :class
+                       #(when not-selected?
+                         (str % " no-selection")))]
     [:div.fancydate
      props'
      repr

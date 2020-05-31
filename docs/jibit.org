@@ -978,6 +978,8 @@ Moved both parts outside, core has the CLI handling right now.
 
 - [X] Manual sync inbox button
 
+- [ ] Message about how many pics were imported
+
 - [ ] Manual import button on UI side
 
   DnD target of course makes sense but we have to make it halfway
