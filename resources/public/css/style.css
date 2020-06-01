@@ -340,6 +340,10 @@ h1#head {
     top: 10px;
 }
 
+#activity img {
+    height: 2em;
+}
+
 /* Tags */
 
 #no-tags {

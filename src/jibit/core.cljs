@@ -548,7 +548,7 @@
  (fn [{db :db} [_ photo]]
    (if-not (:is_raw photo)
      {:show-photo-on-lightbox [photo (-> db :photos)]}
-     {})))
+     {:dispatch [:show-message "I can't show raw photos."]})))
 
 ;;; queries from db
 
@@ -1167,8 +1167,6 @@
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
-     [activity-indicator]
-     [message-box]
      [:div#menu
       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
            :title "Open gear data editor"
@@ -1193,6 +1191,8 @@
    [filter-panel]
    [tags-view]
    [lighttable]
+   [activity-indicator]
+   [message-box]
 
    ;; unrendered metadata for form inputs
    [gear-datalists "camera-list" :camera]
