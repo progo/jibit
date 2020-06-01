@@ -148,9 +148,11 @@
    (let [get-photos? (and (ok? status)
                           (-> response :total-files pos?))]
      (into {}
-           [[:db (assoc db :activity nil)]  ; TODO show message about count
+           [[:db (assoc db :activity nil)]
             (when get-photos?
-              [:dispatch [:get-photos]])]))))
+              [:dispatch-n [[:show-message (cl-format nil "~d photo~:p imported"
+                                                      (-> response :total-files))]
+                            [:get-photos]]])]))))
 
 
 (re-frame/reg-event-fx
@@ -243,6 +245,7 @@
                 :tags []
                 :state ()
                 :activity nil
+                :message nil
                 :show-filter-panel? true
                 :selected-tags #{}
                 :selected #{}
@@ -264,6 +267,15 @@
    {:http-xhrio (build-edn-request :method :get
                                    :uri "/gear"
                                    :response :on-get-gear)}))
+
+(re-frame/reg-event-fx
+ :show-message
+ (fn [{db :db} [_ msg]]
+   (if msg
+     {:db (assoc db :message msg)
+      :dispatch-after-delay {:event [:show-message nil]
+                             :timeout 2000}}
+     {:db (assoc db :message nil)})))
 
 (re-frame/reg-event-db
  :toggle-show-filter-panel
@@ -539,6 +551,11 @@
      {})))
 
 ;;; queries from db
+
+(re-frame/reg-sub
+ :message
+ (fn [db _]
+   (:message db)))
 
 (re-frame/reg-sub
  :activity
@@ -1121,6 +1138,14 @@
              :on-click toggle-fn
              }])))
 
+(defn message-box
+  "Nonmodal temporary message in the corner"
+  []
+  (let [message @(re-frame/subscribe [:message])]
+    [:div#message
+     {:class (when (nil? message) "hidden")}
+     (str message)]))
+
 (defn activity-indicator
   "Nonmodal spinner in top right corner."
   []
@@ -1143,6 +1168,7 @@
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
      [activity-indicator]
+     [message-box]
      [:div#menu
       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
            :title "Open gear data editor"

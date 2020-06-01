@@ -314,7 +314,19 @@ h1#head {
     color: white;
 }
 
-/** non-modal activity **/
+/** non-modal message, activity **/
+
+#message {
+    background-color: black;
+    opacity: 0.8;
+
+    border-radius: 10px;
+    padding: 10px;
+
+    position: fixed;
+    right: 25px;
+    top: 10px;
+}
 
 #activity {
     background-color: black;
