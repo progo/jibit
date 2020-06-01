@@ -62,8 +62,12 @@
 (def sync-inbox
   (make-req-handler #'clurator.view.operations/sync-inbox))
 
+(def upload-photos
+  (make-req-handler #'clurator.view.photo/upload-photos))
+
 (comp/defroutes app
   (GET "/" [] index)
+  (POST "/upload" [] upload-photos)
   (POST    "/tag-photo" [] tag-photos)
   (POST    "/tag" [] create-update-new-tag)
   (DELETE  "/tag" [] delete-tag)

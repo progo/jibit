@@ -69,14 +69,18 @@
 ;; Defining client/server conversations
 
 (defn build-edn-request
-  "Build a request building map that can be passed to :http-xhrio."
+  "Build a request building map that can be passed to :http-xhrio. This
+  is our basic XHR protocol of choice, EDN on both ends. Use :body only
+  when uploading files (using js/FormData objects)."
   [&{method :method
      uri :uri
      params :params
+     body :body
      response :response}]
   {:method method
    :uri (str server-uri uri)
    :params params
+   :body body
    :format (ajax.edn/edn-request-format)
    :response-format (ajax.edn/edn-response-format)
    :on-success [response]
@@ -109,6 +113,31 @@
 (defn ok?
   [status]
   (= status :ok))
+
+(re-frame/reg-event-fx
+ :upload-files
+ (fn [_ [_ files-cmp]]
+   (let [fd (js/FormData.)
+         files (.-files files-cmp)
+         files# (count (array-seq files))
+         name (.-name files-cmp)]
+     (if (pos? files#)
+       (do
+         (doseq [file-key (.keys js/Object files)]
+           (.append fd name (aget files file-key)))
+         ;; TODO upload spinner
+         {:http-xhrio (build-edn-request :method :post
+                                         :uri "/upload"
+                                         :body fd
+                                         :response :on-upload)})
+       ;; Do nothing when no files (we probs cleared/cancelled the input)
+       {}))))
+
+
+(re-frame/reg-event-fx
+ :show-file-import
+ (fn [_ _]
+   {:activate-file-upload nil}))
 
 (re-frame/reg-event-db
  :on-get-gear
@@ -228,6 +257,12 @@
                            (clj->js projected-photos)
                            #js {:index index})
        (.init)))))
+
+;; activate input[type=file] to show a file selector
+(re-frame/reg-fx
+ :activate-file-upload
+ (fn [_]
+   (.click (js/document.getElementById "file-upload"))))
 
 (re-frame/reg-fx
  :dispatch-after-delay
@@ -1167,21 +1202,29 @@
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
+
      [:div#menu
       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
            :title "Open gear data editor"
            :href "#"}
        "Gear"]
       \space
+
       [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
            :title "Sync inbox"
            :href "#"}
        "Inbox"]
       \space
-      [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+
+      [:a {:on-click #(re-frame/dispatch [:show-file-import])
            :title "Select or drop photos to import"
            :href "#"}
        "Import"]
+      [:input#file-upload.hidden
+       {:name "upload"
+        :on-change #(re-frame/dispatch [:upload-files (-> % .-target)])
+        :type :file
+        :multiple true}]
       ]]))
 
 (defn user-interface []

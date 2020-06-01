@@ -956,16 +956,24 @@ CLOSED: [2020-05-17 Sun 16:28]
 
 Moved both parts outside, core has the CLI handling right now.
 
-* TODO Work on Import [7/9]                                          :import:
+* TODO Work on Import [9/9]                                          :import:
 
 - [X] CLI interaction/launcher to start import
 - [X] Speedy shutdown after CLI invocation has processed everything
 - [X] Clean the empty dirs on inbox after import.
 
   We'll move them under =inbox.processed=
-- [ ] Notify / mark DB during import. This way UI can be notified.
+- [X] Notify / mark DB during import. This way UI can be notified.
   Doesn't have to be in DB, a simple atom will do perfectly fine as
   well.
+
+  We don't need this right away if user always activates sync or
+  import from the UI.
+
+  But if there was a background batch job or a dir watch, then we'd
+  need this.
+  
+  Mark this as 'done' and make a separate entry.
 - [X] Import logs
   When imports have happened, what / how many files were imported
   
@@ -980,7 +988,7 @@ Moved both parts outside, core has the CLI handling right now.
 
 - [X] Message about how many pics were imported
 
-- [ ] Manual import button on UI side
+- [X] Manual import button on UI side
 
   DnD target of course makes sense but we have to make it halfway
   without ability to test right away.
@@ -1040,13 +1048,35 @@ what? A tough export might take seconds to complete.
 Let's leave this thing on the backburner for now. Let's instead make
 sure that import routines are easily called from the UI by the user.
 
+** TODO Notify UI when importing
+
+A simple atom in backend plus an API point* will do perfectly fine as
+well. We don't need this right away if user always activates sync or
+import from the UI. But if there was a background batch job or a dir
+watch, *then we'd need this*.
+
+(*) A constant query from the server wouldn't be too fancy. Websockets
+maybe.
+
+** TODO Drag'n'Drop support in the upper right corner
+
+* TODO Import file robustness issues
+** TODO some basic PNG files and whatnot cause problems at exif analysis
+** TODO Problems when inbox.processed already has similar-named files
+
+On conflict rename the new file, okay?
+** TODO Finish the Import button ux
+
+- [ ] Show spinner when doing
+- [ ] Show import count when done.
+
 * TODO When tag is deleted, phantom little divs remain
 
 Deletion of a tag is not a commonly occuring case so perhaps we can
 work around this apparent bug by redoing the lighttable contents
 altogether?
 
-* TODO Spinner
+* TODO Don't flash the Spinner so quickly
 
 When spinner gets disabled make sure we show it for at least 500 ms.
 
