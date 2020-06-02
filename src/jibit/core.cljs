@@ -115,8 +115,8 @@
   (= status :ok))
 
 (re-frame/reg-event-fx
- :upload-files
- (fn [_ [_ files-cmp]]
+ :import-photos
+ (fn [{db :db} [_ files-cmp]]
    (let [fd (js/FormData.)
          files (.-files files-cmp)
          files# (count (array-seq files))
@@ -125,11 +125,11 @@
        (do
          (doseq [file-key (.keys js/Object files)]
            (.append fd name (aget files file-key)))
-         ;; TODO upload spinner
-         {:http-xhrio (build-edn-request :method :post
+         {:db (assoc db :activity "Importing...")
+          :http-xhrio (build-edn-request :method :post
                                          :uri "/upload"
                                          :body fd
-                                         :response :on-upload)})
+                                         :response :on-sync-inbox)})
        ;; Do nothing when no files (we probs cleared/cancelled the input)
        {}))))
 
@@ -170,10 +170,10 @@
               :photos new-photos
               :selected ids)))))
 
+;; This handles both Inbox-sync and Import responses.
 (re-frame/reg-event-fx
  :on-sync-inbox
  (fn [{db :db} [_ {status :status response :response}]]
-   (debug status response)
    (let [get-photos? (and (ok? status)
                           (-> response :total-files pos?))]
      (into {}
@@ -1222,7 +1222,7 @@
        "Import"]
       [:input#file-upload.hidden
        {:name "upload"
-        :on-change #(re-frame/dispatch [:upload-files (-> % .-target)])
+        :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
         :type :file
         :multiple true}]
       ]]))

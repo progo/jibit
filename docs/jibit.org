@@ -1065,10 +1065,14 @@ maybe.
 ** TODO Problems when inbox.processed already has similar-named files
 
 On conflict rename the new file, okay?
-** TODO Finish the Import button ux
+** DONE Finish the Import button ux
+CLOSED: [2020-06-02 Tue 18:35]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-06-02 Tue 18:35]
+:END:
 
-- [ ] Show spinner when doing
-- [ ] Show import count when done.
+- [X] Show spinner when doing
+- [X] Show import count when done.
 
 * TODO When tag is deleted, phantom little divs remain
 
