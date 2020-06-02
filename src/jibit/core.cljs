@@ -174,14 +174,16 @@
 (re-frame/reg-event-fx
  :on-sync-inbox
  (fn [{db :db} [_ {status :status response :response}]]
-   (let [get-photos? (and (ok? status)
-                          (-> response :total-files pos?))]
-     (into {}
-           [[:db (assoc db :activity nil)]
-            (when get-photos?
-              [:dispatch-n [[:show-message (cl-format nil "~d photo~:p imported"
-                                                      (-> response :total-files))]
-                            [:get-photos]]])]))))
+   (let [photos# (-> response :total-files)
+         get-photos? (and (ok? status)
+                          (pos? photos#))
+         message (if (zero? photos#)
+                   "No photos imported"
+                   (cl-format nil "~d photo~:p imported" photos#))]
+     {:db (assoc db :activity nil)
+      :dispatch-n [[:show-message message]
+                   (when get-photos?
+                     [:get-photos])]})))
 
 
 (re-frame/reg-event-fx
