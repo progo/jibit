@@ -170,6 +170,12 @@
               :photos new-photos
               :selected ids)))))
 
+(re-frame/reg-event-fx
+ :on-export
+ (fn [{db :db} [_ {status :status response :response}]]
+   {:db (assoc db :activity nil)
+    :dispatch-n [[:show-message "Export finished."]]}))
+
 ;; This handles both Inbox-sync and Import responses.
 (re-frame/reg-event-fx
  :on-sync-inbox
@@ -542,6 +548,17 @@
         (filter (fn [[k v]]
                   (not (nil? v)))
                 m)))
+
+(re-frame/reg-event-fx
+ :export-selected
+ (fn [{db :db} _]
+   (if-let [selection (seq (-> db :selected))]
+     {:db (assoc db :activity "Exporting...")
+      :http-xhrio (build-edn-request :method :post
+                                     :uri "/export"
+                                     :params {:photos selection}
+                                     :response :on-export)}
+     {:dispatch [:show-message "No photos selected."]})))
 
 (re-frame/reg-event-fx
  :do-sync-inbox
@@ -1227,6 +1244,12 @@
         :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
         :type :file
         :multiple true}]
+      \space
+
+      [:a {:on-click #(re-frame/dispatch [:export-selected])
+           :title "Export selected photos"
+           :href "#"}
+       "Export"]
       ]]))
 
 (defn user-interface []

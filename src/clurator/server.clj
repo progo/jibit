@@ -65,9 +65,13 @@
 (def upload-photos
   (make-req-handler #'clurator.view.photo/upload-photos))
 
+(def export-photos
+  (make-req-handler #'clurator.view.operations/export-photos))
+
 (comp/defroutes app
   (GET "/" [] index)
   (POST "/upload" [] upload-photos)
+  (POST "/export" [] export-photos)
   (POST    "/tag-photo" [] tag-photos)
   (POST    "/tag" [] create-update-new-tag)
   (DELETE  "/tag" [] delete-tag)

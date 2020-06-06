@@ -1059,7 +1059,6 @@ watch, *then we'd need this*.
 maybe.
 
 ** TODO Drag'n'Drop support in the upper right corner
-
 * TODO Import file robustness issues
 ** TODO some basic PNG files and whatnot cause problems at exif analysis
 ** TODO Problems when inbox.processed already has similar-named files
@@ -1080,11 +1079,18 @@ Deletion of a tag is not a commonly occuring case so perhaps we can
 work around this apparent bug by redoing the lighttable contents
 altogether?
 
-* TODO Don't flash the Spinner so quickly
+* DONE Don't flash the Spinner so quickly
+CLOSED: [2020-06-06 Sat 12:04]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-06-06 Sat 12:04]
+:END:
 
 When spinner gets disabled make sure we show it for at least 500 ms.
 
 A quick flashing of the spinner is not that user friendly.
+
+We can solve this by always showing a nonmodal message after the
+spinning is done spinning.
 
 * TODO Refactor :active-filters and :get-photos to use same basis
 * DONE Date filters aren't working

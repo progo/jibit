@@ -10,6 +10,17 @@
                 :from [:photo]
                 :where [:= :uuid uuid]}))
 
+(defn get-files-by-id
+  "Get storage filenames for given collection of IDs."
+  [ids]
+  (->>
+   (db/query! {:select [:storage_filename]
+               :from [:photo]
+               :where [:in :id ids]})
+   (map :storage_filename)
+   ;; (map (partial str clurator.settings/storage-directory "/"))
+   ))
+
 (defn build-date-range-criteria
   "For a photo table column `column` and dt values `begin` and `end`
   build a suitable filter predicate."

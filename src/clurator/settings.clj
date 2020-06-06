@@ -8,6 +8,9 @@
 ;; The storage for collected files/jibit
 (def storage-directory (fs/expand-home "~/pics/clurator"))
 
+;; Outbox directory for exports
+(def outbox-path (fs/expand-home "~/pics/outbox"))
+
 ;; The location we source new material
 (def inbox-path (fs/expand-home "~/pics/inbox"))
 
