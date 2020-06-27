@@ -1059,6 +1059,40 @@ watch, *then we'd need this*.
 maybe.
 
 ** TODO Drag'n'Drop support in the upper right corner
+
+* TODO Export options
+SCHEDULED: <2020-06-22 Mon>
+
+- Export as $preset
+- Export full (as JPEG)
+
+  Meaning we convert to JPEG if it's not JPEG. Doesn't apply to raws.
+
+* DONE Selections sluggish due to tags?
+CLOSED: [2020-06-27 Sat 18:58]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-06-27 Sat 18:58]
+:END:
+[2020-06-27 Sat]
+
+- On our table of 800 slides, having tags imposes ~1.4 s delays on
+  selections!
+- Removing tags from showing on slides, the delays reduce to ~30-40 ms
+- This is just a selection so there shouldn't be a big difference.
+- culprit is the ~tag-view~ component...
+  - ah-ha! Of course. There's a subscription to selection. That
+    explains it all.
+  - selection changes, it causes re-renders.
+- implemented (copypasted) a tiny variant of the tag which doesn't do
+  the usability things... only represents the tag
+- this new variant helped a great deal. Selections are instant again.
+  But taggings can be sluggish.
+
+* TODO Tagging on huge table is sluggish
+
+- 800 slides on the table, tagging takes +400 ms
+- Too much.
+
 * TODO Import file robustness issues
 ** TODO some basic PNG files and whatnot cause problems at exif analysis
 ** TODO Problems when inbox.processed already has similar-named files

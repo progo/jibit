@@ -735,6 +735,18 @@
 
 ;;; Tags
 
+;; TODO can we refactor this with `tag-view`?
+(defn small-tag-view
+  "Render a small RO tag element meant to be used as information."
+  [tag]
+  (let [tag-id (:id tag)]
+    ^{:key tag-id}
+    [:li {:style (if-let [color (:computed_color tag)]
+                   {:background-color (rgb->rgba color 0.20)
+                    :border-color color})
+          :title (or (:description tag) "")}
+     (:name tag)]))
+
 (defn tag-view
   "Render a small element that visually represents a clickable tag."
   [tag]
@@ -775,7 +787,7 @@
    (doall
     (for [tid tag-ids]
       ^{:key (str "inline-tag-" tid)}
-      (tag-view (tags-db tid))))])
+      (small-tag-view (tags-db tid))))])
 
 ;;; Views and components
 
@@ -796,7 +808,7 @@
      label]))
 
 (defn slide [photo]
-  (let [tags-map (re-frame/subscribe [:tags-map])
+  (let [tags-map @(re-frame/subscribe [:tags-map])
         gear-db @(re-frame/subscribe [:gear-db])
         selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
     [:div.slide-wrapper
@@ -822,7 +834,7 @@
        (when (:is_raw photo)
          [:li "RAW"])
        (when-let [tags (seq (:tagged/ids photo))]
-         [:li (render-tags-from-ids @tags-map tags)])
+         [:li (render-tags-from-ids tags-map tags)])
        ]]]))
 
 (defn data-bound-input
