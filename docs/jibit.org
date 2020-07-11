@@ -1066,6 +1066,20 @@ maybe.
 - Export full (as JPEG)
 
   Meaning we convert to JPEG if it's not JPEG. Doesn't apply to raws.
+  
+- Automatic tag when a photo is exported?
+  - We can just also make mass operations on them. Like select 15
+    photos, tag "flicker" and export.
+
+* TODO Record dates of image export
+
+- Then we can have things like filters: "exported on:" 
+
+* TODO Fancydate improvements
+
+- when custom range selected, make sure the begin...end dates are
+  always sensical
+  - ie. reset the other end if they cross over
 
 * DONE Selections sluggish due to tags?
 CLOSED: [2020-06-27 Sat 18:58]

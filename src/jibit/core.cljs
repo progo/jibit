@@ -811,16 +811,18 @@
   (let [tags-map @(re-frame/subscribe [:tags-map])
         gear-db @(re-frame/subscribe [:gear-db])
         selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
+
     [:div.slide-wrapper
      [:div.slide
       {:on-context-menu #(dispatch-preventing-default-action
                           %
                           [:select-photo (:id photo)])
        :class (when selected? "selected-slide")}
-      [:img {:class (when (:is_raw photo)
-                      "raw-image")
-             :on-click #(re-frame/dispatch [:show-photo photo])
+
+      [:img {:class (when (:is_raw photo) "raw-image")
+             :on-double-click #(re-frame/dispatch [:show-photo photo])
              :src (photo-thumbnail-uri photo)}]
+
       [:ul.info
        [:li (human/datestamp (:taken_ts photo))]
        ;; [:li (-> photo :camera_id gear-db human/gear-label)]
