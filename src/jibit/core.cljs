@@ -830,7 +830,7 @@
        [:li (human/shutter-speed (:shutter_speed photo)) " s"]
        (when-not (zero? (:exposure_comp photo))
          [:li (human/exp-comp (:exposure_comp photo)) " EV"])
-       [:li "ISO " (:iso photo)]
+       [:li [:span.iso "ISO"] (human/iso (:iso photo))]
        (when (:is_raw photo)
          [:li "RAW"])
        (when-let [tags (seq (:tagged/ids photo))]

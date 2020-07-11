@@ -1061,7 +1061,6 @@ maybe.
 ** TODO Drag'n'Drop support in the upper right corner
 
 * TODO Export options
-SCHEDULED: <2020-06-22 Mon>
 
 - Export as $preset
 - Export full (as JPEG)

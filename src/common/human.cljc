@@ -36,6 +36,10 @@
     "0"
     (cl-format nil "~,2@f" ec)))
 
+(defn iso
+  [iso]
+  (Math/round iso))
+
 (defn gear-label
   [gear]
   (clojure.string/trim

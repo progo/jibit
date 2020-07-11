@@ -78,6 +78,16 @@ h1#head {
     border-color: pink;
 }
 
+/** ISO badge **/
+.iso {
+    display: inline-block;
+    margin-right: .1em;
+    font-size: smaller;
+    background-color: #000;
+    color: silver;
+    border-radius: 2px;
+}
+
 /** Menu controls, somewhat like darktable style. **/
 
 #menu {
