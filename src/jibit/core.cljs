@@ -814,27 +814,33 @@
 
     [:div.slide-wrapper
      [:div.slide
-      {:on-context-menu #(dispatch-preventing-default-action
-                          %
-                          [:select-photo (:id photo)])
-       :class (when selected? "selected-slide")}
+      {:class (when selected? "selected-slide")}
 
-      ;; Offer 3 different selections maybe. Work on one type.
+      ;; Offer 3 different selections. Work on one type.
       [:div.overlay-controls
-       [:img.sel1
-        {:src "/img/selection-1.png"
-         :on-click #(debug "clicking on X1")}]
-       ;; [:img.sel2
-       ;;  {:src "/img/selection-2.png"
-       ;;   :on-click #(debug "clicking on X2")}]
-       ;; [:img.sel3
-       ;;  {:src "/img/selection-3.png"
-       ;;   :on-click #(debug "clicking on X3")}]
+       {:on-double-click #(re-frame/dispatch [:show-photo photo])}
+
+       [:img.selector.sel1
+        {:src (if selected? "/img/selection-1-fill.png" "/img/selection-1.png")
+         :on-click #(re-frame/dispatch [:select-photo (:id photo)])}]
+       [:img.selector.sel2
+        {:src "/img/selection-2.png"
+         :on-click #(debug "clicking on X2")}]
+       [:img.selector.sel3
+        {:src "/img/selection-3.png"
+         :on-click #(debug "clicking on X3")}]
+
+       ;; Then offer other quick edit tools, such as RATING
+       [:span {:style {:position :absolute :bottom 0}} "Add title"]
        ]
 
-      [:img {:class (when (:is_raw photo) "raw-image")
-             :on-double-click #(re-frame/dispatch [:show-photo photo])
-             :src (photo-thumbnail-uri photo)}]
+      [:div.img-wrapper
+       ;; TODO here we have support to show any "raw" indications
+       [:div {:class (if selected? "encircled" "hidden")}]
+
+       [:img.photograph
+        {:class (when (:is_raw photo) "raw-image")
+         :src (photo-thumbnail-uri photo)}]]
 
       [:ul.info
        [:li (human/datestamp (:taken_ts photo))]
@@ -864,7 +870,9 @@
 
        (when-let [tags (seq (:tagged/ids photo))]
          [:li (render-tags-from-ids tags-map tags)])
-       ]]]))
+       ]
+
+      ]]))
 
 (defn data-bound-input
   "Build an input element that binds into a chain `data-ids`. Props is a
