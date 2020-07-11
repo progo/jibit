@@ -121,7 +121,62 @@ h1#head {
     margin: 1px;
     background-color: black;
     margin-top: 0px;
+
+    /* relative so that the overlay controls can lay on top perfectly */
+    position: relative;
 }
+
+/**** Various clickable controls for slide **/
+#lighttable .slide .overlay-controls {
+    z-index: 2;
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: none;
+}
+
+/** Show overlay controls on hover **/
+#lighttable .slide:hover .overlay-controls {
+    display: block;
+}
+
+.overlay-controls img {
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+}
+.overlay-controls .sel1 {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.overlay-controls .sel2 {
+    position: absolute;
+    top: 0;
+    left: 28px;
+}
+.overlay-controls .sel3 {
+    position: absolute;
+    top: 0;
+    left: 56px;
+}
+
+.overlay-controls .sel1:hover {opacity: 1;}
+.overlay-controls .sel2:hover {opacity: 1;}
+.overlay-controls .sel3:hover {opacity: 1;}
+
+/** debug */
+#lighttable .slide:hover {
+    /* background-color: maroon; */
+}
+
+/********************************************/
 
 .selected-slide img {
     outline: 4px red solid;
@@ -130,7 +185,7 @@ h1#head {
 
 .selected-slide .info {}
 
-.slide img {
+.slide > img {
     object-fit: contain;
     width: 200px;
     height: 200px;

@@ -819,6 +819,19 @@
                           [:select-photo (:id photo)])
        :class (when selected? "selected-slide")}
 
+      ;; Offer 3 different selections maybe. Work on one type.
+      [:div.overlay-controls
+       [:img.sel1
+        {:src "/img/selection-1.png"
+         :on-click #(debug "clicking on X1")}]
+       ;; [:img.sel2
+       ;;  {:src "/img/selection-2.png"
+       ;;   :on-click #(debug "clicking on X2")}]
+       ;; [:img.sel3
+       ;;  {:src "/img/selection-3.png"
+       ;;   :on-click #(debug "clicking on X3")}]
+       ]
+
       [:img {:class (when (:is_raw photo) "raw-image")
              :on-double-click #(re-frame/dispatch [:show-photo photo])
              :src (photo-thumbnail-uri photo)}]
@@ -838,8 +851,7 @@
         (when-not (zero? (:exposure_comp photo))
           [:span
            [:span.small-label "EC"]
-           (human/exp-comp (:exposure_comp photo)) " EV" ])
-        ]
+           (human/exp-comp (:exposure_comp photo)) " EV" ])]
 
        ;; Debug things...
        [:li

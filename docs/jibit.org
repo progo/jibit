@@ -956,6 +956,10 @@ CLOSED: [2020-05-17 Sun 16:28]
 
 Moved both parts outside, core has the CLI handling right now.
 
+* TODO Raw indicator
+
+Ditch the "RAW" item and maybe show film perforations.
+
 * TODO Work on Import [9/9]                                          :import:
 
 - [X] CLI interaction/launcher to start import
