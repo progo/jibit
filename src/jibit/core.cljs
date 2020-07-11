@@ -823,16 +823,31 @@
              :src (photo-thumbnail-uri photo)}]
       [:ul.info
        [:li (human/datestamp (:taken_ts photo))]
-       [:li (-> photo :camera_id gear-db human/gear-label)]
-       [:li (-> photo :lens_id gear-db human/gear-label)]
-       [:li (human/focal-length (:focal_length_35 photo)) " mm"]
-       [:li (human/aperture (:aperture photo))]
-       [:li (human/shutter-speed (:shutter_speed photo)) " s"]
-       (when-not (zero? (:exposure_comp photo))
-         [:li (human/exp-comp (:exposure_comp photo)) " EV"])
-       [:li [:span.iso "ISO"] (human/iso (:iso photo))]
+       ;; [:li (-> photo :camera_id gear-db human/gear-label)]
+       ;; [:li (-> photo :lens_id gear-db human/gear-label)]
+       [:li.technical-details
+        [:span.small-label "FL"]
+        (human/focal-length (:focal_length_35 photo)) " mm"
+        [:span.small-label "ƒ/"]
+        (human/aperture (:aperture photo))
+        [:span.small-label "SS"]
+        (human/shutter-speed (:shutter_speed photo))
+        [:span.small-label "ISO"] (human/iso (:iso photo))
+        (when-not (zero? (:exposure_comp photo))
+          [:span
+           [:span.small-label "EC"]
+           (human/exp-comp (:exposure_comp photo)) " EV" ])
+        ]
+
+       ;; Debug things...
+       [:li
+        [:span.small-label "ID"]
+        (:id photo)]
+
+       ;; Debug things...
        (when (:is_raw photo)
          [:li "RAW"])
+
        (when-let [tags (seq (:tagged/ids photo))]
          [:li (render-tags-from-ids tags-map tags)])
        ]]]))

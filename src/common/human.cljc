@@ -22,19 +22,28 @@
   "Aperture values in concise human-readable format. 1/2 and 1/3 stops
   are plenty accurate. (Round others into these increments.)"
   [f]
-  (cl-format nil "ƒ/~,1f" f))
+  ;; ditch ƒ/ for now
+  (cl-format nil "~,1f" f))
 
 (defn shutter-speed
+  "Format shutter speeds in commonly accepted forms.
+
+  Values like '0.01' seconds are formed as '1/100',
+  near-second values like '0.666667' are formed as '0.7'''
+  and round seconds are 1''
+  "
   [ss]
   (cond
-    (>= ss 1) (str ss)
-    (< ss 1) (cl-format nil "1/~D" (Math/round (/ ss)))))
+    (<= ss 0.5) (cl-format nil "1/~D" (Math/round (/ ss)))
+    (> ss 0.5) (if (integer? ss)
+                 (cl-format nil "~D\"" ss)
+                 (cl-format nil "~,1F\"" ss))))
 
 (defn exp-comp
   [ec]
   (if (zero? ec)
     "0"
-    (cl-format nil "~,2@f" ec)))
+    (cl-format nil "~,1@f" ec)))
 
 (defn iso
   [iso]

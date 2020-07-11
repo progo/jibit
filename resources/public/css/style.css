@@ -78,13 +78,13 @@ h1#head {
     border-color: pink;
 }
 
-/** ISO badge **/
-.iso {
+/** badge **/
+.small-label {
     display: inline-block;
     margin-right: .1em;
     font-size: smaller;
     background-color: #000;
-    color: silver;
+    color: #ffec64;
     border-radius: 2px;
 }
 
