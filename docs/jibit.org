@@ -956,7 +956,11 @@ CLOSED: [2020-05-17 Sun 16:28]
 
 Moved both parts outside, core has the CLI handling right now.
 
-* TODO Raw indicator
+* DONE Raw indicator
+CLOSED: [2020-07-12 Sun 12:18]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-07-12 Sun 12:18]
+:END:
 
 Ditch the "RAW" item and maybe show film perforations.
 
@@ -1310,7 +1314,11 @@ run will be a "dry run", collecting the potential trouble and then we
 confirm regardless of found trouble.
 
 * TODO Slide visual work                                                 :ui:
-** TODO Raw indication: show another div over the thumbnail
+** DONE Raw indication: show another div over the thumbnail
+CLOSED: [2020-07-12 Sun 12:18]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-07-12 Sun 12:18]
+:END:
 
 This div can use all kinds of cool background styles to fade out the raw thumbnail.
 
