@@ -835,8 +835,11 @@
        ]
 
       [:div.img-wrapper
-       ;; TODO here we have support to show any "raw" indications
        [:div {:class (if selected? "encircled" "hidden")}]
+
+       ;; Here we have support to show any "raw" indications
+       ;; (when (:is_raw photo)
+       ;;   [:div.raw-photo])
 
        [:img.photograph
         {:class (when (:is_raw photo) "raw-image")
@@ -863,10 +866,6 @@
        [:li
         [:span.small-label "ID"]
         (:id photo)]
-
-       ;; Debug things...
-       (when (:is_raw photo)
-         [:li "RAW"])
 
        (when-let [tags (seq (:tagged/ids photo))]
          [:li (render-tags-from-ids tags-map tags)])

@@ -206,7 +206,9 @@ h1#head {
 }
 
 .slide img.raw-image {
-    background:radial-gradient(#887e09, transparent);
+    /* background: radial-gradient(#9a9a9a, transparent); */
+    background-image: url('/img/perforated-background.png');
+    background-size: contain;
 }
 
 #lighttable .slide .info {
