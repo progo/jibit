@@ -193,10 +193,10 @@ h1#head {
     width: 260px;
     height: 260px;
 
-    background-image: url('/img/selection-yel.png');
+    background-image: url('/img/selection-yel2.png');
     background-size: contain;
 
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .slide img.photograph {
