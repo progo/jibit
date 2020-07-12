@@ -151,6 +151,7 @@ h1#head {
     height: 32px;
     opacity: 0.8;
     position: absolute;
+    user-select: none;
 }
 .overlay-controls .sel1 {
     top: 0;
@@ -227,6 +228,27 @@ h1#head {
 
     color: #ffb000;
     font-family: 'Courier';
+}
+
+/**** Quick popup label editor **/
+
+div#main {
+    position: relative;
+}
+
+#quick-label-editor {
+    z-index: 6;
+    width: 250px;
+    height: 200px;
+    position: absolute;
+    background-color: black;
+    border-radius: 5px;
+    border: 3px white solid;
+    padding: 19px;
+}
+
+#quick-label-editor input,textarea {
+    width: 230px;
 }
 
 /**** Button styling ***/

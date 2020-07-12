@@ -272,6 +272,22 @@
  (fn [_]
    (.click (js/document.getElementById "file-upload"))))
 
+;; The popup label editor has to be positioned near where user
+;; clicked.
+(re-frame/reg-fx
+ :position-quick-label-editor
+ (fn [[x y]]
+   (let [cmp (js/document.getElementById "quick-label-editor")]
+     (set! (.. cmp -style -top) (str y "px"))
+     (set! (.. cmp -style -left) (str x "px")))))
+
+;; Focus the first input
+(re-frame/reg-fx
+ :focus-quick-label-editor
+ (fn [_]
+   (let [cmp (js/document.getElementById "quick-label-editor")]
+     (debug "We're going to focus on this..."))))
+
 (re-frame/reg-fx
  :dispatch-after-delay
  (fn [{event :event timeout :timeout}]
@@ -604,6 +620,20 @@
      {:show-photo-on-lightbox [photo (-> db :photos)]}
      {:dispatch [:show-message "I can't show raw photos."]})))
 
+;; User clicks on a slide to edit the texts, we'll pop up
+;; a (semi)modal dialog to let them.
+(re-frame/reg-event-fx
+ :show-quick-label-editor
+ (fn [{db :db} [_ photo click-position]]
+   {:db (-> db
+            (assoc-in [:input :label-edit]
+                      {:photo photo
+                       :title (:title photo)
+                       :description (:description photo)})
+            (update :state conj :quick-label-edit))
+    :focus-quick-label-editor nil
+    :position-quick-label-editor click-position}))
+
 ;;; queries from db
 
 (re-frame/reg-sub
@@ -823,15 +853,21 @@
        [:img.selector.sel1
         {:src (if selected? "/img/selection-1-fill.png" "/img/selection-1.png")
          :on-click #(re-frame/dispatch [:select-photo (:id photo)])}]
-       [:img.selector.sel2
-        {:src "/img/selection-2.png"
-         :on-click #(debug "clicking on X2")}]
-       [:img.selector.sel3
-        {:src "/img/selection-3.png"
-         :on-click #(debug "clicking on X3")}]
+       ;; [:img.selector.sel2
+       ;;  {:src "/img/selection-2.png"
+       ;;   :on-click #(debug "clicking on X2")}]
+       ;; [:img.selector.sel3
+       ;;  {:src "/img/selection-3.png"
+       ;;   :on-click #(debug "clicking on X3")}]
 
        ;; Then offer other quick edit tools, such as RATING
-       [:span {:style {:position :absolute :bottom 0}} "Add title"]
+       [:span
+        {:style {:position :absolute :bottom 0}
+         :on-click (fn [e]
+                     (re-frame/dispatch [:show-quick-label-editor
+                                         photo
+                                         [(.-pageX e) (- (.-pageY e) 20)]]))}
+        "Add title"]
        ]
 
       [:div.img-wrapper
@@ -849,6 +885,8 @@
        [:li (human/datestamp (:taken_ts photo))]
        ;; [:li (-> photo :camera_id gear-db human/gear-label)]
        ;; [:li (-> photo :lens_id gear-db human/gear-label)]
+       (when (seq (:title photo))
+         [:li (:title photo)])
        [:li.technical-details
         [:span.small-label "FL"]
         (human/focal-length (:focal_length_35 photo)) " mm"
@@ -1248,6 +1286,28 @@
      {:class (when (nil? message) "hidden")}
      (str message)]))
 
+(defn quick-label-edit
+  "Small two-part editor for titles and descriptions"
+  []
+  (let [enabled? (= :quick-label-edit @(re-frame/subscribe [:current-state]))]
+    [:div#quick-label-editor
+     {:class (if enabled? "" "hidden")}
+
+     [data-bound-input [:label-edit :title]
+      {:type :text
+       :placeholder "Title"
+       :auto-complete "off"
+       :name "photo-title"}
+      :on-enter 'save-this-mf]
+     [:br]
+
+     [data-bound-input [:label-edit :description]
+      {:rows 7
+       :placeholder "Description..."
+       :name "photo-description"}
+      :textarea? true]
+     ]))
+
 (defn activity-indicator
   "Nonmodal spinner in top right corner."
   []
@@ -1301,7 +1361,7 @@
       ]]))
 
 (defn user-interface []
-  [:div
+  [:div#main
    ;; Visible "zero-level" elements
    [header]
    [filter-panel]
@@ -1309,6 +1369,7 @@
    [lighttable]
    [activity-indicator]
    [message-box]
+   [quick-label-edit]
 
    ;; unrendered metadata for form inputs
    [gear-datalists "camera-list" :camera]
