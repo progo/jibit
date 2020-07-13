@@ -1083,12 +1083,22 @@ maybe.
 
 - Then we can have things like filters: "exported on:" 
 
-* TODO Fancydate improvements
-SCHEDULED: <2020-07-13 Mon>
+* DONE Fancydate improvements
+CLOSED: [2020-07-13 Mon 20:18] SCHEDULED: <2020-07-13 Mon>
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-07-13 Mon 20:18]
+:END:
 
 - when custom range selected, make sure the begin...end dates are
   always sensical
   - ie. reset the other end if they cross over
+- we use =data-bound-input= and now there's a tiny bit more to
+  refactor.
+
+* TODO Refactor fancydate into its own ns
+SCHEDULED: <2020-07-15 Wed>
+
+Let's start splitting this beast up from here.
 
 * DONE Selections sluggish due to tags?
 CLOSED: [2020-06-27 Sat 18:58]

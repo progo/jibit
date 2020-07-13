@@ -343,11 +343,22 @@
 
 ;; Store changed input value under a chain of keys in db,
 ;; under :input.
+;;
+;; An optional function `custom-eval-fn` can be passed that'll have the
+;; database, the data ids, and the new value, and will return new
+;; database. This is to allow more *complex* logic on updating user
+;; input. Handle with caution and always, TODO: get rid of it.
 (re-frame/reg-event-db
  :change-input
- (fn [db [_ data-ids new-value]]
-   (if (nil? new-value)
+ (fn [db [_ data-ids new-value custom-eval-fn]]
+   (cond
+     (not (nil? custom-eval-fn))
+     (custom-eval-fn db data-ids new-value)
+
+     (nil? new-value)
      (dissoc-in db (conj (seq data-ids) :input))
+
+     :else
      (assoc-in db (conj (seq data-ids) :input) new-value))))
 
 (def fancydate-presets
@@ -919,11 +930,13 @@
 
   Optional named arguments:
   - `textarea?` makes this a textarea.
-  - `:clearable?` that will incorporate hacks to make the input text
-     or search clearable in firefox via a button.
+  - `:clearable?` that will incorporate hacks to make the input text or
+    search clearable in firefox via a button.
   - `on-enter` (fn) function to call when user hits RET
+  - `custom-eval-db-fn` (fn :: db -> new-value -> db) pass custom
+    evaluation when modified field value is being stored in db
   "
-  [data-ids props & {:keys [clearable? textarea? on-enter]}]
+  [data-ids props & {:keys [clearable? textarea? on-enter custom-eval-db-fn]}]
   (let [checkbox? (= :checkbox (:type props))
         bound @(re-frame/subscribe [:input data-ids])
         ;; Checkboxes (thus react) won't accept nils as false
@@ -934,7 +947,8 @@
                                        data-ids
                                        (if checkbox?
                                          (not bound)
-                                         (-> % .-target .-value))])
+                                         (-> % .-target .-value))
+                                       (or custom-eval-db-fn nil)])
         keyup-fn (when on-enter
                    #(when (= "Enter" (.-key %))
                       (on-enter)))
@@ -974,6 +988,54 @@
       (for [{name :name value :value} options]
         ^{:key value} [:option {:value value} name]))]))
 
+(defn format-date-range
+  "Format a date range that begins from one date and ends with another.
+  It is an open ended range when only one is defined; if the dates are
+  same, it's assumed to be the one day only; if both are null we don't
+  have a range."
+  [begin end]
+  (cond
+    (and (empty? begin) (empty? end))
+    "Not selected"
+
+    (= begin end)
+    (jibit.datetime/org-format begin)
+
+    :t
+    (str (jibit.datetime/org-format begin)
+         " ⟶ "
+         (jibit.datetime/org-format end))))
+
+(defn fancydate-custom-updater
+  "Make sure that when user selects a beginning, the end isn't before
+  it. We'll sniff from the end of `data-ids` if we are dealing
+  with :begin or :end here."
+  [db data-ids new-value]
+  (let [full-path (conj (seq data-ids) :input)
+        path-init (butlast full-path)
+        which-end (last full-path) ; :begin/:end
+        other-end (case which-end
+                    :end :begin
+                    :begin :end)
+        other-value (get (get-in db path-init) other-end)
+
+        ;; these dates happen to be in ISO so we can just string-compare
+        other-value* (cond
+                       ;; New begin goes after end.
+                       (and (= which-end :begin)
+                            (>= new-value other-value))
+                       new-value
+
+                       ;; New end goes before begin.
+                       (and (= which-end :end)
+                            (<= new-value other-value))
+                       new-value
+
+                       :else other-value)]
+    (-> db
+        (assoc-in full-path new-value)
+        (assoc-in (conj (vec path-init) other-end) other-value*))))
+
 (defn data-bound-fancydate
   "Create a fancydate type dropdown/date range selector. Binds to a
   chain `data-ids`. Property map `props` is fed to the outermost
@@ -981,17 +1043,7 @@
   [data-ids props]
   (let [{:keys [begin end]} @(re-frame/subscribe [:input data-ids])
         not-selected? (and (empty? begin) (empty? end))
-        repr (cond
-               not-selected?
-               "Not selected"
-
-               (= begin end)
-               (jibit.datetime/org-format begin)
-
-               :t
-               (str (jibit.datetime/org-format begin)
-                    " ⟶ "
-                    (jibit.datetime/org-format end)))
+        repr (format-date-range begin end)
         props' (update props
                        :class
                        #(when not-selected?
@@ -1009,11 +1061,13 @@
         [:li "Begin "
          (data-bound-input
           (conj data-ids :begin)
-          {:type :date})]
+          {:type :date}
+          :custom-eval-db-fn fancydate-custom-updater)]
         [:li "End "
          (data-bound-input
           (conj data-ids :end)
-          {:type :date})]]
+          {:type :date}
+          :custom-eval-db-fn fancydate-custom-updater)]]
        ]]]))
 
 (defn filter-panel []
