@@ -16,7 +16,11 @@
           [basename ext] (fs/split-ext f)
           target (str target-dir "/" basename ".jpeg")]
       (debug "Doing" source "=>" target)
-      (fs/exec "convert" source "-resize" "1600x1600>" "-quality" "90" "-unsharp" "0x0.75+0.75+0.008" target)))
+      (fs/exec "convert" source
+               "-resize" "1600x1600>"
+               "-quality" "90"
+               "-unsharp" "0x0.75+0.75+0.008"
+               target)))
   ;; We could be deleting the empty dir if there are problems with
   ;; input data. But might be as convenient to leave it be.
   ;; (fs/delete target-dir)
