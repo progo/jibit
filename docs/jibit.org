@@ -1079,7 +1079,14 @@ maybe.
   - We can just also make mass operations on them. Like select 15
     photos, tag "flicker" and export.
 
-** TODO Export filenames into something better
+** DONE Export filenames into something better
+CLOSED: [2020-07-14 Tue 17:54]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-07-14 Tue 17:54]
+:END:
+
+We're giving them easily sortable names based on TAKEN_TS. On name
+conflicts we throw letters at the end of the name.
 * TODO Record dates of image export
 
 - Then we can have things like filters: "exported on:" 
