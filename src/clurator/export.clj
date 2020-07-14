@@ -1,21 +1,29 @@
 (ns clurator.export
   (:require [taoensso.timbre :as timbre :refer [debug spy]]
             [me.raynes.fs :as fs]
+            [java-time :as time]
             clurator.utils
-            clurator.settings
-            ))
+            clurator.settings))
+
+(defn format-output-file-name
+  [photo]
+  (let [taken (time/local-date-time (:taken_ts photo))]
+    (time/format "yyyy-MM-dd (ccc) HH-mm-ss"
+                 (time/local-date-time taken))))
 
 (defn export-resize-photos
   "Export selected photos as JPEGs, resize to certain size limit. With
   raw files we probably want to either run dcraw or extract the
   preview files if possible. Or just ignore for now."
-  [files target-dir]
+  [photos target-dir]
   (fs/mkdir target-dir)
-  (doseq [f files]
-    (let [source (str clurator.settings/storage-directory "/" f)
-          [basename ext] (fs/split-ext f)
-          target (str target-dir "/" basename ".jpeg")]
-      (debug "Doing" source "=>" target)
+  (doseq [photo photos]
+    (let [source (str clurator.settings/storage-directory "/"
+                      (:storage_filename photo))
+          target (str target-dir "/"
+                      (format-output-file-name photo)
+                      ".jpeg")]
+      (debug "Converting" source "=>" target)
       (fs/exec "convert" source
                "-resize" "1600x1600>"
                "-quality" "90"

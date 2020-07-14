@@ -18,9 +18,10 @@
   "Export selected photos into a dir specified by settings. Resize for
   web consumption, currently hardcoded behavior."
   [req]
-  (let [photos (spy (-> req filtering/read-edn :photos))
-        files (clurator.model.photo/get-files-by-id photos)]
+  (let [photos (-> req filtering/read-edn :photos)
+        photos (clurator.model.photo/get-photos-by-id photos)]
+    (debug photos)
     (clurator.export/export-resize-photos
-     files
+     photos
      clurator.settings/outbox-path)
     {:resp true}))

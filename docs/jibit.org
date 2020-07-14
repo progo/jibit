@@ -1079,6 +1079,7 @@ maybe.
   - We can just also make mass operations on them. Like select 15
     photos, tag "flicker" and export.
 
+** TODO Export filenames into something better
 * TODO Record dates of image export
 
 - Then we can have things like filters: "exported on:" 
