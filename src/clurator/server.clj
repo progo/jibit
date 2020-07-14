@@ -7,6 +7,7 @@
             clurator.view.gear
             clurator.view.tag
             clurator.view.photo
+            clurator.view.operations
             clurator.settings
 
             [taoensso.timbre :as timbre :refer [debug spy]]))
