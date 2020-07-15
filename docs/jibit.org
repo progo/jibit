@@ -1103,8 +1103,11 @@ CLOSED: [2020-07-13 Mon 20:18] SCHEDULED: <2020-07-13 Mon>
 - we use =data-bound-input= and now there's a tiny bit more to
   refactor.
 
-* TODO Refactor fancydate into its own ns
-SCHEDULED: <2020-07-15 Wed>
+* DONE Refactor fancydate into its own ns
+CLOSED: [2020-07-15 Wed 19:41] SCHEDULED: <2020-07-15 Wed>
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-07-15 Wed 19:41]
+:END:
 
 Let's start splitting this beast up from here.
 
