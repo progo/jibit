@@ -373,7 +373,7 @@
  :toggle-tag-on-selected
  (fn [{db :db} [_ tag-id]]
    (when-let [sel (seq (-> db :selected))]
-     (timbre/debugf "Setting tag %d to photos %s" tag-id sel)
+     ;; (timbre/debugf "Setting tag %d to photos %s" tag-id sel)
      {:http-xhrio (build-edn-request :method :post
                                      :uri "/tag-photo"
                                      :params {:tag tag-id
@@ -597,10 +597,36 @@
             (assoc-in [:input :label-edit]
                       {:photo photo
                        :title (:title photo)
-                       :description (:description photo)})
+                       :notes (:notes photo)})
             (update :state conj :quick-label-edit))
     :focus-quick-label-editor nil
     :position-quick-label-editor click-position}))
+
+(defn update-photo
+  "Search linearly for photo in photos by ID and update the record."
+  [photos photo]
+  ;; This is frustratingly bad code now, reflects on poor usage of
+  ;; data structures for `photos`.
+  (let [selection-fn #(= (:id %) (:id photo))
+        antiselect-fn (complement selection-fn)
+        head (take-while antiselect-fn photos)
+        tail (drop 1 (drop-while antiselect-fn photos))]
+    ;; now `photos` == `head` . [`photo`] . `tail`
+    (concat head [photo] tail)))
+
+;; User closes (and saves) the label editor. We'll want to update the
+;; labels instantly on local and then send a background query to the
+;; server to persist them there.
+(re-frame/reg-event-fx
+ :save-close-label-popup
+ (fn [{db :db} [_]]
+   (let [label (-> db :input :label-edit)
+         photo' (assoc (-> label :photo)
+                       :title (:title label)
+                       :notes (:notes label))]
+     {:db (-> db
+              (update :state pop)
+              (update :photos update-photo photo'))})))
 
 ;;; queries from db
 
@@ -1134,9 +1160,10 @@
      (str message)]))
 
 (defn quick-label-edit
-  "Small two-part editor for titles and descriptions"
+  "Small two-part editor for titles and notes."
   []
-  (let [enabled? (= :quick-label-edit @(re-frame/subscribe [:current-state]))]
+  (let [enabled? (= :quick-label-edit @(re-frame/subscribe [:current-state]))
+        save-fn #(re-frame/dispatch [:save-close-label-popup])]
     [:div#quick-label-editor
      {:class (if enabled? "" "hidden")}
 
@@ -1145,14 +1172,19 @@
        :placeholder "Title"
        :auto-complete "off"
        :name "photo-title"}
-      :on-enter 'save-this-mf]
+      :on-enter save-fn]
      [:br]
 
-     [data-bound-input [:label-edit :description]
+     [data-bound-input [:label-edit :notes]
       {:rows 7
-       :placeholder "Description..."
-       :name "photo-description"}
+       :placeholder "Notes..."
+       :name "photo-notes"}
       :textarea? true]
+
+     [:br]
+     [:a.button
+      {:on-click save-fn}
+      "Close"]
      ]))
 
 (defn activity-indicator
