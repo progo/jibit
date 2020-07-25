@@ -4,6 +4,13 @@
             [clurator.model.tag :as tag]
             [taoensso.timbre :as timbre :refer [spy debug]]))
 
+(defn update-photo
+  "Update photo's attributes (map) by photo ID."
+  [id attr-map]
+  (db/query! {:update :photo
+              :set attr-map
+              :where [:= :id id]}))
+
 (defn get-by-uuid
   [uuid]
   (db/query-1! {:select [:*]

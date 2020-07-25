@@ -44,6 +44,16 @@
       ;; no files
       {:resp []})))
 
+(defn title-photo
+  [req]
+  (let [{photo-id :id
+         title :title
+         notes :notes} (view.filtering/read-edn req)]
+    (model.photo/update-photo photo-id
+                              {:title title
+                               :notes notes})
+    {:resp :ok}))
+
 (defn serve-thumbnail-by-uuid
   [uuid]
   (java.io.File. (str clurator.settings/thumbnail-dir "/" uuid ".jpeg")))

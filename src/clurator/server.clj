@@ -48,6 +48,9 @@
 (def tag-photos
   (make-req-handler #'clurator.view.tag/tag-photos))
 
+(def title-photo
+  (make-req-handler #'clurator.view.photo/title-photo))
+
 (def create-update-new-tag
   (make-req-handler #'clurator.view.tag/create-update-new-tag))
 
@@ -73,7 +76,8 @@
   (GET "/" [] index)
   (POST "/upload" [] upload-photos)
   (POST "/export" [] export-photos)
-  (POST    "/tag-photo" [] tag-photos)
+  (POST "/tag-photo" [] tag-photos)
+  (POST "/title-photo" [] title-photo)
   (POST    "/tag" [] create-update-new-tag)
   (DELETE  "/tag" [] delete-tag)
   (POST "/gear" [] update-gear)

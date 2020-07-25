@@ -178,6 +178,12 @@
    {:db (assoc db :activity nil)
     :dispatch-n [[:show-message "Export finished."]]}))
 
+;; A generic event for when we do small background sync/saves
+(re-frame/reg-event-fx
+ :on-background-save
+ (fn [{db :db} [_]]
+   {:db (assoc db :activity nil)}))
+
 ;; This handles both Inbox-sync and Import responses.
 (re-frame/reg-event-fx
  :on-sync-inbox
@@ -625,8 +631,15 @@
                        :title (:title label)
                        :notes (:notes label))]
      {:db (-> db
+              (assoc :activity "Saving...")
               (update :state pop)
-              (update :photos update-photo photo'))})))
+              (update :photos update-photo photo'))
+      :http-xhrio (build-edn-request :method :post
+                                     :uri "/title-photo"
+                                     :params {:id (:id photo')
+                                              :title (:title photo')
+                                              :notes (:notes photo')}
+                                     :response :on-background-save)})))
 
 ;;; queries from db
 
