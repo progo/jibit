@@ -293,8 +293,8 @@
 (re-frame/reg-fx
  :focus-quick-label-editor
  (fn [_]
-   (let [cmp (js/document.getElementById "quick-label-editor")]
-     (debug "We're going to focus on this..."))))
+   (let [cmp (js/document.getElementById "quick-label-edit-title")]
+     (js/setTimeout #(.focus cmp) 0))))
 
 (re-frame/reg-fx
  :dispatch-after-delay
@@ -858,8 +858,9 @@
                      (re-frame/dispatch [:show-quick-label-editor
                                          photo
                                          [(.-pageX e) (- (.-pageY e) 20)]]))}
-        "Add title"]
-       ]
+        (if (:title photo)
+          "Edit title"
+          "Add title")]]
 
       [:div.img-wrapper
        [:div {:class (if selected? "encircled" "hidden")}]
@@ -1172,6 +1173,13 @@
      {:class (when (nil? message) "hidden")}
      (str message)]))
 
+(defn activate-button
+  "When a buttonlike `a` is in focus and user presses SPC or RET, we
+  want to activate it as if it was clicked on."
+  [evt]
+  (when (#{" " "Enter"} (.-key evt))
+    (doto (.-target evt) (.click))))
+
 (defn quick-label-edit
   "Small two-part editor for titles and notes."
   []
@@ -1184,6 +1192,8 @@
       {:type :text
        :placeholder "Title"
        :auto-complete "off"
+       :id "quick-label-edit-title"
+       :tab-index 0
        :name "photo-title"}
       :on-enter save-fn]
      [:br]
@@ -1191,14 +1201,16 @@
      [data-bound-input [:label-edit :notes]
       {:rows 7
        :placeholder "Notes..."
+       :tab-index 0
        :name "photo-notes"}
       :textarea? true]
 
      [:br]
      [:a.button
-      {:on-click save-fn}
-      "Close"]
-     ]))
+      {:on-click save-fn
+       :on-key-down activate-button
+       :tab-index 0}
+      "Close"]]))
 
 (defn activity-indicator
   "Nonmodal spinner in top right corner."
