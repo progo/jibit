@@ -415,6 +415,48 @@ CLOSED: [2020-04-03 Fri 13:56]
 - Exiv2 is a C++ tool and quickly googling around it seems there are
   no hugely popular java bindings available.
 
+** Nikon lens EXIF...                                                :nikon:
+
+- NEF: exiftool reads LensID okay
+- Darktable: parses and shows the LensID okay
+- Darktable-exported jpeg: no...
+
+Here's the json outputs from exiftool, highlighting the difference. We
+can see that "Lens" is adequate and "LensSpec" great. But LensSpec is
+not available for Leica.
+
+When we use LensID as primary and LensSpec and Lens as backups, we're
+getting different lens data depending on what raw processor was used.
+  
+#+BEGIN_EXAMPLE
+# Original raw
+(~/pics/nikon-exif-test) exiftool -j DDF_9205.NEF | grep -i lens
+  "LensType": "D",
+  "Lens": "85mm f/1.8",
+  "LensDataVersion": "0204",
+  "LensIDNumber": 56,
+  "LensFStops": 6.33,
+  "LensID": "AF Nikkor 85mm f/1.8D",
+  "LensSpec": "85mm f/1.8 D",
+  
+# Rawtherapee
+(~/pics/nikon-exif-test) exiftool -j DDF_9205_rawtherapee.jpg| grep -i lens
+  "LensType": "D",
+  "Lens": "85mm f/1.8",
+  "LensDataVersion": "0204",
+  "LensIDNumber": 56,
+  "LensFStops": 6.33,
+  "LensID": "AF Nikkor 85mm f/1.8D",
+  "LensSpec": "85mm f/1.8 D",
+
+# Darktable
+(~/pics/nikon-exif-test) exiftool -j DDF_9205_darktable.jpg| grep -i lens
+  "LensType": "D",
+  "Lens": "85mm f/1.8",
+  "LensFStops": 6.33,
+  "LensSpec": "85mm f/1.8 D",
+#+END_EXAMPLE
+
 * NOTSURE Fix import inaccuracies
 CLOSED: [2020-03-07 Sat 17:21]
 

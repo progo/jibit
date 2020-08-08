@@ -136,7 +136,7 @@
   [e]
   (let [camera-id (get-or-create-gear "camera" (:exif/Make e) (:exif/Model e))
         lens-id (apply get-or-create-gear "lens" (determine-lens-information
-                                                  (:exif/LensID e)
+                                                  (:exif/BestLens e)
                                                   (:exif/LensMake e)
                                                   (:exif/LensModel e)))]
     (jdbc/execute!

@@ -20,6 +20,8 @@
   ["-LensMake"
    "-LensModel"
    "-LensID"
+   "-LensSpec"
+   "-Lens"
    "-ImageWidth"
    "-ImageHeight"
    "-Megapixels#"
@@ -88,6 +90,7 @@
   (read-response!))
 
 (comment
-  (get-exif-map "/home/progo/panasonic-test-material/2020-05-16-15-50-P1020617.jpg")
+  (get-exif-map "/home/progo/pics/nikon-exif-test/DDF_9205_rawtherapee.jpg")
+  (get-exif-map "/home/progo/pics/nikon-exif-test/DDF_9205_darktable.jpg")
   )
 
