@@ -108,7 +108,7 @@ h1#head {
 
 #lighttable {
     margin-left: 25px;
-    margin-right: 25px;
+    margin-right: 350px;
 }
 
 #lighttable .slide-wrapper {
@@ -457,6 +457,12 @@ div#main {
 }
 
 .tags-bar-big {
+    /** Float this thing to the side */
+    top: 120px;
+    right: 10px;
+    width: 330px;
+    position:fixed;
+
     padding: 5px;
     margin-left: 25px;
     margin-right: 25px;
