@@ -893,9 +893,9 @@
            (human/exp-comp (:exposure_comp photo)) " EV" ])]
 
        ;; Debug things...
-       [:li
-        [:span.small-label "ID"]
-        (:id photo)]
+       ;; [:li
+       ;;  [:span.small-label "ID"]
+       ;;  (:id photo)]
 
        (when-let [tags (seq (:tagged/ids photo))]
          [:li (render-tags-from-ids tags-map tags)])
