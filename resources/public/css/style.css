@@ -471,7 +471,7 @@ div#main {
 
 .tags-bar-big {
     /** Float this thing to the side */
-    top: 120px;
+    top: 60px;
     right: 10px;
     width: 330px;
     position:fixed;
