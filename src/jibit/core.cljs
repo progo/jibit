@@ -1232,7 +1232,7 @@
        [:span.selection-count "Selected " sc \space
         [:a {:class "clear"
              :on-click #(re-frame/dispatch [:clear-selection])
-             :href "#"} "Clear"]])
+             :href "javascript:void(0)"} "Clear"]])
 
      [:div#right-hand-side
       [activity-indicator]
@@ -1240,19 +1240,19 @@
       [:div#menu
        [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
             :title "Open gear data editor"
-            :href "#"}
+            :href "javascript:void(0)"}
         "Gear"]
        \space
 
        [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
             :title "Sync inbox"
-            :href "#"}
+            :href "javascript:void(0)"}
         "Inbox"]
        \space
 
        [:a {:on-click #(re-frame/dispatch [:show-file-import])
             :title "Select or drop photos to import"
-            :href "#"}
+            :href "javascript:void(0)"}
         "Import"]
        [:input#file-upload.hidden
         {:name "upload"
@@ -1263,7 +1263,7 @@
 
        [:a {:on-click #(re-frame/dispatch [:export-selected])
             :title "Export selected photos"
-            :href "#"}
+            :href "javascript:void(0)"}
         "Export"]
        ]]]))
 
