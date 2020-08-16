@@ -1213,7 +1213,7 @@
       "Close"]]))
 
 (defn activity-indicator
-  "Nonmodal spinner in top right corner."
+  "Nonmodal spinner with an in-progress message."
   []
   (let [activity-msg @(re-frame/subscribe [:activity])]
     [:div#activity
@@ -1234,46 +1234,48 @@
              :on-click #(re-frame/dispatch [:clear-selection])
              :href "#"} "Clear"]])
 
-     [:div#menu
-      [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
-           :title "Open gear data editor"
-           :href "#"}
-       "Gear"]
-      \space
+     [:div#right-hand-side
+      [activity-indicator]
 
-      [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
-           :title "Sync inbox"
-           :href "#"}
-       "Inbox"]
-      \space
+      [:div#menu
+       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+            :title "Open gear data editor"
+            :href "#"}
+        "Gear"]
+       \space
 
-      [:a {:on-click #(re-frame/dispatch [:show-file-import])
-           :title "Select or drop photos to import"
-           :href "#"}
-       "Import"]
-      [:input#file-upload.hidden
-       {:name "upload"
-        :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
-        :type :file
-        :multiple true}]
-      \space
+       [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
+            :title "Sync inbox"
+            :href "#"}
+        "Inbox"]
+       \space
 
-      [:a {:on-click #(re-frame/dispatch [:export-selected])
-           :title "Export selected photos"
-           :href "#"}
-       "Export"]
-      ]]))
+       [:a {:on-click #(re-frame/dispatch [:show-file-import])
+            :title "Select or drop photos to import"
+            :href "#"}
+        "Import"]
+       [:input#file-upload.hidden
+        {:name "upload"
+         :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
+         :type :file
+         :multiple true}]
+       \space
+
+       [:a {:on-click #(re-frame/dispatch [:export-selected])
+            :title "Export selected photos"
+            :href "#"}
+        "Export"]
+       ]]]))
 
 (defn user-interface []
   [:div#main
    ;; Visible "zero-level" elements
-   [header]
    [filter-panel]
    [tags-view]
    [lighttable]
-   [activity-indicator]
-   [message-box]
    [quick-label-edit]
+   [header]
+   [message-box]
 
    ;; unrendered metadata for form inputs
    [gear-datalists "camera-list" :camera]

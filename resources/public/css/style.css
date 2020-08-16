@@ -102,15 +102,23 @@ h1#head {
 
 /** Menu controls, somewhat like darktable style. **/
 
+#head > #right-hand-side {
+    float: right;
+    display: inline-block;
+}
+
 #menu {
     font-family: "Poppins Light";
-    float: right;
     margin-right: 20px;
+    margin-left: 20px;
+    display: inline-block;
 }
+
 #menu > a {
     color: silver;
     text-decoration: none;
 }
+
 #menu > a:hover {
     color: pink;
     text-decoration: underline;
@@ -356,7 +364,7 @@ div#main {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 #filter h1 {
@@ -441,26 +449,27 @@ div#main {
     border-radius: 10px;
     padding: 10px;
 
+    z-index: 10;
     position: fixed;
     right: 25px;
     top: 10px;
 }
 
 #activity {
-    background-color: black;
-    opacity: 0.8;
+    background-color: #111;
 
     border-radius: 10px;
-    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
 
-    position: fixed;
-    right: 25px;
-    top: 10px;
+    font-size: 85%;
+    font-weight: 100;
+    font-style: italic;
+
+    display: inline-block;
 }
 
-#activity img {
-    height: 2em;
-}
+#activity img {}
 
 /* Tags */
 
