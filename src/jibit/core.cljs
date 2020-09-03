@@ -541,12 +541,13 @@
 
 (re-frame/reg-event-fx
  :export-selected
- (fn [{db :db} _]
+ (fn [{db :db} [_ export-template]]
    (if-let [selection (seq (-> db :selected))]
      {:db (assoc db :activity "Exporting...")
       :http-xhrio (build-edn-request :method :post
                                      :uri "/export"
-                                     :params {:photos selection}
+                                     :params {:photos selection
+                                              :template export-template}
                                      :response :on-export)}
      {:dispatch [:show-message "No photos selected."]})))
 
@@ -1261,10 +1262,20 @@
          :multiple true}]
        \space
 
-       [:a {:on-click #(re-frame/dispatch [:export-selected])
-            :title "Export selected photos"
-            :href "javascript:void(0)"}
-        "Export"]
+       [:span
+        [:a {:on-click #(re-frame/dispatch [:export-selected :default])
+             :title "Export selected photos"
+             :href "javascript:void(0)"}
+         "Export"]
+        [:span.submenu-indicator "▼"
+         [:ul.dropdown
+          [:li {:on-click #(re-frame/dispatch [:export-selected :default])
+                :href "javascript:void(0)"}
+           "1600px, sharpened"]
+          [:li {:on-click #(re-frame/dispatch [:export-selected :full])
+                :href "javascript:void(0)"}
+           "Full"]
+          ]]]
        ]]]))
 
 (defn user-interface []

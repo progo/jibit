@@ -568,6 +568,10 @@ CLOSED: [2020-05-21 Thu 14:59]
 - State "STARTED"    from              [2020-05-21 Thu 12:10]
 :END:
 * TODO Photo model: UUID as the only ID?
+* TODO Make "user-select none" as default behavior in every comp?
+
+The selectively allow user select where it makes sense.
+
 * DONE Exif on Panasonic GX80
 CLOSED: [2020-05-23 Sat 13:19] SCHEDULED: <2020-05-23 Sat>
 :LOGBOOK:

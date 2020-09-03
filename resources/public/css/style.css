@@ -114,14 +114,54 @@ h1#head {
     display: inline-block;
 }
 
-#menu > a {
+#menu a {
     color: silver;
     text-decoration: none;
 }
 
-#menu > a:hover {
+#menu a:hover {
     color: pink;
     text-decoration: underline;
+}
+
+/**  Menu bar dropdowns **/
+
+#menu .submenu-indicator {
+    color: #5a5a5a;
+    user-select: none;
+    cursor: pointer;
+}
+
+#menu .submenu-indicator:hover {
+    color: yellow;
+}
+
+#menu .submenu-indicator .dropdown {
+    display: none;
+    position: absolute;
+    margin-top: -3px;
+    right: 20px;
+    padding: 5px;
+    background-color: #333;
+    color: silver;
+
+    list-style: none;
+}
+
+#menu .submenu-indicator .dropdown li {
+    font-size: 60%;
+}
+
+#menu .submenu-indicator .dropdown li:hover {
+    color: yellow;
+}
+
+#menu .submenu-indicator .dropdown:hover {
+    display: block;
+}
+
+#menu .submenu-indicator:hover .dropdown {
+    display: block;
 }
 
 /*** Lighttable and slides ***/
