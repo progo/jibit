@@ -37,21 +37,35 @@
 (defn export-resize-photos
   "Export selected photos as JPEGs, resize to certain size limit. With
   raw files we probably want to either run dcraw or extract the
-  preview files if possible. Or just ignore for now."
-  [photos target-dir]
+  preview files if possible. Or just ignore for now.
+
+  TODO The first arg `template` (either :default or :full) indicates
+  if we want to sharpen and resize the file or just pass it untouched.
+  "
+  [template photos target-dir]
   (fs/mkdir target-dir)
   (doseq [photo photos]
     (let [source (str clurator.settings/storage-directory "/"
                       (:storage_filename photo))
           target (find-first-nonconflicting-name
                   (str target-dir "/" (format-output-file-name photo))
-                  ".jpeg")]
-      (debug "Converting" source "=>" target)
-      (fs/exec "convert" source
-               "-resize" "1600x1600>"
-               "-quality" "90"
-               "-unsharp" "0x0.75+0.75+0.008"
-               target)))
+                  ;; If we just copy, we want to keep the orig extension
+                  (if (= :full template)
+                    (fs/extension source)
+                    ".jpeg"))]
+      (debug template)
+      (case template
+        :default
+        (do
+          (debug "Converting" source "=>" target)
+          (fs/exec "convert" source
+                   "-resize" "1600x1600>"
+                   "-quality" "90"
+                   "-unsharp" "0x0.75+0.75+0.008"
+                   target))
+        :full
+        (do
+          (fs/copy source target)))))
   ;; We could be deleting the empty dir if there are problems with
   ;; input data. But might be as convenient to leave it be.
   ;; (fs/delete target-dir)
