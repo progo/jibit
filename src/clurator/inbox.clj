@@ -63,11 +63,7 @@
       (fs/delete f)
 
       :else
-      (fs/move f clurator.settings/inbox-processed-path)))
-
-  ;; Finally try to delete the inbox. It should definitely quietly
-  ;; fail if there are files present.
-  (fs/delete inbox))
+      (fs/move f clurator.settings/inbox-processed-path))))
 
 (defn file-modification-time [f]
   (-> f
