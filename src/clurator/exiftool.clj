@@ -34,6 +34,7 @@
    "-LightValue"
    "-Rating#"
    "-CreateDate#"
+   "-DateTimeOriginal#"
    "-Make"
    "-Model"])
 

@@ -23,11 +23,27 @@
            :else
            (get emap "Lens"))))
 
+(defn get-best-creation-date
+  "CreateDate is common but sometimes not used. Query other values and
+  supply it."
+  [emap]
+  (assoc emap "CreateDate"
+         (cond
+           (get emap "CreateDate")
+           (get emap "CreateDate")
+
+           (get emap "DateTimeOriginal")
+           (get emap "DateTimeOriginal")
+
+           ;; will crash at later step
+           :else nil)))
+
 (defn get-exif-map
   "From file denoted by `file-path`, get keyworded map of parsed EXIF."
   [file-path]
   (-> (exiftool/get-exif-map file-path)
       get-best-lens-data
+      get-best-creation-date
       (update "CreateDate" str->datetime)
       (clurator.utils/keywordify-map :exif)))
 
