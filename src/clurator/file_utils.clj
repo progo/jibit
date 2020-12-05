@@ -1,5 +1,6 @@
 (ns clurator.file-utils
   (:require [me.raynes.fs :as fs]
+            [java-time :as time]
             clurator.settings))
 
 (defn file-extension-in-set?
@@ -21,3 +22,20 @@
   [path]
   (or (raw-file? path)
       (bitmap-file? path)))
+
+(defn move-under-directory*
+  "Move file or dir 'f' under target directory 'target'. On name
+  conflict, rename using current datetime stamp."
+  [f target]
+  (let [filename (fs/base-name f)
+        full-target (str target "/" filename)
+        conflict? (fs/exists? full-target)
+        timestamp (->> (time/local-date-time)
+                       (time/format ".yyyy-MM-dd--HH-mm-ss-SSS"))]
+    (cond
+      conflict?
+      (fs/move f (str full-target timestamp))
+
+      :else
+      (fs/move f full-target)
+    )))

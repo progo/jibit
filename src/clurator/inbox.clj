@@ -63,7 +63,7 @@
       (fs/delete f)
 
       :else
-      (fs/move f clurator.settings/inbox-processed-path))))
+      (futils/move-under-directory* f clurator.settings/inbox-processed-path))))
 
 (defn file-modification-time [f]
   (-> f
