@@ -1424,7 +1424,17 @@ To get photos and tags in one query, you join =PHOTO_TAG= and collect
   extra bits of information that we store in the M2M relation
   =PHOTO_TAG=.
 * TODO Maybe show tiny photo counts per each tag?                      :idea:
-* TODO re-pressed
+* Keybindings
+** Piranha
+
+https://github.com/piranha/keybind
+
+Emacs-style global keybinds. Let's see how it works.
+
+Holy shit it works perfectly out of the box.
+
+** NOTSURE re-pressed
+CLOSED: [2021-01-01 Fri 17:51]
 
 https://github.com/gadfly361/re-pressed
 
@@ -1432,7 +1442,6 @@ Looks like a solid idea. It manages keyboard events. Probably more
 than beneficial.
 
 Added in project deps, experimentation to follow later on.
-
 * TODO UI: show total exp time                                         :idea:
 
 For example user has selected 5 images that have all been exposed

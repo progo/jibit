@@ -19,6 +19,7 @@
                  [day8.re-frame/http-fx "v0.2.0"]
                  [cljsjs/moment "2.24.0-0"]
                  [cljsjs/photoswipe "4.1.1-0"]
+                 [keybind "2.2.0"]
 
                  ;; Clurator, file ops
                  [clj-commons/fs "1.5.2"]
