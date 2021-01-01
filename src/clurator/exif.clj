@@ -6,7 +6,8 @@
 
 (defn str->datetime
   [s]
-  (time/local-date-time "yyyy:MM:dd HH:mm:ss" s))
+  (when s
+    (time/local-date-time "yyyy:MM:dd HH:mm:ss" s)))
 
 (defn get-best-lens-data
   "Exiftool is giving us several candidates for lens identification. But
