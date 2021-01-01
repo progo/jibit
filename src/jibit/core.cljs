@@ -503,9 +503,19 @@
    (update db :selected #(toggle-set-membership photo-id %))))
 
 (re-frame/reg-event-db
+ :select-all-photos
+ (fn [db _]
+   (assoc db :selected (-> db :photos photo-ids))))
+
+(re-frame/reg-event-db
  :clear-selection
  (fn [db _]
    (update db :selected empty)))
+
+;; Key binds
+
+(keybind/bind! "C-a" ::select-all #(dispatch-preventing-default-action
+                                    % [:select-all-photos]))
 
 ;; Toggle tag from query
 
