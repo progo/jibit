@@ -514,8 +514,15 @@
 
 ;; Key binds
 
-(keybind/bind! "C-a" ::select-all #(dispatch-preventing-default-action
-                                    % [:select-all-photos]))
+(keybind/bind! "M-a" ::select-all
+               #(dispatch-preventing-default-action
+                 % [:select-all-photos]))
+(keybind/bind! "M-l" ::deselect-all
+               #(dispatch-preventing-default-action
+                 % [:clear-selection]))
+(keybind/bind! "M-e" ::export-selected
+               #(dispatch-preventing-default-action
+                 % [:export-selected :default]))
 
 ;; Toggle tag from query
 

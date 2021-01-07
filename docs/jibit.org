@@ -1425,6 +1425,20 @@ To get photos and tags in one query, you join =PHOTO_TAG= and collect
   =PHOTO_TAG=.
 * TODO Maybe show tiny photo counts per each tag?                      :idea:
 * Keybindings
+** Alt modifier
+
+Browsers and browser extensions like Tridactyl, Vimperator and Vimium
+take over many of the keys.
+
+Vanilla browsers don't, probably, because we =.preventDefault= on key
+action.
+
+But even still, extensions or no, I wonder if it's a good idea to take
+over some customary browser shortcuts at all.
+
+Instead of C-a selecting all slides, M-a works across the test bench.
+Let's go with Alt.
+
 ** Piranha
 
 https://github.com/piranha/keybind
@@ -1432,7 +1446,6 @@ https://github.com/piranha/keybind
 Emacs-style global keybinds. Let's see how it works.
 
 Holy shit it works perfectly out of the box.
-
 ** NOTSURE re-pressed
 CLOSED: [2021-01-01 Fri 17:51]
 
@@ -1442,6 +1455,12 @@ Looks like a solid idea. It manages keyboard events. Probably more
 than beneficial.
 
 Added in project deps, experimentation to follow later on.
+* TODO Statistics for gamification purposes
+
+- Show Stats about "count and % of pictures tagged/titled"
+- Show histograms about the counts, examples:
+  - Untagged content by the year
+
 * TODO UI: show total exp time                                         :idea:
 
 For example user has selected 5 images that have all been exposed
