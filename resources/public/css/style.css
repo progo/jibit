@@ -238,6 +238,10 @@ h1#head {
 
 /********************************************/
 
+.focused-slide {
+    outline: 2mm dotted red;
+}
+
 .selected-slide img.photograph {}
 
 .slide .img-wrapper {

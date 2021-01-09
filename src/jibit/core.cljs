@@ -92,9 +92,9 @@
 ;;;;
 
 (defn photo-ids
-  "Get a set of photo/ids from a collection of photo maps."
+  "Get an ordered seq of photo/ids from a collection of photo maps."
   [p]
-  (set (map :id p)))
+  (map :id p))
 
 ;;;; Our ajax responses from server.
 ;; Events come with a map with keys [:status :response], where status
@@ -167,7 +167,7 @@
  :on-get-photos
  (fn [db [_ {status :status new-photos :response}]]
    (when (ok? status)
-     (let [ids (clojure.set/intersection (photo-ids new-photos)
+     (let [ids (clojure.set/intersection (set (photo-ids new-photos))
                                          (:selected db))]
        (assoc db
               :photos new-photos
@@ -350,6 +350,50 @@
  (fn [db _]
    (update db :show-filter-panel? not)))
 
+
+;; Photo focus things. One thing at a time only
+
+(defn focus-next
+  [current-id photo-ids]
+  (cond
+    (nil? (seq photo-ids))
+    nil
+
+    (nil? current-id)
+    (first photo-ids)
+
+    :else
+    (-> (drop-while (complement #{current-id}) photo-ids)
+        second)))
+
+(defn focus-previous
+  [current-id photo-ids]
+  (cond
+    (nil? (seq photo-ids))
+    nil
+
+    (nil? current-id)
+    (first photo-ids)
+
+    :else
+    (-> (take-while (complement #{current-id}) photo-ids)
+        last)))
+
+(re-frame/reg-event-db
+ :focus-next-photo
+ (fn [db _]
+   (let [photo-ids (-> db :photos photo-ids)]
+     (update db :focused-photo #(focus-next % photo-ids)))))
+
+(re-frame/reg-event-db
+ :focus-previous-photo
+ (fn [db _]
+   (let [photo-ids (-> db :photos photo-ids)]
+     (update db :focused-photo #(focus-previous % photo-ids)))))
+
+
+
+
 ;; Store changed input value under a chain of keys in db,
 ;; under :input.
 ;;
@@ -505,7 +549,7 @@
 (re-frame/reg-event-db
  :select-all-photos
  (fn [db _]
-   (assoc db :selected (-> db :photos photo-ids))))
+   (assoc db :selected (-> db :photos photo-ids set))))
 
 (re-frame/reg-event-db
  :clear-selection
@@ -523,6 +567,12 @@
 (keybind/bind! "M-e" ::export-selected
                #(dispatch-preventing-default-action
                  % [:export-selected :default]))
+(keybind/bind! "left" ::focus-previous
+               #(dispatch-preventing-default-action
+                 % [:focus-previous-photo]))
+(keybind/bind! "right" ::focus-next
+               #(dispatch-preventing-default-action
+                 % [:focus-next-photo]))
 
 ;; Toggle tag from query
 
@@ -768,6 +818,12 @@
    (contains? (-> db :selected)
               photo-id)))
 
+;; Currently focused photo
+(re-frame/reg-sub
+ :focused-photo?
+ (fn [db [_ photo-id]]
+   (= (-> db :focused-photo) photo-id)))
+
 (re-frame/reg-sub
  :input
  (fn [db [_ data-ids]]
@@ -850,11 +906,14 @@
 (defn slide [photo]
   (let [tags-map @(re-frame/subscribe [:tags-map])
         gear-db @(re-frame/subscribe [:gear-db])
+        focused? @(re-frame/subscribe [:focused-photo? (:id photo)])
         selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
 
     [:div.slide-wrapper
      [:div.slide
-      {:class (when selected? "selected-slide")}
+      {:class (str (when selected? "selected-slide")
+                   \space
+                   (when focused? "focused-slide"))}
 
       ;; Offer 3 different selections. Work on one type.
       [:div.overlay-controls
