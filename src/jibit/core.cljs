@@ -573,6 +573,7 @@
 
 ;; Key binds
 
+;; Actions performed on selection
 (keybind/bind! "M-a" ::select-all
                #(dispatch-preventing-default-action
                  % [:select-all-photos]))
@@ -582,16 +583,20 @@
 (keybind/bind! "M-e" ::export-selected
                #(dispatch-preventing-default-action
                  % [:export-selected :default]))
+
+;; Actions performed on currently focused photo
 (keybind/bind! "left" ::focus-previous
                #(dispatch-preventing-default-action
                  % [:focus-previous-photo]))
 (keybind/bind! "right" ::focus-next
                #(dispatch-preventing-default-action
                  % [:focus-next-photo]))
-
 (keybind/bind! "M-1" ::select-1
                #(dispatch-preventing-default-action
                  % [:select-focused-photo]))
+(keybind/bind! "enter" ::show-focused
+               #(dispatch-preventing-default-action
+                 % [:show-focused-photo]))
 
 ;; Toggle tag from query
 
@@ -675,12 +680,26 @@
                                      :params filter-criteria
                                      :response :on-get-photos)})))
 
+(defn get-photo-by-id
+  [pid photos]
+  (first
+   (drop-while (fn [p]
+                 (not= (:id p) pid))
+               photos)))
+
 (re-frame/reg-event-fx
  :show-photo
  (fn [{db :db} [_ photo]]
    (if-not (:is_raw photo)
      {:show-photo-on-lightbox [photo (-> db :photos)]}
      {:dispatch [:show-message "I can't show raw photos."]})))
+
+(re-frame/reg-event-fx
+ :show-focused-photo
+ (fn [{db :db} _]
+   (when-let [currently-focused (-> db :focused-photo)]
+     (let [photo (get-photo-by-id currently-focused (-> db :photos))]
+       {:dispatch [:show-photo photo]}))))
 
 ;; User clicks on a slide to edit the texts, we'll pop up
 ;; a (semi)modal dialog to let them.
