@@ -30,6 +30,12 @@
   []
   (first (array-seq (js/document.querySelectorAll ".pswp"))))
 
+;; Poor implementation but this is so because we haven't fit PSWP into react framework
+(defn projector-on?
+  "Is projector currently active and visible."
+  []
+  (.contains (.-classList (get-photoswipe-elt)) "pswp--visible"))
+
 (defn rgb->rgba
   "Given hex string #RRGGBB turn it into #RRGGBBAA. Opacity is a decimal
   between [0, 1]"
@@ -249,6 +255,8 @@
 
 ;;;; Ajax end
 
+(def photoswipe-js)
+
 (re-frame/reg-fx
  ;; We take a photo and a coll of photos, we look up the index of the
  ;; photo in the mix (linear time) and build a JSON object for
@@ -269,11 +277,13 @@
                                   :w (:width p)
                                   :h (:height p)})
                                cooked-photos)]
-     (doto (js/PhotoSwipe. (get-photoswipe-elt)
-                           js/PhotoSwipeUI_Default
-                           (clj->js projected-photos)
-                           #js {:index index})
-       (.init)))))
+     (do
+       (set! photoswipe-js (js/PhotoSwipe.
+                            (get-photoswipe-elt)
+                            js/PhotoSwipeUI_Default
+                            (clj->js projected-photos)
+                            #js {:index index}))
+       (.init photoswipe-js)))))
 
 ;; activate input[type=file] to show a file selector
 (re-frame/reg-fx
@@ -697,9 +707,13 @@
 (re-frame/reg-event-fx
  :show-focused-photo
  (fn [{db :db} _]
-   (when-let [currently-focused (-> db :focused-photo)]
-     (let [photo (get-photo-by-id currently-focused (-> db :photos))]
-       {:dispatch [:show-photo photo]}))))
+   (if (projector-on?)
+     ;; Close projector
+     (.close photoswipe-js)
+     ;; Open projector
+     (when-let [currently-focused (-> db :focused-photo)]
+       (let [photo (get-photo-by-id currently-focused (-> db :photos))]
+         {:dispatch [:show-photo photo]})))))
 
 ;; User clicks on a slide to edit the texts, we'll pop up
 ;; a (semi)modal dialog to let them.
