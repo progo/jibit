@@ -398,6 +398,11 @@
        second))))
 
 (re-frame/reg-event-db
+ :focus-photo
+ (fn [db [_ pid]]
+   (assoc db :focused-photo pid)))
+
+(re-frame/reg-event-db
  :focus-next-photo
  (fn [db _]
    (let [photo-ids (-> db :photos photo-ids)]
@@ -965,7 +970,8 @@
      [:div.slide
       {:class (str (when selected? "selected-slide")
                    \space
-                   (when focused? "focused-slide"))}
+                   (when focused? "focused-slide"))
+       :on-click #(re-frame/dispatch [:focus-photo (:id photo)])}
 
       ;; Offer 3 different selections. Work on one type.
       [:div.overlay-controls
