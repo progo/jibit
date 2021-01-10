@@ -239,7 +239,7 @@ h1#head {
 /********************************************/
 
 .focused-slide {
-    outline: 2mm dotted red;
+    outline: 2mm dotted #666;
 }
 
 .selected-slide img.photograph {}

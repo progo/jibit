@@ -352,9 +352,24 @@
 
 
 ;; Photo focus things. One thing at a time only
+;; This is a terrible approach that we use now, O(n) navigation, or worse.
 
-(defn focus-next
-  [current-id photo-ids]
+(defn rotate
+  "Rotate a seq shifting elements to the right by `n` elements.
+  Negative `n` shifts to the left."
+  [n s]
+  (let [n' (if (neg? n)
+             (+ (count s) n)
+             n)]
+    (concat
+     (drop n' s)
+     (take n' s))))
+
+(defn focus-by-step
+  "Given currently focused (or nil) `current-id` and an ordered seq of
+  ids `photo-ids`, select the next one if step is 1, previous if step
+  is -1. We wrap around if we reach the end."
+  [current-id photo-ids step]
   (cond
     (nil? (seq photo-ids))
     nil
@@ -363,33 +378,26 @@
     (first photo-ids)
 
     :else
-    (-> (drop-while (complement #{current-id}) photo-ids)
-        second)))
-
-(defn focus-previous
-  [current-id photo-ids]
-  (cond
-    (nil? (seq photo-ids))
-    nil
-
-    (nil? current-id)
-    (first photo-ids)
-
-    :else
-    (-> (take-while (complement #{current-id}) photo-ids)
-        last)))
+    (let [photo-ids' (rotate step photo-ids)
+          mapped (map vector photo-ids photo-ids')]
+      (->
+       (drop-while (fn [[a b]]
+                     (not= a current-id))
+                   mapped)
+       first
+       second))))
 
 (re-frame/reg-event-db
  :focus-next-photo
  (fn [db _]
    (let [photo-ids (-> db :photos photo-ids)]
-     (update db :focused-photo #(focus-next % photo-ids)))))
+     (update db :focused-photo #(focus-by-step % photo-ids 1)))))
 
 (re-frame/reg-event-db
  :focus-previous-photo
  (fn [db _]
    (let [photo-ids (-> db :photos photo-ids)]
-     (update db :focused-photo #(focus-previous % photo-ids)))))
+     (update db :focused-photo #(focus-by-step % photo-ids -1)))))
 
 
 
