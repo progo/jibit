@@ -1313,6 +1313,8 @@
   "When a buttonlike `a` is in focus and user presses SPC or RET, we
   want to activate it as if it was clicked on."
   [evt]
+  (.preventDefault evt)
+  (.stopPropagation evt)
   (when (#{" " "Enter"} (.-key evt))
     (doto (.-target evt) (.click))))
 

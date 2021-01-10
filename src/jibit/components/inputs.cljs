@@ -2,8 +2,8 @@
   "Provide DB-bound input components."
   (:require [taoensso.timbre :as timbre :refer [debug spy]]
             [re-frame.core :as re-frame]
-            cljs.reader
-            ))
+            [keybind.core :as keybind]
+            cljs.reader))
 
 (defn data-bound-toggle-button
   [data-ids {:keys [label-on
@@ -61,7 +61,11 @@
         ;; more checkbox handling
         props (if checkbox?
                 (assoc props :checked bound)
-                props)]
+                props)
+        ;; Disable global keybinds while we're focused on the input
+        props (assoc props
+                     :on-focus keybind/disable!
+                     :on-blur keybind/enable!)]
     [:div
      {:class (if clearable? "input-outer-clearable" "input-outer")}
      [(if textarea? :textarea :input) props]
