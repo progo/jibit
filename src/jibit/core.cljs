@@ -555,6 +555,13 @@
    (update db :selected #(toggle-set-membership photo-id %))))
 
 (re-frame/reg-event-db
+ :select-focused-photo
+ (fn [db _]
+   (if-let [focused (-> db :focused-photo)]
+     (update db :selected #(toggle-set-membership focused %))
+     db)))
+
+(re-frame/reg-event-db
  :select-all-photos
  (fn [db _]
    (assoc db :selected (-> db :photos photo-ids set))))
@@ -581,6 +588,10 @@
 (keybind/bind! "right" ::focus-next
                #(dispatch-preventing-default-action
                  % [:focus-next-photo]))
+
+(keybind/bind! "M-1" ::select-1
+               #(dispatch-preventing-default-action
+                 % [:select-focused-photo]))
 
 ;; Toggle tag from query
 
