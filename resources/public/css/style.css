@@ -528,7 +528,12 @@ div#main {
     top: 60px;
     right: 10px;
     width: 330px;
-    position:fixed;
+    position: fixed;
+
+    height: 90%;
+    overflow-y: auto;
+    scrollbar-width: 5px;
+    scrollbar-color: black;
 
     padding: 5px;
     margin-left: 5px;
@@ -538,6 +543,18 @@ div#main {
     background-color: #222;
     border-radius: 10px;
     min-height: 28px;
+}
+
+.tags-bar-big::-webkit-scrollbar {
+    width: 10px;
+}
+.tags-bar-big::-webkit-scrollbar-track {
+    background: orange;
+    border-radius: 15px;
+}
+.tags-bar-big::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 15px;
 }
 
 .tags-bar-big li {
