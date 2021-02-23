@@ -6,10 +6,17 @@
             clurator.settings))
 
 (defn format-output-file-name
+  "Name the file by its taken timestamp, if present. Alternative is to
+  take its processing ts which is our best bet at guessing when the
+  file was last modified or processed."
   [photo]
-  (let [taken (time/local-date-time (:taken_ts photo))]
-    (time/format "yyyy-MM-dd (ccc) HH-mm-ss"
-                 (time/local-date-time taken))))
+  (let [taken_ts (:taken_ts photo)
+        processed_ts (:process_ts photo)
+        ts (time/local-date-time (or taken_ts processed_ts))]
+    (str
+     (time/format "yyyy-MM-dd (ccc) HH-mm-ss"
+                  (time/local-date-time ts))
+     (if-not taken_ts "(proctime)" ""))))
 
 (defn int->ssstring
   "Convert integer into a spreadsheet style column name."
