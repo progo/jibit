@@ -60,7 +60,6 @@
                   (if (= :full template)
                     (fs/extension source)
                     ".jpeg"))]
-      (debug template)
       (case template
         :default
         (do
@@ -70,6 +69,17 @@
                    "-quality" "90"
                    "-unsharp" "0x0.75+0.75+0.008"
                    target))
+
+        :whitebox
+        (do
+          (debug "Converting" source "=>" target)
+          (fs/exec "convert" source
+                   "-resize" "1920x1920>"
+                   "-quality" "90"
+                   "-border" "6"
+                   "-bordercolor" "white"
+                   target))
+
         :full
         (do
           (fs/copy source target)))))

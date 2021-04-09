@@ -1409,6 +1409,9 @@
           [:li {:on-click #(re-frame/dispatch [:export-selected :default])
                 :href "javascript:void(0)"}
            "1600px, sharpened"]
+          [:li {:on-click #(re-frame/dispatch [:export-selected :whitebox])
+                :href "javascript:void(0)"}
+           "1920px, border, unsharpened"]
           [:li {:on-click #(re-frame/dispatch [:export-selected :full])
                 :href "javascript:void(0)"}
            "Full"]
