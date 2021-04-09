@@ -6,6 +6,7 @@
    ajax.edn
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
+   common.settings
    [cljs.pprint :refer [cl-format]]
    [keybind.core :as keybind]
    [cljsjs.photoswipe]
@@ -1406,15 +1407,12 @@
          "Export"]
         [:span.submenu-indicator "▼"
          [:ul.dropdown
-          [:li {:on-click #(re-frame/dispatch [:export-selected :default])
-                :href "javascript:void(0)"}
-           "1600px, sharpened"]
-          [:li {:on-click #(re-frame/dispatch [:export-selected :whitebox])
-                :href "javascript:void(0)"}
-           "1920px, border, unsharpened"]
-          [:li {:on-click #(re-frame/dispatch [:export-selected :full])
-                :href "javascript:void(0)"}
-           "Full"]
+          (for [export-scheme (vals common.settings/export-schemes)]
+            ^{:key export-scheme}
+            [:li {:on-click #(re-frame/dispatch [:export-selected (:key export-scheme)])
+                  :href "javascript:void(0)"}
+             (:name export-scheme)]
+            )
           ]]]
        ]]]))
 

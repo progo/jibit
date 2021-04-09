@@ -3,6 +3,7 @@
             [me.raynes.fs :as fs]
             [java-time :as time]
             clurator.utils
+            common.settings
             clurator.settings))
 
 (defn format-output-file-name
@@ -44,45 +45,34 @@
 (defn export-resize-photos
   "Export selected photos as JPEGs, resize to certain size limit. With
   raw files we probably want to either run dcraw or extract the
-  preview files if possible. Or just ignore for now.
-
-  TODO The first arg `template` (either :default or :full) indicates
-  if we want to sharpen and resize the file or just pass it untouched.
-  "
-  [template photos target-dir]
+  preview files if possible. Or just ignore for now. "
+  [scheme-key photos target-dir]
   (fs/mkdir target-dir)
   (doseq [photo photos]
-    (let [source (str clurator.settings/storage-directory "/"
+    (let [export-scheme (get common.settings/export-schemes scheme-key)
+          export-method (:method export-scheme)
+          source (str clurator.settings/storage-directory "/"
                       (:storage_filename photo))
           target (find-first-nonconflicting-name
                   (str target-dir "/" (format-output-file-name photo))
                   ;; If we just copy, we want to keep the orig extension
-                  (if (= :full template)
+                  (if (= export-method :passthrough)
                     (fs/extension source)
                     ".jpeg"))]
-      (case template
-        :default
+      (case export-method
+        :convert
         (do
           (debug "Converting" source "=>" target)
-          (fs/exec "convert" source
-                   "-resize" "1600x1600>"
-                   "-quality" "90"
-                   "-unsharp" "0x0.75+0.75+0.008"
-                   target))
+          (apply fs/exec
+                 (concat ["convert" source]
+                         (:args export-scheme)
+                         [target])))
 
-        :whitebox
+        :passthrough
         (do
-          (debug "Converting" source "=>" target)
-          (fs/exec "convert" source
-                   "-resize" "1920x1920>"
-                   "-quality" "90"
-                   "-border" "6"
-                   "-bordercolor" "white"
-                   target))
-
-        :full
-        (do
+          (debug "Passthrough (copy as-is)" source "=>" target)
           (fs/copy source target)))))
+
   ;; We could be deleting the empty dir if there are problems with
   ;; input data. But might be as convenient to leave it be.
   ;; (fs/delete target-dir)
