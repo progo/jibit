@@ -31,6 +31,10 @@
   []
   (first (array-seq (js/document.querySelectorAll ".pswp"))))
 
+(defn get-default-export-scheme-key
+  []
+  (-> common.settings/export-schemes first first))
+
 ;; Poor implementation but this is so because we haven't fit PSWP into react framework
 (defn projector-on?
   "Is projector currently active and visible."
@@ -1401,7 +1405,7 @@
        \space
 
        [:span
-        [:a {:on-click #(re-frame/dispatch [:export-selected :default])
+        [:a {:on-click #(re-frame/dispatch [:export-selected (get-default-export-scheme-key)])
              :title "Export selected photos"
              :href "javascript:void(0)"}
          "Export"]
