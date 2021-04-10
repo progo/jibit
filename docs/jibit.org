@@ -1114,7 +1114,11 @@ maybe.
 
 ** TODO Drag'n'Drop support in the upper right corner
 
-* TODO Export options
+* DONE Export options
+CLOSED: [2021-04-10 Sat 15:51]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2021-04-10 Sat 15:51]
+:END:
 
 - Export as $preset
 - Export full (as JPEG)
@@ -1196,7 +1200,7 @@ CLOSED: [2020-06-02 Tue 18:35]
 - [X] Show spinner when doing
 - [X] Show import count when done.
 
-* TODO When tag is deleted, phantom little divs remain
+* TODO [#B] When tag is deleted, phantom little divs remain
 
 Deletion of a tag is not a commonly occuring case so perhaps we can
 work around this apparent bug by redoing the lighttable contents
@@ -1253,6 +1257,7 @@ that no more photos can be tagged with it.
 * TODO Move "filter/get photos" button to the top bar
 
 Something like "apply filters" or something.
+
 * DONE Mark kebab-case words as full words                            :emacs:
 
 Searches using * or # are not satisfactory because Emacs selects only
