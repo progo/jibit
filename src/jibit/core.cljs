@@ -602,7 +602,7 @@
                  % [:clear-selection]))
 (keybind/bind! "M-e" ::export-selected
                #(dispatch-preventing-default-action
-                 % [:export-selected :default]))
+                 % [:export-selected (get-default-export-scheme-key)]))
 
 ;; Actions performed on currently focused photo
 (keybind/bind! "left" ::focus-previous
