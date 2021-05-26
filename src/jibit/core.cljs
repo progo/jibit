@@ -185,6 +185,12 @@
               :selected ids)))))
 
 (re-frame/reg-event-fx
+ :on-match-tags
+ (fn [{db :db} [_ {status :status tag-ids :response}]]
+   {:dispatch [:get-photos]
+    :db (assoc db :activity nil)}))
+
+(re-frame/reg-event-fx
  :on-export
  (fn [{db :db} [_ {status :status response :response}]]
    {:db (assoc db :activity nil)
@@ -603,6 +609,9 @@
 (keybind/bind! "M-e" ::export-selected
                #(dispatch-preventing-default-action
                  % [:export-selected (get-default-export-scheme-key)]))
+(keybind/bind! "M-q" ::match-tags
+               #(dispatch-preventing-default-action
+                 % [:match-tags-on-selected]))
 
 ;; Actions performed on currently focused photo
 (keybind/bind! "left" ::focus-previous
@@ -662,6 +671,21 @@
                                               :template export-template}
                                      :response :on-export)}
      {:dispatch [:show-message "No photos selected."]})))
+
+;;
+(re-frame/reg-event-fx
+ :match-tags-on-selected
+ (fn [{db :db} _]
+   (when-let [selection (seq (-> db :selected))]
+     (if (= 1 (count selection))
+       {:dispatch [:show-message "Not matching tags on a selection of one."]}
+
+       {:db (assoc db :activity "Matching tags...")
+        :http-xhrio (build-edn-request :method :post
+                                       :uri "/tag-photo/match"
+                                       :params {:photos selection}
+                                       :response :on-match-tags)
+        }))))
 
 (re-frame/reg-event-fx
  :do-sync-inbox

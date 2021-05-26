@@ -48,6 +48,9 @@
 (def tag-photos
   (make-req-handler #'clurator.view.tag/tag-photos))
 
+(def tag-photos-match
+  (make-req-handler #'clurator.view.tag/tag-photos-match-tags))
+
 (def title-photo
   (make-req-handler #'clurator.view.photo/title-photo))
 
@@ -73,20 +76,21 @@
   (make-req-handler #'clurator.view.operations/export-photos))
 
 (comp/defroutes app
-  (GET "/" [] index)
-  (POST "/upload" [] upload-photos)
-  (POST "/export" [] export-photos)
-  (POST "/tag-photo" [] tag-photos)
-  (POST "/title-photo" [] title-photo)
-  (POST    "/tag" [] create-update-new-tag)
-  (DELETE  "/tag" [] delete-tag)
-  (POST "/gear" [] update-gear)
-  (POST "/inbox/sync" [] sync-inbox)
-  (GET "/tags" [] list-tags)
-  (GET "/gear" [] list-gear)
-  (GET "/photos" [] list-photos)
-  (GET "/thumbnail/:uuid" [uuid] (clurator.view.photo/serve-thumbnail-by-uuid uuid))
-  (GET "/photo/:uuid" [uuid] (clurator.view.photo/serve-full-by-uuid uuid))
+  (GET    "/" [] index)
+  (POST   "/upload" [] upload-photos)
+  (POST   "/export" [] export-photos)
+  (POST   "/tag-photo" [] tag-photos)
+  (POST   "/tag-photo/match" [] tag-photos-match)
+  (POST   "/title-photo" [] title-photo)
+  (POST   "/tag" [] create-update-new-tag)
+  (DELETE "/tag" [] delete-tag)
+  (POST   "/gear" [] update-gear)
+  (POST   "/inbox/sync" [] sync-inbox)
+  (GET    "/tags" [] list-tags)
+  (GET    "/gear" [] list-gear)
+  (GET    "/photos" [] list-photos)
+  (GET    "/thumbnail/:uuid" [uuid] (clurator.view.photo/serve-thumbnail-by-uuid uuid))
+  (GET    "/photo/:uuid" [uuid] (clurator.view.photo/serve-full-by-uuid uuid))
   (compojure.route/resources "/fonts" {:root "/public/fonts"})
   (compojure.route/not-found "not found"))
 

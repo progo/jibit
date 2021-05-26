@@ -6,6 +6,14 @@
 (defn list-tags [req]
   {:resp (model.tag/query-tags)})
 
+(defn tag-photos-match-tags
+  "On a selection of photos, sync up the tags so that every photo will
+  have the same tags. We will probably adjust and add more behavior to
+  this later on."
+  [req]
+  (let [{photo-ids :photos} (view.filtering/read-edn req)]
+    {:resp (model.tag/match-tags-between-photos photo-ids)}))
+
 (defn tag-photos [req]
   {:resp (let [{tag-id :tag
                 photo-ids :photos} (view.filtering/read-edn req)]

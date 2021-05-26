@@ -42,6 +42,20 @@
     (-add-tags-for-photos tag-id photo-ids)
     )))
 
+(defn match-tags-between-photos
+  "Match tags between photos so that every photo on the seq has the same
+  tags. Yes, the doseq approach is not the most elegant way but it
+  works fine for the originally intended usecase of matching 2-3
+  photos at a time. Return the set of tags."
+  [photo-ids]
+  (let [tags (db/query! {:select [:tag_id]
+                         :from [:photo_tag]
+                         :where [:in :photo_id photo-ids]})
+        tag-ids (into #{} (map :tag_id tags))]
+    (doseq [tag-id tag-ids]
+      (-add-tags-for-photos tag-id photo-ids))
+    tag-ids))
+
 (defn set-tag-for-photos
   "Apply given tag to all photos denoted by `photo-ids`. Mode will be
   one of the following.
