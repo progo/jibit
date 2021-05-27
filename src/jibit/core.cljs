@@ -177,12 +177,12 @@
 (re-frame/reg-event-db
  :on-get-photos
  (fn [db [_ {status :status new-photos :response}]]
-   (when (ok? status)
-     (let [ids (clojure.set/intersection (set (photo-ids new-photos))
-                                         (:selected db))]
-       (assoc db
-              :photos new-photos
-              :selected ids)))))
+   (when (ok? status) ; FIXME probably faulty use of `reg-event-db`
+     (let [photo-ids-set (set (photo-ids new-photos))]
+       (-> db
+           (update :focused-photo photo-ids-set)
+           (update :selected #(clojure.set/intersection photo-ids-set %))
+           (assoc :photos new-photos))))))
 
 (re-frame/reg-event-fx
  :on-match-tags
@@ -454,16 +454,18 @@
    (update-in db (conj (seq data-ids) :input) not)))
 
 ;;; Set tags on selected photos!
+;;; or focused
 (re-frame/reg-event-fx
  :toggle-tag-on-selected
  (fn [{db :db} [_ tag-id]]
-   (when-let [sel (seq (-> db :selected))]
-     ;; (timbre/debugf "Setting tag %d to photos %s" tag-id sel)
-     {:http-xhrio (build-edn-request :method :post
-                                     :uri "/tag-photo"
-                                     :params {:tag tag-id
-                                              :photos sel}
-                                     :response :on-tag)})))
+   (let [selection (seq (-> db :selected))
+         focused (-> db :focused-photo)]
+     (when-let [photos (or selection (and focused (list focused)))]
+       {:http-xhrio (build-edn-request :method :post
+                                       :uri "/tag-photo"
+                                       :params {:tag tag-id
+                                                :photos photos}
+                                       :response :on-tag)}))))
 
 (def gear-table-columns
   [{:title "Type" :field "gear_type", :width 80}
@@ -953,14 +955,10 @@
         selections (re-frame/subscribe [:selected-tags])
         selected? (@selections tag-id)]
     ^{:key tag-id}
-    [:li {:on-click #(when photos-selected?
-                       (re-frame/dispatch [:toggle-tag-on-selected tag-id]))
+    [:li {:on-click #(re-frame/dispatch [:toggle-tag-on-selected tag-id])
           :on-context-menu #(dispatch-preventing-default-action % [:toggle-tag-filter tag-id])
           :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
-          :class (str
-                  (if photos-selected? "" "not-taggable")
-                  \space
-                  (if selected? "selected" ""))
+          :class (if selected? "selected" "")
           :style (if-let [color (:computed_color tag)]
                    {:background-color (rgb->rgba color 0.20)
                     :border-color color})
