@@ -124,6 +124,13 @@
        (map (juxt id-key identity))
        (into {})))
 
+(defn get-selection
+  "Get all selected photos, or currently focused photo. Return a seq."
+  [db]
+  (let [sel (-> db :selected)
+        focus (-> db :focused-photo)]
+    (or (seq sel) [focus])))
+
 (defn ok?
   [status]
   (= status :ok))
@@ -454,18 +461,15 @@
    (update-in db (conj (seq data-ids) :input) not)))
 
 ;;; Set tags on selected photos!
-;;; or focused
 (re-frame/reg-event-fx
  :toggle-tag-on-selected
  (fn [{db :db} [_ tag-id]]
-   (let [selection (seq (-> db :selected))
-         focused (-> db :focused-photo)]
-     (when-let [photos (or selection (and focused (list focused)))]
-       {:http-xhrio (build-edn-request :method :post
-                                       :uri "/tag-photo"
-                                       :params {:tag tag-id
-                                                :photos photos}
-                                       :response :on-tag)}))))
+   (when-let [selection (seq (get-selection db))]
+     {:http-xhrio (build-edn-request :method :post
+                                     :uri "/tag-photo"
+                                     :params {:tag tag-id
+                                              :photos selection}
+                                     :response :on-tag)})))
 
 (def gear-table-columns
   [{:title "Type" :field "gear_type", :width 80}
@@ -665,20 +669,19 @@
 (re-frame/reg-event-fx
  :export-selected
  (fn [{db :db} [_ export-template]]
-   (if-let [selection (seq (-> db :selected))]
+   (if-let [photos (get-selection db)]
      {:db (assoc db :activity "Exporting...")
       :http-xhrio (build-edn-request :method :post
                                      :uri "/export"
-                                     :params {:photos selection
+                                     :params {:photos photos
                                               :template export-template}
                                      :response :on-export)}
      {:dispatch [:show-message "No photos selected."]})))
 
-;;
 (re-frame/reg-event-fx
  :match-tags-on-selected
  (fn [{db :db} _]
-   (when-let [selection (seq (-> db :selected))]
+   (when-let [selection (seq (get-selection db))]
      (if (= 1 (count selection))
        {:dispatch [:show-message "Not matching tags on a selection of one."]}
 
