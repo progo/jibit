@@ -620,9 +620,15 @@
                  % [:match-tags-on-selected]))
 
 ;; Actions performed on currently focused photo
+;; (keybind/bind! "j" ::focus-previous1
+;;                #(dispatch-preventing-default-action
+;;                  % [:focus-previous-photo]))
 (keybind/bind! "left" ::focus-previous
                #(dispatch-preventing-default-action
                  % [:focus-previous-photo]))
+;; (keybind/bind! "k" ::focus-next1
+;;                #(dispatch-preventing-default-action
+;;                  % [:focus-next-photo]))
 (keybind/bind! "right" ::focus-next
                #(dispatch-preventing-default-action
                  % [:focus-next-photo]))
@@ -632,6 +638,11 @@
 (keybind/bind! "enter" ::show-focused
                #(dispatch-preventing-default-action
                  % [:show-focused-photo]))
+
+;; (keybind/bind! "tab" ::testing-tab
+;;                #(js/console.log "tabby"))
+;; (keybind/bind! "space" ::testing-space
+;;                #(js/console.log "spacey"))
 
 ;; Toggle tag from query
 
