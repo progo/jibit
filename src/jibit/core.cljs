@@ -1084,8 +1084,10 @@
        (when (seq (:title photo))
          [:li (:title photo)])
        [:li.technical-details
+        ;; TODO color-code the crop factor a little bit, and put 35mm
+        ;; equivalent in a tooltip!
         [:span.small-label "FL"]
-        (human/focal-length (:focal_length_35 photo)) " mm"
+        (human/focal-length (:focal_length photo)) " mm"
         [:span.small-label "ƒ/"]
         (human/aperture (:aperture photo))
         [:span.small-label "SS"]
