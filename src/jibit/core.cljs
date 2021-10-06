@@ -379,6 +379,14 @@
    (update db :show-filter-panel? not)))
 
 
+;; TODO! Our data structure choice is poor if we need to often use this.
+(defn get-photo-by-id
+  [pid photos]
+  (first
+   (drop-while (fn [p]
+                 (not= (:id p) pid))
+               photos)))
+
 ;; Photo focus things. One thing at a time only
 ;; This is a terrible approach that we use now, O(n) navigation, or worse.
 
@@ -603,6 +611,29 @@
  (fn [db _]
    (update db :selected empty)))
 
+(defn truncate-time-component
+  "Given an ISO datetime of string format, truncate possible time away."
+  [ts]
+  (clojure.string/replace ts #"T.*$" ""))
+
+;; Inspect taken_ts times of selection and redo the search using the
+;; date range so that we focus on those dates.
+(re-frame/reg-event-fx
+ :filter-search-on-selected
+ (fn [{db :db} _]
+   (when-let [photo-ids (seq (get-selection db))]
+     (let [all-photos (:photos db)
+           ;; TODO. Again slow application of `get-photo-by-id` here.
+           photos (map #(get-photo-by-id % all-photos) photo-ids)
+           taken-tss (map (comp truncate-time-component :taken_ts) photos)
+           taken-min (apply min taken-tss)
+           taken-max (apply max taken-tss)]
+       ;; (println "Earliest" taken-min "latest" taken-max)
+       {:db (-> db
+                (assoc-in [:input :filter :taken-ts :begin] taken-min)
+                (assoc-in [:input :filter :taken-ts :end] taken-max))
+        :dispatch [:get-photos]}))))
+
 ;; Key binds
 
 ;; Actions performed on selection
@@ -618,6 +649,9 @@
 (keybind/bind! "M-q" ::match-tags
                #(dispatch-preventing-default-action
                  % [:match-tags-on-selected]))
+(keybind/bind! "M-`" ::filter-around-selected
+               #(dispatch-preventing-default-action
+                 % [:filter-search-on-selected]))
 
 ;; Actions performed on currently focused photo
 ;; (keybind/bind! "j" ::focus-previous1
@@ -739,13 +773,6 @@
                                      :uri "/photos"
                                      :params filter-criteria
                                      :response :on-get-photos)})))
-
-(defn get-photo-by-id
-  [pid photos]
-  (first
-   (drop-while (fn [p]
-                 (not= (:id p) pid))
-               photos)))
 
 (re-frame/reg-event-fx
  :show-photo
