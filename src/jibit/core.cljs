@@ -80,10 +80,14 @@
   (. evt preventDefault)
   (re-frame/dispatch event))
 
-;; hack hack hack
-(defn quick-tags-popup-mode? []
-  (let [db @re-frame.db/app-db]
-    (:show-quick-tags-popup? db)))
+;; We could store context out of `db` to be perhaps less smelly
+(defn user-in-context?
+  ([ctx]
+   (user-in-context? @re-frame.db/app-db ctx))
+  ([db ctx]
+   (if (nil? ctx)
+     true
+     ((-> db :contexts) ctx))))
 
 (defn build-edn-request
   "Build a request building map that can be passed to :http-xhrio. This
@@ -352,6 +356,7 @@
                {:photos []
                 :tags []
                 :state ()
+                :contexts #{}
                 :activity nil
                 :message nil
                 :show-filter-panel? true
@@ -624,17 +629,16 @@
    (update db :selected empty)))
 
 (re-frame/reg-event-db
- :toggle-quick-tags-popup
+ :show-quick-tags-popup
  (fn [db _]
-   (let [sel? (boolean (seq (get-selection db)))]
-     (update db :show-quick-tags-popup?
-             (fn [currently-shown?]
-               (case [(boolean sel?) (boolean currently-shown?)]
+   (let [sel? (boolean (seq (get-selection db)))
+         currently-shown? (boolean (user-in-context? db :quick-tags))
+         show? (case [(boolean sel?) (boolean currently-shown?)]
                  [true true] false ; hide
                  [true false] true ; show
                  [false true] false ; hide
-                 [false false] false ; don't show if no selection
-                 ))))))
+                 [false false] false)] ; don't show if no selection
+     (update db :contexts (if show? conj disj) :quick-tags))))
 
 (defn truncate-time-component
   "Given an ISO datetime of string format, truncate possible time away."
@@ -661,61 +665,37 @@
 
 ;; Key binds
 
-;; Actions performed on selection
-(keybind/bind! "M-a" ::select-all
-               #(dispatch-preventing-default-action
-                 % [:select-all-photos]))
-(keybind/bind! "M-l" ::deselect-all
-               #(dispatch-preventing-default-action
-                 % [:clear-selection]))
-(keybind/bind! "M-e" ::export-selected
-               #(dispatch-preventing-default-action
-                 % [:export-selected (get-default-export-scheme-key)]))
-(keybind/bind! "M-`" ::filter-around-selected
-               #(dispatch-preventing-default-action
-                 % [:filter-search-on-selected]))
+(def keybindings
+  {"M-a" {:kw ::select-all :dispatch :select-all-photos}
+   "M-l" {:kw ::deselect-all :dispatch :clear-selection}
+   "M-e" {:kw ::export-selected :dispatch :export-selected}
+   "M-`" {:kw ::filter-around-selected :dispatch :filter-search-on-selected}
 
-;; Quick tagging begins here from M-q
+   ;; quick tags and its context-specific bindings
+   "M-q" {:kw ::show-quick-tags
+          :dispatch :show-quick-tags-popup}
+   "M-w" {:kw ::match-tags
+          :context :quick-tags
+          :dispatch :match-tags-on-selected}
 
-(keybind/bind! "M-q" ::show-quick-tags
-               #(dispatch-preventing-default-action
-                 % [:toggle-quick-tags-popup]))
+   "left" {:kw ::focus-previous :dispatch :focus-previous-photo}
+   "right" {:kw ::focus-next :dispatch :focus-next-photo}
+   "M-1" {:kw ::select-1 :dispatch :select-focused-photo}
+   "enter" {:kw ::show-focused :dispatch :show-focused-photo}})
 
-;; Now this is a sort of a submap of M-q or `quick-tags-popup`.
-;; Reckon we can build a multimethod out of these things.
-(keybind/bind! "M-w" ::match-tags
-               (fn [evt]
-                 (. evt preventDefault)
-                 (when (quick-tags-popup-mode?)
-                   (dispatch-preventing-default-action
-                     evt [:match-tags-on-selected]))))
+
+(defn init-keybindings! [m]
+  (doseq [[key {kw :kw context :context event :dispatch}] keybindings]
+    (let [handler (fn [e]
+                    (when (user-in-context? context)
+                      (dispatch-preventing-default-action e [event])))]
+      (keybind/bind! key kw handler))))
+
+;; Redo keybindings each load
+(keybind/unbind-all!)
+(init-keybindings! keybindings)
 
 
-
-;; Actions performed on currently focused photo
-;; (keybind/bind! "j" ::focus-previous1
-;;                #(dispatch-preventing-default-action
-;;                  % [:focus-previous-photo]))
-(keybind/bind! "left" ::focus-previous
-               #(dispatch-preventing-default-action
-                 % [:focus-previous-photo]))
-;; (keybind/bind! "k" ::focus-next1
-;;                #(dispatch-preventing-default-action
-;;                  % [:focus-next-photo]))
-(keybind/bind! "right" ::focus-next
-               #(dispatch-preventing-default-action
-                 % [:focus-next-photo]))
-(keybind/bind! "M-1" ::select-1
-               #(dispatch-preventing-default-action
-                 % [:select-focused-photo]))
-(keybind/bind! "enter" ::show-focused
-               #(dispatch-preventing-default-action
-                 % [:show-focused-photo]))
-
-;; (keybind/bind! "tab" ::testing-tab
-;;                #(js/console.log "tabby"))
-;; (keybind/bind! "space" ::testing-space
-;;                #(js/console.log "spacey"))
 
 ;; Toggle tag from query
 
@@ -758,7 +738,8 @@
       :http-xhrio (build-edn-request :method :post
                                      :uri "/export"
                                      :params {:photos photos
-                                              :template export-template}
+                                              :template (or export-template
+                                                            (get-default-export-scheme-key))}
                                      :response :on-export)}
      {:dispatch [:show-message "No photos selected."]})))
 
@@ -1007,9 +988,11 @@
    (-> db :selected-tags)))
 
 (re-frame/reg-sub
- :show-quick-tags-popup?
- (fn [db _]
-   (:show-quick-tags-popup? db)))
+ :in-context?
+ (fn [db [_ ctx]]
+   (-> (:contexts db)
+       ctx
+       boolean)))
 
 (re-frame/reg-sub
  :photos
@@ -1390,7 +1373,7 @@
        [:div.pswp__caption__center]]]]]])
 
 (defn quick-tags-popup []
-  (let [show? @(re-frame/subscribe [:show-quick-tags-popup?])
+  (let [show? @(re-frame/subscribe [:in-context? :quick-tags])
         sel# @(re-frame/subscribe [:selected-photos#])
         multiple-selected? (> sel# 1)
         ]
