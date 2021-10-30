@@ -80,7 +80,10 @@
   (. evt preventDefault)
   (re-frame/dispatch event))
 
-;; Defining client/server conversations
+;; hack hack hack
+(defn quick-tags-popup-mode? []
+  (let [db @re-frame.db/app-db]
+    (:show-quick-tags-popup? db)))
 
 (defn build-edn-request
   "Build a request building map that can be passed to :http-xhrio. This
@@ -124,12 +127,21 @@
        (map (juxt id-key identity))
        (into {})))
 
+;; `coverage` = nil ==> count all
+;; `coverage` = :just-selection ==> count just selected
 (defn get-selection
   "Get all selected photos, or currently focused photo. Return a seq."
-  [db]
-  (let [sel (-> db :selected)
-        focus (-> db :focused-photo)]
-    (or (seq sel) [focus])))
+  ([db]
+   (get-selection db nil))
+  ([db coverage]
+   (let [all? (nil? coverage)
+         sel (-> db :selected)
+         focus (-> db :focused-photo)]
+     (cond
+       (seq sel) sel
+       (and all? focus) (list focus)
+       :else ()))))
+
 
 (defn ok?
   [status]
@@ -611,6 +623,19 @@
  (fn [db _]
    (update db :selected empty)))
 
+(re-frame/reg-event-db
+ :toggle-quick-tags-popup
+ (fn [db _]
+   (let [sel? (boolean (seq (get-selection db)))]
+     (update db :show-quick-tags-popup?
+             (fn [currently-shown?]
+               (case [(boolean sel?) (boolean currently-shown?)]
+                 [true true] false ; hide
+                 [true false] true ; show
+                 [false true] false ; hide
+                 [false false] false ; don't show if no selection
+                 ))))))
+
 (defn truncate-time-component
   "Given an ISO datetime of string format, truncate possible time away."
   [ts]
@@ -646,12 +671,26 @@
 (keybind/bind! "M-e" ::export-selected
                #(dispatch-preventing-default-action
                  % [:export-selected (get-default-export-scheme-key)]))
-(keybind/bind! "M-q" ::match-tags
-               #(dispatch-preventing-default-action
-                 % [:match-tags-on-selected]))
 (keybind/bind! "M-`" ::filter-around-selected
                #(dispatch-preventing-default-action
                  % [:filter-search-on-selected]))
+
+;; Quick tagging begins here from M-q
+
+(keybind/bind! "M-q" ::show-quick-tags
+               #(dispatch-preventing-default-action
+                 % [:toggle-quick-tags-popup]))
+
+;; Now this is a sort of a submap of M-q or `quick-tags-popup`.
+;; Reckon we can build a multimethod out of these things.
+(keybind/bind! "M-w" ::match-tags
+               (fn [evt]
+                 (. evt preventDefault)
+                 (when (quick-tags-popup-mode?)
+                   (dispatch-preventing-default-action
+                     evt [:match-tags-on-selected]))))
+
+
 
 ;; Actions performed on currently focused photo
 ;; (keybind/bind! "j" ::focus-previous1
@@ -929,16 +968,19 @@
  (fn [db _]
    (-> db :tags-map)))
 
+;; Count of all selected or focused photos
+;; `coverage` = nil ==> count all
+;; `coverage` = :just-selection ==> count just selected
 (re-frame/reg-sub
  :selected-photos#
- (fn [db _]
-   (count (-> db :selected))))
+ (fn [db [_ coverage]]
+   (count (get-selection db coverage))))
 
-;; Set of all selected photos
+;; Set of all selected or focused photos
 (re-frame/reg-sub
  :selected-photos-all
- (fn [db _]
-   (-> db :selected)))
+ (fn [db [_ coverage]]
+   (get-selection db coverage)))
 
 ;; Is this photo selected or not
 (re-frame/reg-sub
@@ -963,6 +1005,11 @@
  :selected-tags
  (fn [db _]
    (-> db :selected-tags)))
+
+(re-frame/reg-sub
+ :show-quick-tags-popup?
+ (fn [db _]
+   (:show-quick-tags-popup? db)))
 
 (re-frame/reg-sub
  :photos
@@ -1342,6 +1389,20 @@
       [:div.pswp__caption
        [:div.pswp__caption__center]]]]]])
 
+(defn quick-tags-popup []
+  (let [show? @(re-frame/subscribe [:show-quick-tags-popup?])
+        sel# @(re-frame/subscribe [:selected-photos#])
+        multiple-selected? (> sel# 1)
+        ]
+    [:div#quick-tags-popup
+     {:class (when-not show? "hidden")}
+     [:h1 "Tag " sel#  " photo" (if multiple-selected? \s) \:]
+     [:p "a bit of a todo this here..."]
+     [:br]
+     (when multiple-selected?
+       [:h1 "Match tags" [:kbd "[M-w]"]])
+     ]))
+
 (defn lighttable []
   (let [photos (re-frame/subscribe [:photos])]
     (fn []
@@ -1432,7 +1493,7 @@
 
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
-        sc @(re-frame/subscribe [:selected-photos#])]
+        sc @(re-frame/subscribe [:selected-photos# :just-selection])]
     [:h1#head "Photos"
      [:span.photos-count \# pc]
      [filter-button]
@@ -1509,6 +1570,7 @@
    [modal-background]
    [tag-edit-dialog]
    [gear-edit-dialog]
+   [quick-tags-popup]
 
    ;; Prompt downmost
    [modal-prompt]])

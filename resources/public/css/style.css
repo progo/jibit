@@ -620,6 +620,41 @@ div#main {
     border-radius: 5px;
 }
 
+/** Quick tags view sits in front of tags */
+
+div#quick-tags-popup {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    top: 60px;
+    right: 10px;
+
+    padding: 5px;
+    background-color: #222;
+    border-radius: 10px;
+    border: #ffec64 2px solid;
+}
+
+#quick-tags-popup h1 {
+    background-color: #333;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+
+    padding: 2px;
+    padding-left: 6px;
+
+    border-radius: 10px;
+
+    font-size: 120%;
+}
+
+#quick-tags-popup h1 kbd {
+    float: right;
+    margin: 4px;
+    color: silver;
+}
+
 /** Clearable inputs **/
 .input-outer-clearable {
     display: inline-block;
