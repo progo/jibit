@@ -164,7 +164,6 @@
   "Take user's input (parsed in some way) and build/execute a SQL query.
   Look for keys under `build-photo-filter'."
   [criteria]
-
   (let [crit (build-photo-filter criteria)
         total-count (-> crit
                         (merge {:select [:%count]
@@ -176,4 +175,7 @@
                    (#(map fetch-tags %))
                    (#(map massage-content %)))]
     {:photos photos
-     :meta {:total-count total-count}}))
+     :meta {:total-count total-count
+            :offset (crit :offset)
+            :limit (crit :limit)
+            }}))

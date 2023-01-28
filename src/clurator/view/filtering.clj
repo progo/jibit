@@ -52,6 +52,7 @@
 (defn handle-filter-criteria
   [criteria]
   ;; order-by            enum
+  ;; offset              num
   ;; camera              text
   ;; lens                text
   ;; camera-id           num
@@ -73,6 +74,7 @@
          (clean-edn-input :show-only-unrated?)
          (clean-edn-input :show-only-uncooked?)
          (clean-edn-input :tags)
+         (clean-edn-input :offset)
          (clean-input-as :taken-begin "taken-ts[begin]")
          (clean-input-as :taken-end "taken-ts[end]")
          (clean-input-as :imported-begin "imported-ts[begin]")

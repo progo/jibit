@@ -204,7 +204,7 @@
      (let [photo-ids-set (set (photo-ids photos))]
        (-> db
            (update :focused-photo photo-ids-set)
-           (assoc :photos-count (-> metadata :total-count))
+           (assoc :photos-window metadata)
            (update :selected #(clojure.set/intersection photo-ids-set %))
            (assoc :photos photos))))))
 
@@ -773,7 +773,8 @@
 (re-frame/reg-event-fx
  :get-photos
  (fn [{db :db} _]
-   (let [filter-criteria (-> db
+   (let [window (or (-> db :photos-window) {})
+         filter-criteria (-> db
                              :input
                              :filter
 
@@ -789,12 +790,20 @@
                                                 (-> db :input :filter :camera)
                                                 (-> db :gear)))
 
-                             clean-nil-values)]
+                             clean-nil-values
+
+                             (assoc :offset (or (window :offset) 0)))]
      (debug "Get photos with:" filter-criteria)
      {:http-xhrio (build-edn-request :method :get
                                      :uri "/photos"
                                      :params filter-criteria
                                      :response :on-get-photos)})))
+
+(re-frame/reg-event-fx
+ :change-page
+ (fn [{db :db} [_ delta]]
+   {:db (assoc-in db [:photos-window :offset] 10)
+    :dispatch [:get-photos]}))
 
 (re-frame/reg-event-fx
  :show-photo
@@ -1005,6 +1014,12 @@
  :photos-count
  (fn [db _]
    (-> db :photos-count)))
+
+(re-frame/reg-sub
+ :photos-window
+ ;; :total-count/ :offset / :limit
+ (fn [db _]
+   (-> db :photos-window)))
 
 ;;; Tags
 
@@ -1476,11 +1491,25 @@
      \space
      [:img {:src "/img/film-spinner-sq-orange.gif"}]]))
 
+(defn page-selector
+  ""
+  []
+  (let [{total-photos :total-count
+         from :offset
+         shown# :limit} @(re-frame/subscribe [:photos-window])
+        curr-page (inc (quot from shown#))
+        pages# (js/Math.ceil (/ total-photos shown#))
+        ]
+    [:div {:style {:display :inline-block}}
+     [:span.photos-count \# (inc from) \- (+ from shown#) \/ total-photos]
+     [:a {:on-click #(re-frame/dispatch [:change-page -1])} "<<"]
+     \space curr-page "/" pages# \space
+     [:a {:on-click #(re-frame/dispatch [:change-page 1])} ">>"]]))
+
 (defn header []
-  (let [pc @(re-frame/subscribe [:photos-count])
-        sc @(re-frame/subscribe [:selected-photos# :just-selection])]
+  (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
     [:h1#head "Jibit"
-     [:span.photos-count \# pc]
+     [page-selector]
      [filter-button]
      (when (pos? sc)
        [:span.selection-count "Selected " sc \space
