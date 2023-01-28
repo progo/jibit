@@ -667,7 +667,8 @@
 
 (def keybindings
   {"M-a" {:kw ::select-all :dispatch :select-all-photos}
-   "M-l" {:kw ::deselect-all :dispatch :clear-selection}
+   ;; "M-l" {:kw ::deselect-all :dispatch :clear-selection}
+   "M-c" {:kw ::deselect-all :dispatch :clear-selection}
    "M-e" {:kw ::export-selected :dispatch :export-selected}
    "M-`" {:kw ::filter-around-selected :dispatch :filter-search-on-selected}
 
