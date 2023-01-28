@@ -110,8 +110,8 @@
                            0 false
                            1 true)))
 
-(defn filter-photos
-  "Take user's input (parsed in some way) and build/execute a SQL query."
+(defn build-photo-filter
+  "Build a map of criteria to  query photos from db."
   [{:keys
     [order-by
      offset
@@ -138,29 +138,42 @@
      show-only-uncooked?]
     :or {order-by :taken_ts
          offset 0
-         limit 1234}}]
+         limit 72}}]
+  {:select [:photo.*]
+   :from [:photo]
+   :left-join [[:gear :camera] [:= :camera.id :photo.camera_id]
+               [:gear :lens]   [:= :lens.id   :photo.lens_id]]
+   :where [:and true
+           (build-date-range-criteria :taken_ts taken-begin taken-end)
+           (build-date-range-criteria :import_ts imported-begin imported-end)
+           (if camera-id
+             [:= :photo.camera_id camera-id]
+             (build-gear-criteria :camera camera))
+           (if lens-id
+             [:= :photo.lens_id lens-id]
+             (build-gear-criteria :lens lens))
+           (build-tags-criteria tags tags-union? show-only-untagged?)
+           (build-rated-criterion show-only-unrated?)
+           (build-cooked-criterion show-only-uncooked?)
+           (build-title-criterion show-only-untitled?)]
+   :order-by [order-by]
+   :offset offset
+   :limit limit})
 
-  (-> {:select [:photo.*]
-       :from [:photo]
-       :left-join [[:gear :camera] [:= :camera.id :photo.camera_id]
-                   [:gear :lens]   [:= :lens.id   :photo.lens_id]]
-       :where [:and true
-               (build-date-range-criteria :taken_ts taken-begin taken-end)
-               (build-date-range-criteria :import_ts imported-begin imported-end)
-               (if camera-id
-                 [:= :photo.camera_id camera-id]
-                 (build-gear-criteria :camera camera))
-               (if lens-id
-                 [:= :photo.lens_id lens-id]
-                 (build-gear-criteria :lens lens))
-               (build-tags-criteria tags tags-union? show-only-untagged?)
-               (build-rated-criterion show-only-unrated?)
-               (build-cooked-criterion show-only-uncooked?)
-               (build-title-criterion show-only-untitled?)]
-       :order-by [order-by]
-       :offset offset
-       :limit limit}
-      db/query!
-      (#(map fetch-tags %))
-      (#(map massage-content %))
-      ))
+(defn filter-photos
+  "Take user's input (parsed in some way) and build/execute a SQL query.
+  Look for keys under `build-photo-filter'."
+  [criteria]
+
+  (let [crit (build-photo-filter criteria)
+        total-count (-> crit
+                        (merge {:select [:%count]
+                                :offset 0
+                                :limit -1})
+                        (db/query-count!))
+        photos (-> crit
+                   db/query!
+                   (#(map fetch-tags %))
+                   (#(map massage-content %)))]
+    {:photos photos
+     :meta {:total-count total-count}}))

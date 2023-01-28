@@ -199,13 +199,14 @@
 
 (re-frame/reg-event-db
  :on-get-photos
- (fn [db [_ {status :status new-photos :response}]]
-   (when (ok? status) ; FIXME probably faulty use of `reg-event-db`
-     (let [photo-ids-set (set (photo-ids new-photos))]
+ (fn [db [_ {status :status {metadata :meta photos :photos} :response}]]
+   (when (ok? status)
+     (let [photo-ids-set (set (photo-ids photos))]
        (-> db
            (update :focused-photo photo-ids-set)
+           (assoc :photos-count (-> metadata :total-count))
            (update :selected #(clojure.set/intersection photo-ids-set %))
-           (assoc :photos new-photos))))))
+           (assoc :photos photos))))))
 
 (re-frame/reg-event-fx
  :on-match-tags
@@ -1003,7 +1004,7 @@
 (re-frame/reg-sub
  :photos-count
  (fn [db _]
-   (count (-> db :photos))))
+   (-> db :photos-count)))
 
 ;;; Tags
 
