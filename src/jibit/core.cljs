@@ -1478,7 +1478,7 @@
 (defn header []
   (let [pc @(re-frame/subscribe [:photos-count])
         sc @(re-frame/subscribe [:selected-photos# :just-selection])]
-    [:h1#head "Photos"
+    [:h1#head "Jibit"
      [:span.photos-count \# pc]
      [filter-button]
      (when (pos? sc)
