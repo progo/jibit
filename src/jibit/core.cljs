@@ -1509,7 +1509,7 @@
      \space
      [:img {:src "/img/film-spinner-sq-orange.gif"}]]))
 
-(defn page-selector
+(defn page-navigator
   "Show number of photos, where we are, and offer navigation tools."
   []
   (let [{total-photos :total-count
@@ -1523,16 +1523,19 @@
       [:div {:style {:display :inline-block}}
        [:span.photos-count
         \# (inc offset) \- (min total-photos (+ offset limit)) \/ total-photos]
-       \space
-       [:a {:on-click #(re-frame/dispatch [:navigate-page -1])} "◀"]
-       \space curr-page "/" pages# \space
-       [:a {:on-click #(re-frame/dispatch [:navigate-page 1])} "▶"]]
+       [:div.page-navigator
+        [:a.navigate {:on-click #(re-frame/dispatch [:navigate-page -1])} "◀"]
+        \space
+        [:span.curr-page curr-page]
+        [:span.slash "/"]
+        [:span.pagecount pages# \space]
+        [:a.navigate {:on-click #(re-frame/dispatch [:navigate-page 1])} "▶"]]]
       [:span.photos-count \# total-photos])))
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
     [:h1#head "Jibit"
-     [page-selector]
+     [page-navigator]
      [filter-button]
      (when (pos? sc)
        [:span.selection-count "Selected " sc \space

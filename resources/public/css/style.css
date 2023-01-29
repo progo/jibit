@@ -66,6 +66,37 @@ h1#head {
     margin-bottom: -10px;
 }
 
+#head .page-navigator {
+    border-radius: 8px;
+    border: solid thin gold;
+    background-color: #ffab23;
+    padding-left: 8px;
+    padding-right: 8px;
+
+    margin-left: 8px;
+
+    display: inline-block;
+    font-size: smaller;
+    color: #333;
+    user-select: none;
+}
+
+.page-navigator .navigate {
+    cursor: pointer;
+    vertical-align: text-bottom;
+}
+
+.page-navigator .navigate:hover {
+    color: gold;
+}
+.page-navigator .slash {
+    font-weight: lighter;
+}
+.page-navigator .pagecount {
+    margin-left: -2px;
+    font-size: 92%;
+}
+
 .photos-count {
     color: silver;
     font-size: smaller;
