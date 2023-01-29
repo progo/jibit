@@ -799,10 +799,28 @@
                                      :params filter-criteria
                                      :response :on-get-photos)})))
 
+(defn shift-photos-window
+  "Calculate new photo view offset based on number of photos. `delta`
+  corresponds to a number of 'pages' to shift over."
+  [{:keys [total-count offset limit]} delta]
+  (let [offset' (+ offset (* delta limit))
+        ;; wrap around to 'page 1' after reaching max
+        offset-w (if (>= offset' total-count)
+                   0
+                   offset')
+        ;; wrap around to last page, if below min
+        offset-w (if (neg? offset-w)
+                   (* limit
+                      (Math/floor (/ total-count limit)))
+                   offset-w)]
+    {:total-count total-count
+     :offset offset-w
+     :limit limit}))
+
 (re-frame/reg-event-fx
- :change-page
+ :navigate-page
  (fn [{db :db} [_ delta]]
-   {:db (assoc-in db [:photos-window :offset] 10)
+   {:db (update db :photos-window shift-photos-window delta)
     :dispatch [:get-photos]}))
 
 (re-frame/reg-event-fx
@@ -1492,19 +1510,20 @@
      [:img {:src "/img/film-spinner-sq-orange.gif"}]]))
 
 (defn page-selector
-  ""
+  "Show number of photos, where we are, and offer navigation tools."
   []
   (let [{total-photos :total-count
          from :offset
          shown# :limit} @(re-frame/subscribe [:photos-window])
         curr-page (inc (quot from shown#))
-        pages# (js/Math.ceil (/ total-photos shown#))
+        pages# (Math/ceil (/ total-photos shown#))
         ]
     [:div {:style {:display :inline-block}}
-     [:span.photos-count \# (inc from) \- (+ from shown#) \/ total-photos]
-     [:a {:on-click #(re-frame/dispatch [:change-page -1])} "<<"]
+     [:span.photos-count \# (inc from) \- (min total-photos (+ from shown#)) \/ total-photos]
+     \space
+     [:a {:on-click #(re-frame/dispatch [:navigate-page -1])} "◀"]
      \space curr-page "/" pages# \space
-     [:a {:on-click #(re-frame/dispatch [:change-page 1])} ">>"]]))
+     [:a {:on-click #(re-frame/dispatch [:navigate-page 1])} "▶"]]))
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
