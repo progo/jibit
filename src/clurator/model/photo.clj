@@ -165,17 +165,23 @@
   Look for keys under `build-photo-filter'."
   [criteria]
   (let [crit (build-photo-filter criteria)
+        offset (:offset criteria)
         total-count (-> crit
                         (merge {:select [:%count]
                                 :offset 0
                                 :limit -1})
                         (db/query-count!))
-        photos (-> crit
+        ;; reset offset if it doesn't make sense.
+        ;; (FIXME) might be we want to do this on the client
+        offset (if (> offset total-count)
+                 0
+                 offset)
+        photos (-> (assoc crit :offset offset)
                    db/query!
                    (#(map fetch-tags %))
                    (#(map massage-content %)))]
     {:photos photos
      :meta {:total-count total-count
-            :offset (crit :offset)
+            :offset offset
             :limit (crit :limit)
             }}))
