@@ -1513,17 +1513,21 @@
   "Show number of photos, where we are, and offer navigation tools."
   []
   (let [{total-photos :total-count
-         from :offset
-         shown# :limit} @(re-frame/subscribe [:photos-window])
-        curr-page (inc (quot from shown#))
-        pages# (Math/ceil (/ total-photos shown#))
-        ]
-    [:div {:style {:display :inline-block}}
-     [:span.photos-count \# (inc from) \- (min total-photos (+ from shown#)) \/ total-photos]
-     \space
-     [:a {:on-click #(re-frame/dispatch [:navigate-page -1])} "◀"]
-     \space curr-page "/" pages# \space
-     [:a {:on-click #(re-frame/dispatch [:navigate-page 1])} "▶"]]))
+         offset :offset
+         limit :limit} @(re-frame/subscribe [:photos-window])
+        curr-page (inc (quot offset limit))
+        pages# (Math/ceil (/ total-photos limit))
+        show-navigation? (not (and (zero? offset)
+                                   (<= total-photos limit)))]
+    (if show-navigation?
+      [:div {:style {:display :inline-block}}
+       [:span.photos-count
+        \# (inc offset) \- (min total-photos (+ offset limit)) \/ total-photos]
+       \space
+       [:a {:on-click #(re-frame/dispatch [:navigate-page -1])} "◀"]
+       \space curr-page "/" pages# \space
+       [:a {:on-click #(re-frame/dispatch [:navigate-page 1])} "▶"]]
+      [:span.photos-count \# total-photos])))
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
