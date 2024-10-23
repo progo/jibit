@@ -19,6 +19,14 @@
                  :method :convert
                  :args ["-resize" "1600x1600>"
                         "-quality" "90"]}
+   :instagram {:name "Instagram"
+               :key :instagram
+               :method :convert
+               :args ["-resize" "1080x1080"
+                      "-background" "black"
+                      "-gravity" "center"
+                      "-extent" "1080x1080"
+                      "-quality" "90"]}
    :whitebox {:name "1920px whitebox unsharpened"
               :key :whitebox
               :method :convert
