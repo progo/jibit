@@ -36,27 +36,6 @@
   ;; All non-nil states are modal, for now.
   state)
 
-(defn i
-  "{debug} Inspect DB."
-  [& ks]
-  (let [db @re-frame.db/app-db]
-    (cond
-      (nil? ks) (sort (keys db))
-      :t (get-in db ks))))
-
-(defn join-strings
-  "Join nonempty non-nil strings with separator."
-  ([coll]
-   (join-strings ", " coll))
-  ([sep coll]
-   (apply str (interpose sep (filter identity coll)))))
-
-(defn toggle-set-membership
-  [x s]
-  (if (s x)
-    (clojure.set/difference s #{x})
-    (clojure.set/union      s #{x})))
-
 ;; We could store context out of `db` to be perhaps less smelly
 (defn user-in-context?
   ([ctx]
@@ -498,13 +477,13 @@
 (re-frame/reg-event-db
  :select-photo
  (fn [db [_ photo-id]]
-   (update db :selected #(toggle-set-membership photo-id %))))
+   (update db :selected #(utils/toggle-set-membership photo-id %))))
 
 (re-frame/reg-event-db
  :select-focused-photo
  (fn [db _]
    (if-let [focused (-> db :focused-photo)]
-     (update db :selected #(toggle-set-membership focused %))
+     (update db :selected #(utils/toggle-set-membership focused %))
      db)))
 
 (re-frame/reg-event-db
@@ -529,11 +508,6 @@
                  [false false] false)] ; don't show if no selection
      (update db :contexts (if show? conj disj) :quick-tags))))
 
-(defn truncate-time-component
-  "Given an ISO datetime of string format, truncate possible time away."
-  [ts]
-  (clojure.string/replace ts #"T.*$" ""))
-
 ;; Inspect taken_ts times of selection and redo the search using the
 ;; date range so that we focus on those dates.
 (re-frame/reg-event-fx
@@ -543,7 +517,7 @@
      (let [all-photos (:photos db)
            ;; TODO. Again slow application of `get-photo-by-id` here.
            photos (map #(get-photo-by-id % all-photos) photo-ids)
-           taken-tss (map (comp truncate-time-component :taken_ts) photos)
+           taken-tss (map (comp utils/truncate-time-component :taken_ts) photos)
            taken-min (apply min taken-tss)
            taken-max (apply max taken-tss)]
        ;; (println "Earliest" taken-min "latest" taken-max)
@@ -592,7 +566,7 @@
 (re-frame/reg-event-fx
  :toggle-tag-filter
  (fn [{db :db} [_ tag-id]]
-   (let [tags-selection (toggle-set-membership tag-id (:selected-tags db))]
+   (let [tags-selection (utils/toggle-set-membership tag-id (:selected-tags db))]
      {:db (assoc-in db [:selected-tags] tags-selection)
       :dispatch [:get-photos]
       })))

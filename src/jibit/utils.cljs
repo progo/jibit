@@ -47,6 +47,32 @@
   [p]
   (map :id p))
 
+(defn i
+  "{debug} Inspect DB."
+  [& ks]
+  (let [db @re-frame.db/app-db]
+    (cond
+      (nil? ks) (sort (keys db))
+      :t (get-in db ks))))
+
+(defn join-strings
+  "Join nonempty non-nil strings with separator."
+  ([coll]
+   (join-strings ", " coll))
+  ([sep coll]
+   (apply str (interpose sep (filter identity coll)))))
+
+(defn truncate-time-component
+  "Given an ISO datetime of string format, truncate possible time away."
+  [ts]
+  (clojure.string/replace ts #"T.*$" ""))
+
+(defn toggle-set-membership
+  [x s]
+  (if (s x)
+    (clojure.set/difference s #{x})
+    (clojure.set/union      s #{x})))
+
 
 (defn build-edn-request
   "Build a request building map that can be passed to :http-xhrio. This
