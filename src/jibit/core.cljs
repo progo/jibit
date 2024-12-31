@@ -6,6 +6,7 @@
    ajax.edn
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
+   [jibit.uri :as uri]
    common.settings
    [cljs.pprint :refer [cl-format]]
    [keybind.core :as keybind]
@@ -15,21 +16,10 @@
    [jibit.components.fancydate :refer [data-bound-fancydate]]
    [jibit.components.quick-label]
    [jibit.components.header]
+   [jibit.components.lighttable]
    [jibit.components.tag-edit]
    [jibit.components.gear-editor :as gear-editor]
    [jibit.utils :as utils :refer [dissoc-in]]))
-
-;; Remember to specify protocol. And no trailing slash.
-;; (def server-uri "http://localhost:8088")
-(def server-uri "")
-
-(defn photo-image-uri
-  [photo]
-  (str server-uri "/photo/" (:uuid photo)))
-
-(defn photo-thumbnail-uri
-  [photo]
-  (str server-uri "/thumbnail/" (:uuid photo)))
 
 (defn get-photoswipe-elt
   []
@@ -40,13 +30,6 @@
   "Is projector currently active and visible."
   []
   (.contains (.-classList (get-photoswipe-elt)) "pswp--visible"))
-
-(defn rgb->rgba
-  "Given hex string #RRGGBB turn it into #RRGGBBAA. Opacity is a decimal
-  between [0, 1]"
-  [rgb opacity]
-  (let [op (int (* 255 opacity))]
-    (cl-format nil "~a~2'0x" rgb op)))
 
 (defn modal-state?
   "Is this state a modal one?"
@@ -99,7 +82,7 @@
      body :body
      response :response}]
   {:method method
-   :uri (str server-uri uri)
+   :uri (str uri/server-uri uri)
    :params params
    :body body
    :format (ajax.edn/edn-request-format)
@@ -307,8 +290,8 @@
 
          ;; build a minimal data structure for PhotoSwipe
          projected-photos (map (fn [p]
-                                 {:src (photo-image-uri p)
-                                  :msrc (photo-thumbnail-uri p)
+                                 {:src (uri/photo-image-uri p)
+                                  :msrc (uri/photo-thumbnail-uri p)
                                   :w (:width p)
                                   :h (:height p)})
                                cooked-photos)]
@@ -1032,18 +1015,6 @@
 
 ;;; Tags
 
-;; TODO can we refactor this with `tag-view`?
-(defn small-tag-view
-  "Render a small RO tag element meant to be used as information."
-  [tag]
-  (let [tag-id (:id tag)]
-    ^{:key tag-id}
-    [:li {:style (if-let [color (:computed_color tag)]
-                   {:background-color (rgb->rgba color 0.20)
-                    :border-color color})
-          :title (or (:description tag) "")}
-     (:name tag)]))
-
 (defn tag-view
   "Render a small element that visually represents a clickable tag."
   [tag]
@@ -1057,7 +1028,7 @@
           :on-double-click #(re-frame/dispatch [:show-edit-tag-dlg tag-id])
           :class (if selected? "selected" "")
           :style (if-let [color (:computed_color tag)]
-                   {:background-color (rgb->rgba color 0.20)
+                   {:background-color (utils/rgb->rgba color 0.20)
                     :border-color color})
           :title (or (:description tag) "")}
      (:name tag)]))
@@ -1074,96 +1045,7 @@
     {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
     "+"]])
 
-(defn render-tags-from-ids
-  [tags-db tag-ids]
-  [:ul.inline-tags
-   (doall
-    (for [tid tag-ids]
-      ^{:key (str "inline-tag-" tid)}
-      (small-tag-view (tags-db tid))))])
-
 ;;; Views and components
-
-(defn slide [photo]
-  (let [tags-map @(re-frame/subscribe [:tags-map])
-        gear-db @(re-frame/subscribe [:gear-db])
-        focused? @(re-frame/subscribe [:focused-photo? (:id photo)])
-        selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
-
-    [:div.slide-wrapper
-     [:div.slide
-      {:class (str (when selected? "selected-slide")
-                   \space
-                   (when focused? "focused-slide"))
-       :on-click #(re-frame/dispatch [:focus-photo (:id photo)])}
-
-      ;; Offer 3 different selections. Work on one type.
-      [:div.overlay-controls
-       {:on-double-click #(re-frame/dispatch [:show-photo photo])}
-
-       [:img.selector.sel1
-        {:src (if selected? "/img/selection-1-fill.png" "/img/selection-1.png")
-         :on-click #(re-frame/dispatch [:select-photo (:id photo)])}]
-       ;; [:img.selector.sel2
-       ;;  {:src "/img/selection-2.png"
-       ;;   :on-click #(debug "clicking on X2")}]
-       ;; [:img.selector.sel3
-       ;;  {:src "/img/selection-3.png"
-       ;;   :on-click #(debug "clicking on X3")}]
-
-       ;; Then offer other quick edit tools, such as RATING
-       [:span
-        {:style {:position :absolute :bottom 0}
-         :on-click (fn [e]
-                     (re-frame/dispatch [:show-quick-label-editor
-                                         photo
-                                         [(.-pageX e) (- (.-pageY e) 20)]]))}
-        (if (:title photo)
-          "Edit title"
-          "Add title")]]
-
-      [:div.img-wrapper
-       [:div {:class (if selected? "encircled" "hidden")}]
-
-       ;; Here we have support to show any "raw" indications
-       ;; (when (:is_raw photo)
-       ;;   [:div.raw-photo])
-
-       [:img.photograph
-        {:class (when (:is_raw photo) "raw-image")
-         :src (photo-thumbnail-uri photo)}]]
-
-      [:ul.info
-       [:li (human/datestamp (:taken_ts photo))]
-       ;; [:li (-> photo :camera_id gear-db human/gear-label)]
-       ;; [:li (-> photo :lens_id gear-db human/gear-label)]
-       (when (seq (:title photo))
-         [:li (:title photo)])
-       [:li.technical-details
-        ;; TODO color-code the crop factor a little bit, and put 35mm
-        ;; equivalent in a tooltip!
-        [:span.small-label "FL"]
-        (human/focal-length (:focal_length photo)) " mm"
-        [:span.small-label "ƒ/"]
-        (human/aperture (:aperture photo))
-        [:span.small-label "SS"]
-        (human/shutter-speed (:shutter_speed photo))
-        [:span.small-label "ISO"] (human/iso (:iso photo))
-        (when-not (zero? (:exposure_comp photo))
-          [:span
-           [:span.small-label "EC"]
-           (human/exp-comp (:exposure_comp photo)) " EV" ])]
-
-       ;; Debug things...
-       ;; [:li
-       ;;  [:span.small-label "ID"]
-       ;;  (:id photo)]
-
-       (when-let [tags (seq (:tagged/ids photo))]
-         [:li (render-tags-from-ids tags-map tags)])
-       ]
-
-      ]]))
 
 (defn filter-panel []
   (let [get-photos #(re-frame/dispatch [:get-photos])
@@ -1265,13 +1147,6 @@
        [:h1 "Match tags" [:kbd "[M-w]"]])
      ]))
 
-(defn lighttable []
-  (let [photos (re-frame/subscribe [:photos])]
-    (fn []
-      [:div#lighttable
-       (for [photo @photos]
-         ^{:key (:uuid photo)} [slide photo])])))
-
 (defn message-box
   "Nonmodal temporary message in the corner"
   []
@@ -1285,7 +1160,7 @@
    ;; Visible "zero-level" elements
    [filter-panel]
    [tags-view]
-   [lighttable]
+   [jibit.components.lighttable/lighttable]
    [jibit.components.quick-label/quick-label-edit]
    [jibit.components.header/header]
    [message-box]

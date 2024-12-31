@@ -1,4 +1,15 @@
-(ns jibit.utils)
+(ns jibit.utils
+  (:require
+   [cljs.pprint :refer [cl-format]]
+   ))
+
+
+(defn rgb->rgba
+  "Given hex string #RRGGBB turn it into #RRGGBBAA. Opacity is a decimal
+  between [0, 1]"
+  [rgb opacity]
+  (let [op (int (* 255 opacity))]
+    (cl-format nil "~a~2'0x" rgb op)))
 
 (defn get-default-export-scheme-key
   []
