@@ -3,7 +3,6 @@
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
-   ajax.edn
    [taoensso.timbre :as timbre :refer [debug spy]]
    [common.human :as human]
    [jibit.uri :as uri]
@@ -19,7 +18,7 @@
    [jibit.components.tags]
    [jibit.components.filters]
    [jibit.components.gear-editor :as gear-editor]
-   [jibit.utils :as utils :refer [dissoc-in]]))
+   [jibit.utils :as utils :refer [dissoc-in build-edn-request]]))
 
 (defn get-photoswipe-elt
   []
@@ -66,24 +65,6 @@
    (if (nil? ctx)
      true
      ((-> db :contexts) ctx))))
-
-(defn build-edn-request
-  "Build a request building map that can be passed to :http-xhrio. This
-  is our basic XHR protocol of choice, EDN on both ends. Use :body only
-  when uploading files (using js/FormData objects)."
-  [&{method :method
-     uri :uri
-     params :params
-     body :body
-     response :response}]
-  {:method method
-   :uri (str uri/server-uri uri)
-   :params params
-   :body body
-   :format (ajax.edn/edn-request-format)
-   :response-format (ajax.edn/edn-response-format)
-   :on-success [response]
-   :on-failure [response {:status :fail}]})
 
 ;;;;
 

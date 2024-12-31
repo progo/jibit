@@ -1,5 +1,7 @@
 (ns jibit.utils
   (:require
+   ajax.edn
+   [jibit.uri :as uri]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
    [cljs.pprint :refer [cl-format]]
@@ -38,3 +40,22 @@
 
     ;; several keys
     :else (assoc m k (dissoc-in (get m k) ks))))
+
+
+(defn build-edn-request
+  "Build a request building map that can be passed to :http-xhrio. This
+  is our basic XHR protocol of choice, EDN on both ends. Use :body only
+  when uploading files (using js/FormData objects)."
+  [&{method :method
+     uri :uri
+     params :params
+     body :body
+     response :response}]
+  {:method method
+   :uri (str uri/server-uri uri)
+   :params params
+   :body body
+   :format (ajax.edn/edn-request-format)
+   :response-format (ajax.edn/edn-response-format)
+   :on-success [response]
+   :on-failure [response {:status :fail}]})
