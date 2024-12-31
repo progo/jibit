@@ -7,6 +7,7 @@
    [taoensso.timbre :as timbre :refer [debug spy]]
    jibit.components.tags
    [jibit.components.inputs :refer [data-bound-toggle-button data-bound-input data-bound-select]]
+   [jibit.utils :as utils :refer [photo-ids]]
    ))
 
 (defn slide [photo]
@@ -97,3 +98,58 @@
       [:div#lighttable
        (for [photo @photos]
          ^{:key (:uuid photo)} [slide photo])])))
+
+
+;; Photo focus things. One thing at a time only
+;; This is a terrible approach that we use now, O(n) navigation, or worse.
+
+(defn rotate
+  "Rotate a seq shifting elements to the right by `n` elements.
+  Negative `n` shifts to the left."
+  [n s]
+  (let [n' (if (neg? n)
+             (+ (count s) n)
+             n)]
+    (concat
+     (drop n' s)
+     (take n' s))))
+
+(defn focus-by-step
+  "Given currently focused (or nil) `current-id` and an ordered seq of
+  ids `photo-ids`, select the next one if step is 1, previous if step
+  is -1. We wrap around if we reach the end."
+  [current-id photo-ids step]
+  (cond
+    (nil? (seq photo-ids))
+    nil
+
+    (nil? current-id)
+    (first photo-ids)
+
+    :else
+    (let [photo-ids' (rotate step photo-ids)
+          mapped (map vector photo-ids photo-ids')]
+      (->
+       (drop-while (fn [[a b]]
+                     (not= a current-id))
+                   mapped)
+       first
+       second))))
+
+(re-frame/reg-event-db
+ :focus-photo
+ (fn [db [_ pid]]
+   (assoc db :focused-photo pid)))
+
+(re-frame/reg-event-db
+ :focus-next-photo
+ (fn [db _]
+   (let [photo-ids (-> db :photos photo-ids)]
+     (update db :focused-photo #(focus-by-step % photo-ids 1)))))
+
+(re-frame/reg-event-db
+ :focus-previous-photo
+ (fn [db _]
+   (let [photo-ids (-> db :photos photo-ids)]
+     (update db :focused-photo #(focus-by-step % photo-ids -1)))))
+

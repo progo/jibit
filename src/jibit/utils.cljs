@@ -42,6 +42,12 @@
     :else (assoc m k (dissoc-in (get m k) ks))))
 
 
+(defn photo-ids
+  "Get an ordered seq of photo/ids from a collection of photo maps."
+  [p]
+  (map :id p))
+
+
 (defn build-edn-request
   "Build a request building map that can be passed to :http-xhrio. This
   is our basic XHR protocol of choice, EDN on both ends. Use :body only
