@@ -1,7 +1,15 @@
 (ns jibit.utils
   (:require
+   [reagent.core :as reagent]
+   [re-frame.core :as re-frame]
    [cljs.pprint :refer [cl-format]]
    ))
+
+
+(defn dispatch-preventing-default-action
+  [evt event]
+  (. evt preventDefault)
+  (re-frame/dispatch event))
 
 
 (defn rgb->rgba
