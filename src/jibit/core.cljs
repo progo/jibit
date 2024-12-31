@@ -13,6 +13,7 @@
    [cljsjs.photoswipe-ui-default]
    [jibit.components.inputs :refer [data-bound-toggle-button data-bound-input data-bound-select]]
    [jibit.components.fancydate :refer [data-bound-fancydate]]
+   [jibit.components.page-navigator :refer [page-navigator]]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;; Remember to specify protocol. And no trailing slash.
@@ -1508,29 +1509,6 @@
      (str activity-msg)
      \space
      [:img {:src "/img/film-spinner-sq-orange.gif"}]]))
-
-(defn page-navigator
-  "Show number of photos, where we are, and offer navigation tools."
-  []
-  (let [{total-photos :total-count
-         offset :offset
-         limit :limit} @(re-frame/subscribe [:photos-window])
-        curr-page (inc (quot offset limit))
-        pages# (Math/ceil (/ total-photos limit))
-        show-navigation? (not (and (zero? offset)
-                                   (<= total-photos limit)))]
-    (if show-navigation?
-      [:div {:style {:display :inline-block}}
-       [:span.photos-count
-        \# (inc offset) \- (min total-photos (+ offset limit)) \/ total-photos]
-       [:div.page-navigator
-        [:a.navigate {:on-click #(re-frame/dispatch [:navigate-page -1])} "◀"]
-        \space
-        [:span.curr-page curr-page]
-        [:span.slash "/"]
-        [:span.pagecount pages# \space]
-        [:a.navigate {:on-click #(re-frame/dispatch [:navigate-page 1])} "▶"]]]
-      [:span.photos-count \# total-photos])))
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
