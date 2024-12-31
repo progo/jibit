@@ -1381,29 +1381,6 @@
                                           :callback-yes [:delete-tag (-> tag :id)]}])}
          "Delete..."])]]))
 
-(defn projector []
-  [:div.pswp {:tab-index -1 :role "dialog" :aria-hidden true}
-   [:div.pswp__bg]
-   [:div.pswp__scroll-wrap
-    [:div.pswp__container
-     [:div.pswp__item]
-     [:div.pswp__item]
-     [:div.pswp__item]]
-    [:div.pswp__ui.pswp__ui--hidden
-     [:div.pswp__top-bar
-      [:div.pswp__counter]
-      [:button.pswp__button.pswp__button--close {:title "Close (Esc)"}]
-      [:button.pswp__button.pswp__button--fs {:title "Toggle fs"}]
-      [:button.pswp__button.pswp__button--zoom {:title "Zoom in/out"}]
-      [:div.pswp__preloader
-       [:div.pswp__preloader__icn
-        [:div.pswp__preloader__cut
-         [:div.pswp__preloader__donut]]]]
-      [:button.pswp__button.pswp__button--arrow-left {:title "Previous"}]
-      [:button.pswp__button.pswp__button--arrow-right {:title "Next"}]
-      [:div.pswp__caption
-       [:div.pswp__caption__center]]]]]])
-
 (defn quick-tags-popup []
   (let [show? @(re-frame/subscribe [:in-context? :quick-tags])
         sel# @(re-frame/subscribe [:selected-photos#])
