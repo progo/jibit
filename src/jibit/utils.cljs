@@ -1,5 +1,9 @@
 (ns jibit.utils)
 
+(defn get-default-export-scheme-key
+  []
+  (-> common.settings/export-schemes first first))
+
 ;; dissoc-in, inspired by whynotsoftware blog post but recreated
 ;; because of lack of license.
 

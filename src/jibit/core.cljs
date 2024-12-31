@@ -13,7 +13,7 @@
    [cljsjs.photoswipe-ui-default]
    [jibit.components.inputs :refer [data-bound-toggle-button data-bound-input data-bound-select]]
    [jibit.components.fancydate :refer [data-bound-fancydate]]
-   [jibit.components.page-navigator :refer [page-navigator]]
+   [jibit.components.header]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;; Remember to specify protocol. And no trailing slash.
@@ -31,10 +31,6 @@
 (defn get-photoswipe-elt
   []
   (first (array-seq (js/document.querySelectorAll ".pswp"))))
-
-(defn get-default-export-scheme-key
-  []
-  (-> common.settings/export-schemes first first))
 
 ;; Poor implementation but this is so because we haven't fit PSWP into react framework
 (defn projector-on?
@@ -742,7 +738,7 @@
                                      :uri "/export"
                                      :params {:photos photos
                                               :template (or export-template
-                                                            (get-default-export-scheme-key))}
+                                                            (utils/get-default-export-scheme-key))}
                                      :response :on-export)}
      {:dispatch [:show-message "No photos selected."]})))
 
@@ -1439,18 +1435,6 @@
         (human/gear-label g)
         ])]))
 
-(defn filter-button
-  []
-  (let [toggle-fn #(re-frame/dispatch [:toggle-show-filter-panel])
-        ;; panel-showing? (re-frame/subscribe [:show-filter-panel?])
-        filters-in-place? (re-frame/subscribe [:active-filters])]
-    (fn []
-      [:img {:src (if @filters-in-place?
-                    "/img/filter-color.svg"
-                    "/img/filter-bw.svg")
-             :on-click toggle-fn
-             }])))
-
 (defn message-box
   "Nonmodal temporary message in the corner"
   []
@@ -1500,70 +1484,6 @@
        :tab-index 0}
       "Close"]]))
 
-(defn activity-indicator
-  "Nonmodal spinner with an in-progress message."
-  []
-  (let [activity-msg @(re-frame/subscribe [:activity])]
-    [:div#activity
-     {:class (when (nil? activity-msg) "hidden")}
-     (str activity-msg)
-     \space
-     [:img {:src "/img/film-spinner-sq-orange.gif"}]]))
-
-(defn header []
-  (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
-    [:h1#head "Jibit"
-     [page-navigator]
-     [filter-button]
-     (when (pos? sc)
-       [:span.selection-count "Selected " sc \space
-        [:a {:class "clear"
-             :on-click #(re-frame/dispatch [:clear-selection])
-             :href "javascript:void(0)"} "Clear"]])
-
-     [:div#right-hand-side
-      [activity-indicator]
-
-      [:div#menu
-       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
-            :title "Open gear data editor"
-            :href "javascript:void(0)"}
-        "Gear"]
-       \space
-
-       [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
-            :title "Sync inbox"
-            :href "javascript:void(0)"}
-        "Inbox"]
-       \space
-
-       [:a {:on-click #(re-frame/dispatch [:show-file-import])
-            :title "Select or drop photos to import"
-            :href "javascript:void(0)"}
-        "Import"]
-       [:input#file-upload.hidden
-        {:name "upload"
-         :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
-         :type :file
-         :multiple true}]
-       \space
-
-       [:span
-        [:a {:on-click #(re-frame/dispatch [:export-selected (get-default-export-scheme-key)])
-             :title "Export selected photos"
-             :href "javascript:void(0)"}
-         "Export"]
-        [:span.submenu-indicator "▼"
-         [:ul.dropdown
-          (for [export-scheme (vals common.settings/export-schemes)]
-            ^{:key export-scheme}
-            [:li {:on-click #(re-frame/dispatch [:export-selected (:key export-scheme)])
-                  :href "javascript:void(0)"}
-             (:name export-scheme)]
-            )
-          ]]]
-       ]]]))
-
 (defn user-interface []
   [:div#main
    ;; Visible "zero-level" elements
@@ -1571,7 +1491,7 @@
    [tags-view]
    [lighttable]
    [quick-label-edit]
-   [header]
+   [jibit.components.header/header]
    [message-box]
 
    ;; unrendered metadata for form inputs
