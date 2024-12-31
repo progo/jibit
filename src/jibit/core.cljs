@@ -16,6 +16,7 @@
    [jibit.components.quick-label]
    [jibit.components.header]
    [jibit.components.tag-edit]
+   [jibit.components.gear-editor :as gear-editor]
    [jibit.utils :as utils :refer [dissoc-in]]))
 
 ;; Remember to specify protocol. And no trailing slash.
@@ -495,15 +496,6 @@
                                      :params {:tag tag-id
                                               :photos selection}
                                      :response :on-tag)})))
-
-(def gear-table-columns
-  [{:title "Type" :field "gear_type", :width 80}
-   {:title "EXIF Make" :field "exif_make" :width 200}
-   {:title "EXIF Model" :field "exif_model" :width 200}
-   {:title "Label" :field "user_label" :width 200 :editor "input"}])
-
-(def gear-table-column-sort
-  [{:column "gear_type" :dir "asc"}])
 
 (re-frame/reg-event-db
  :show-gear-dlg
@@ -1259,52 +1251,6 @@
   (let [enabled? (modal-state? @(re-frame/subscribe [:current-state]))]
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
-;; Let's experiment with form-3 components, now that we need to hack
-;; something around component display.
-(defn gear-edit-dialog*
-  "Inner comp, gets values as props. I'm not sure why it sometimes works
-  with this function and sometimes not. But using (reagent/argv cmp)
-  seems to work all the time."
-  []
-  (let [tabulator-instance (atom nil)]
-    (reagent/create-class
-     {:component-did-mount (fn [cmp]
-                             (reset! tabulator-instance
-                                     (js/Tabulator.
-                                      "#gear-table"
-                                      (clj->js {:data []
-                                                :initialSort gear-table-column-sort
-                                                :columns gear-table-columns}))))
-      ;; This update is called whenever we open or close gear dialog.
-      :component-did-update (fn [cmp]
-                              (let [gear (second (reagent/argv cmp))]
-                                (timbre/debugf "Redrawing gear table with %d items!"
-                                               (count gear))
-                                (.setData @tabulator-instance (clj->js gear))))
-      :display-name "gear-edit-dialog"
-      :reagent-render
-      (fn []
-        (let [enabled? (some #{:gear-dialog} @(re-frame/subscribe [:state-stack]))]
-          [:div.modal-dialog
-           {:class (when enabled? "modal-shown")}
-           [:h1 "Gear"]
-           [:div
-            [:table#gear-table]]
-           [:div.footer
-            [:a.button {:on-click (fn []
-                                    (let [current-data (-> @tabulator-instance
-                                                           .getData
-                                                           js->clj)]
-                                      (re-frame/dispatch [:save-gear-dlg current-data])))}
-             "Save"]
-            [:a.button {:on-click #(re-frame/dispatch [:close-gear-dlg])}
-             "Close"]
-            ]]))})))
-
-(defn gear-edit-dialog []
-  (let [gear (re-frame/subscribe [:gear-raw])]
-    [gear-edit-dialog* @gear]))
-
 (defn quick-tags-popup []
   (let [show? @(re-frame/subscribe [:in-context? :quick-tags])
         sel# @(re-frame/subscribe [:selected-photos#])
@@ -1326,16 +1272,6 @@
        (for [photo @photos]
          ^{:key (:uuid photo)} [slide photo])])))
 
-(defn gear-datalists [id gear-type]
-  (let [gear @(re-frame/subscribe [:gear-raw gear-type])]
-    [:datalist
-     {:id id}
-     (for [g gear]
-       ^{:key (str "gear-" (:id g))}
-       [:option {:data-value (:id g)}
-        (human/gear-label g)
-        ])]))
-
 (defn message-box
   "Nonmodal temporary message in the corner"
   []
@@ -1355,8 +1291,8 @@
    [message-box]
 
    ;; unrendered metadata for form inputs
-   [gear-datalists "camera-list" :camera]
-   [gear-datalists "lens-list"   :lens]
+   [gear-editor/gear-datalists "camera-list" :camera]
+   [gear-editor/gear-datalists "lens-list"   :lens]
 
    ;; Modal lightbox, let's playfully call it a projector
    ;; [projector]
@@ -1367,7 +1303,7 @@
    ;; needed.
    [modal-background]
    [jibit.components.tag-edit/tag-edit-dialog]
-   [gear-edit-dialog]
+   [gear-editor/gear-edit-dialog]
    [quick-tags-popup]
 
    ;; Prompt downmost
