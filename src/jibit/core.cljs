@@ -18,7 +18,7 @@
    [jibit.components.tags]
    [jibit.components.filters]
    [jibit.components.gear-editor :as gear-editor]
-   [jibit.utils :as utils :refer [dissoc-in build-edn-request photo-ids]]))
+   [jibit.utils :as utils :refer [build-edn-request photo-ids]]))
 
 (defn get-photoswipe-elt
   []
@@ -336,31 +336,6 @@
                  (not= (:id p) pid))
                photos)))
 
-
-;; Store changed input value under a chain of keys in db,
-;; under :input.
-;;
-;; An optional function `custom-eval-fn` can be passed that'll have the
-;; database, the data ids, and the new value, and will return new
-;; database. This is to allow more *complex* logic on updating user
-;; input. Handle with caution and always, TODO: get rid of it.
-(re-frame/reg-event-db
- :change-input
- (fn [db [_ data-ids new-value custom-eval-fn]]
-   (cond
-     (not (nil? custom-eval-fn))
-     (custom-eval-fn db data-ids new-value)
-
-     (nil? new-value)
-     (dissoc-in db (conj (seq data-ids) :input))
-
-     :else
-     (assoc-in db (conj (seq data-ids) :input) new-value))))
-
-(re-frame/reg-event-db
- :toggle-input
- (fn [db [_ data-ids]]
-   (update-in db (conj (seq data-ids) :input) not)))
 
 ;;; Set tags on selected photos!
 (re-frame/reg-event-fx

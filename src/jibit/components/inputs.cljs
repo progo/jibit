@@ -3,7 +3,35 @@
   (:require [taoensso.timbre :as timbre :refer [debug spy]]
             [re-frame.core :as re-frame]
             [keybind.core :as keybind]
-            cljs.reader))
+            cljs.reader
+            [jibit.utils :as utils :refer [dissoc-in]]))
+
+;; Store changed input value under a chain of keys in db,
+;; under :input.
+;;
+;; An optional function `custom-eval-fn` can be passed that'll have the
+;; database, the data ids, and the new value, and will return new
+;; database. This is to allow more *complex* logic on updating user
+;; input. Handle with caution and always, TODO: get rid of it.
+(re-frame/reg-event-db
+ :change-input
+ (fn [db [_ data-ids new-value custom-eval-fn]]
+   (cond
+     (not (nil? custom-eval-fn))
+     (custom-eval-fn db data-ids new-value)
+
+     (nil? new-value)
+     (dissoc-in db (conj (seq data-ids) :input))
+
+     :else
+     (assoc-in db (conj (seq data-ids) :input) new-value))))
+
+
+(re-frame/reg-event-db
+ :toggle-input
+ (fn [db [_ data-ids]]
+   (update-in db (conj (seq data-ids) :input) not)))
+
 
 (defn data-bound-toggle-button
   [data-ids {:keys [label-on
@@ -43,12 +71,14 @@
         bound (if checkbox?
                 (boolean bound)
                 bound)
-        change-fn #(re-frame/dispatch [:change-input
-                                       data-ids
-                                       (if checkbox?
-                                         (not bound)
-                                         (-> % .-target .-value))
-                                       (or custom-eval-db-fn nil)])
+        change-fn #(let [value (-> % .-target .-value)]
+                     (js/console.debug "change-fn" value)
+                     (re-frame/dispatch [:change-input
+                                         data-ids
+                                         (if checkbox?
+                                           (not bound)
+                                           value)
+                                         (or custom-eval-db-fn nil)]))
         keyup-fn (when on-enter
                    #(when (= "Enter" (.-key %))
                       (on-enter)))
