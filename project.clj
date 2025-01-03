@@ -4,21 +4,23 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :min-lein-version "2.7.1"
+  :min-lein-version "2.11.2"
 
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.clojure/clojurescript "1.10.597"]
+                 [org.clojure/clojurescript "1.11.132"]
 
-                 [com.taoensso/timbre "4.10.0"]
+                 [com.taoensso/timbre "6.6.1"]
                  [org.clojure/tools.macro "0.1.2"]
 
                  ;; jibit
-                 [reagent "0.8.1"]
-                 [re-frame "0.11.0-rc3"]
-                 [re-pressed "0.3.1"]
-                 [day8.re-frame/http-fx "v0.2.0"]
+                 [reagent "1.2.0"]
+                 [re-frame "1.4.3"]
+                 [re-pressed "0.3.2"]
+                 [day8.re-frame/http-fx "0.2.4"]
                  [cljsjs/moment "2.24.0-0"]
                  [cljsjs/photoswipe "4.1.1-0"]
+                 [cljsjs/react "17.0.2-0"]
+                 [cljsjs/react-dom "17.0.2-0"]
                  [keybind "2.2.0"]
 
                  ;; Clurator, file ops
@@ -51,7 +53,7 @@
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "jibit.test-runner"]}
 
-  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.4"]
+  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.18"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]
                    }})
 

@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks jibit.core
   (:require
-   [reagent.core :as reagent]
+   ;; [reagent.core :as reagent]
+   reagent.dom
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
    [taoensso.timbre :as timbre :refer [debug spy]]
@@ -955,7 +956,7 @@
   (js/document.getElementById "app"))
 
 (defn mount [el]
-  (reagent/render-component [user-interface] el))
+  (reagent.dom/render [user-interface] el))
 
 (defn mount-app-element []
   (when-let [el (get-app-element)]

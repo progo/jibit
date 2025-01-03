@@ -1,6 +1,7 @@
 (ns jibit.utils
   (:require
    ajax.edn
+   common.settings
    [jibit.uri :as uri]
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
