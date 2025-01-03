@@ -49,25 +49,31 @@
       (str \% make+model \%)]]))
 
 (defn build-tags-criteria
-  "Given a collection of `tags` (ids) build a query condition to filter
-  photos that are somehow tagged with these tags. `union?` denotes if
-  we get a union of tagged photos -- intersection if false.
+  "Given `tags` (ids) (either one atom or seq) build a query condition
+  to filter photos that are somehow tagged with these tags. `union?`
+  denotes if we get a union of tagged photos -- intersection if false.
   `zero-tags?` is a bolted on special case when we want to query
   photos that have no tags. In case it's true, we don't bother with
   further conditions."
   [tags union? zero-tags?]
-  (let [tags (seq tags)]
+  (let [tags* (if-not (coll? tags)
+                [tags]
+                (seq tags))]
     (cond
-      ;; No tags first
+      ;; Untagged photos is a special case
       zero-tags?
       [:not-in :photo.id {:select [:photo_id]
                           :from [:photo_tag]}]
+
+      ;; No tag filter was specified
+      (nil? tags)
+      nil
 
       ;; Union
       (and tags union?)
       [:in :photo.id {:select [:photo_id]
                       :from [:photo_tag]
-                      :where [:in :tag_id tags]}]
+                      :where [:in :tag_id tags*]}]
 
       ;; Intersection
       (and tags (not union?))
@@ -75,10 +81,10 @@
                 :from [:photo_tag]
                 :join [:tag [:= :photo_tag.tag_id :tag.id]]
                 :where [:and
-                        [:in :tag.id tags]
+                        [:in :tag.id tags*]
                         [:= :photo_tag.photo_id :photo.id]]
                 :group-by [:photo_tag.photo_id]
-                :having [:= (count tags) [:count :tag.id]]}])))
+                :having [:= (count tags*) [:count :tag.id]]}])))
 
 (defn build-rated-criterion
   [only-unrated?]

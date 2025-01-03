@@ -20,37 +20,24 @@
     (empty? x) nil
     :else x))
 
-(defmacro clean-input
-  "Check if `kw' as a string is found in a scoped map called `criteria'
-  and if so, produce a map of {kw (criteria (name kw))} for merge.
+(defn clean-input-as
+  [criteria kw input-key]
+  (if-let [value (get criteria input-key)]
+    {kw value}))
 
-  Use in `handle-filter-criteria' and not much elsewhere.
-
-  Optionally supply a body of code that will deal with captured `input'.
-  "
-  ([kw]
-   `(if-let [val# (nilify (get ~'criteria ~(name kw)))]
-      {~kw val#}))
-  ([kw & body]
-   `(if-let [~'input (nilify (get ~'criteria ~(name kw)))]
-      {~kw ~@body}
-      )))
-
-(defmacro clean-input-as
-  "Check if `input-key` found in a scoped map `criteria` and if so,
-  produce a map {kw (criteria input-key)}."
-  [kw input-key]
-  `(if-let [val# (nilify (get ~'criteria ~input-key))]
-     {~kw val#}))
-
-(defmacro clean-edn-input
-  "Given `kw', parse `(get criteria kw)` as edn value."
-  [kw]
-  `(if-let [val# (edn/read-string (get ~'criteria ~(name kw)))]
-     {~kw val#}))
+(defn clean-edn*
+  "Shallowly clean value denoted by keyword `kw`. Any non-strings we
+  pass forward without touching."
+  [criteria kw]
+  (let [rawv (get criteria (name kw))
+        value (if (string? rawv)
+                (edn/read-string rawv)
+                rawv)]
+    (when value
+      {kw value})))
 
 (defn handle-filter-criteria
-  [criteria]
+  [c]
   ;; order-by            enum
   ;; offset              num
   ;; camera              text
@@ -67,24 +54,25 @@
   ;; taken-ts[end]       date
   ;; imported-ts[begin]  date
   ;; imported-ts[end]    date
-  (merge {}
-         (clean-edn-input :tags-union?)
-         (clean-edn-input :show-only-untitled?)
-         (clean-edn-input :show-only-untagged?)
-         (clean-edn-input :show-only-unrated?)
-         (clean-edn-input :show-only-uncooked?)
-         (clean-edn-input :tags)
-         (clean-edn-input :offset)
-         (clean-input-as :taken-begin "taken-ts[begin]")
-         (clean-input-as :taken-end "taken-ts[end]")
-         (clean-input-as :imported-begin "imported-ts[begin]")
-         (clean-input-as :imported-end "imported-ts[end]")
-         (clean-input :order-by
-              (case input
+  (merge
+   {}
+   (clean-edn* c :tags-union?)
+   (clean-edn* c :show-only-untitled?)
+   (clean-edn* c :show-only-untagged?)
+   (clean-edn* c :show-only-unrated?)
+   (clean-edn* c :show-only-uncooked?)
+   (clean-edn* c :tags)
+   (clean-edn* c :offset)
+   (clean-input-as c :taken-begin "taken-ts[begin]")
+   (clean-input-as c :taken-end "taken-ts[end]")
+   (clean-input-as c :imported-begin "imported-ts[begin]")
+   (clean-input-as c :imported-end "imported-ts[end]")
+   (clean-input-as c :camera "camera")
+   (clean-input-as c :lens "lens")
+   (clean-edn* c :camera-id)
+   (clean-edn* c :lens-id)
+   {:order-by (case (get c "order-by")
                 "rating" [:rating :orig_rating]
                 "taken_ts" :taken_ts
-                :taken_ts))
-         (clean-input :camera)
-         (clean-input :lens)
-         (clean-edn-input :camera-id)
-         (clean-edn-input :lens-id)))
+                :taken_ts)}))
+
