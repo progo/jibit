@@ -1,7 +1,5 @@
 (ns jibit.datetime
-  (:require moment))
-
-(defn moment [& arg] (apply js/moment arg))
+  (:require ["moment" :as moment]))
 
 (defn format
   [fmt dt]

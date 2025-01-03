@@ -1,6 +1,5 @@
 (ns ^:figwheel-hooks jibit.core
   (:require
-   ;; [reagent.core :as reagent]
    reagent.dom
    [re-frame.core :as re-frame]
    [day8.re-frame.http-fx]
@@ -10,14 +9,13 @@
    common.settings
    [cljs.pprint :refer [cl-format]]
    [keybind.core :as keybind]
-   [cljsjs.photoswipe]
-   [cljsjs.photoswipe-ui-default]
-   [jibit.components.quick-label]
+   [jibit.components.quick-label :as quick-label]
    [jibit.components.header]
    [jibit.components.lighttable]
    [jibit.components.tag-edit]
    [jibit.components.tags]
    [jibit.components.filters]
+   ;; ["photoswipe" :as PhotoSwipe]
    [jibit.components.gear-editor :as gear-editor]
    [jibit.utils :as utils :refer [build-edn-request photo-ids]]))
 
@@ -927,7 +925,7 @@
    [jibit.components.filters/filter-panel]
    [jibit.components.tags/tags-view]
    [jibit.components.lighttable/lighttable]
-   [jibit.components.quick-label/quick-label-edit]
+   [quick-label/quick-label-edit]
    [jibit.components.header/header]
    [message-box]
 

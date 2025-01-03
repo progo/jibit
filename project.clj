@@ -17,11 +17,8 @@
                  [re-frame "1.4.3"]
                  [re-pressed "0.3.2"]
                  [day8.re-frame/http-fx "0.2.4"]
-                 [cljsjs/moment "2.24.0-0"]
-                 [cljsjs/photoswipe "4.1.1-0"]
-                 [cljsjs/react "17.0.2-0"]
-                 [cljsjs/react-dom "17.0.2-0"]
                  [keybind "2.2.0"]
+                 [thheller/shadow-cljs "2.28.20"]
 
                  ;; Clurator, file ops
                  [clj-commons/fs "1.5.2"]

@@ -1,0 +1,22 @@
+;; shadow-cljs configuration
+{:source-paths ["src"]
+ :dev-http {9500 "public"}
+
+ :dependencies
+ [[reagent "1.2.0"]
+  [re-frame "1.4.3"]
+  [re-pressed "0.3.2"]
+  [day8.re-frame/http-fx "0.2.4"]
+  [keybind "2.2.0"]
+
+  [com.taoensso/timbre "6.6.1"]
+  [org.clojure/tools.macro "0.1.2"]]
+
+ :builds
+ {:app
+  {:target :browser
+   :output-dir "public/js"
+   :asset-path "."
+   :modules
+   {:main
+    {:init-fn jibit.core/mount-app-element}}}}}

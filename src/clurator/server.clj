@@ -2,6 +2,7 @@
   "The HTTP server and API."
   (:require org.httpkit.server
             [compojure.core :as comp :refer [GET POST OPTIONS DELETE]]
+            [ring.middleware.cors :refer [wrap-cors]]
             compojure.route
 
             clurator.view.gear
@@ -75,7 +76,7 @@
 (def export-photos
   (make-req-handler #'clurator.view.operations/export-photos))
 
-(comp/defroutes app
+(comp/defroutes routes
   (GET    "/" [] index)
   (POST   "/upload" [] upload-photos)
   (POST   "/export" [] export-photos)
@@ -93,6 +94,12 @@
   (GET    "/photo/:uuid" [uuid] (clurator.view.photo/serve-full-by-uuid uuid))
   (compojure.route/resources "/fonts" {:root "/public/fonts"})
   (compojure.route/not-found "not found"))
+
+(def app
+  (-> routes
+      (wrap-cors
+       :access-control-allow-origin #"http://localhost:9500"
+       :access-control-allow-methods [:get :put :post :delete])))
 
 (defn run-server
   [port]
