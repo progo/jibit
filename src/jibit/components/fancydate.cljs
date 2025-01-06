@@ -9,7 +9,7 @@
   ^{:doc "Ordered seq of maps with keys {:key :label :begin-dt
   :end-dt}. Begin/end dts are zero-arity functions that return Date
   objects to evaluate applied range."}
-  (let [today jibit.datetime/moment]
+  (let [today jibit.datetime/today]
     [{:key :nil
       :label "[Clear]"
       :begin-dt (constantly nil)

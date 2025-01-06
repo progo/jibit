@@ -1,6 +1,10 @@
 (ns jibit.datetime
   (:require ["moment" :as moment]))
 
+(defn today
+  []
+  (moment))
+
 (defn format
   [fmt dt]
   (if (not (or (= "" dt) (nil? dt)))
