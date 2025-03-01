@@ -3,6 +3,7 @@
   (:require org.httpkit.server
             [compojure.core :as comp :refer [GET POST OPTIONS DELETE]]
             [ring.middleware.cors :refer [wrap-cors]]
+            [ring.middleware.defaults :as ring-middleware]
             compojure.route
 
             clurator.view.gear
@@ -99,7 +100,12 @@
   (-> routes
       (wrap-cors
        :access-control-allow-origin #"http://localhost:9500"
-       :access-control-allow-methods [:get :put :post :delete])))
+       :access-control-allow-methods [:get :put :post :delete])
+      ;; `site-defaults` with security wraps doesn't quite work with
+      ;; CORS out of the box. TODO streamline the middlewares so that
+      ;; we can remove `wrap-cors`.
+      (ring-middleware/wrap-defaults
+       (assoc ring-middleware/site-defaults :security false))))
 
 (defn run-server
   [port]

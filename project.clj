@@ -39,6 +39,11 @@
 
                  ;; Clurator, server ops
                  [org.clojure/tools.cli "1.0.194"]
+                 [ring/ring-core "1.13.0"]
+                 [ring/ring-headers "0.4.0"]
+                 [ring/ring-anti-forgery "1.4.0"]
+                 [org.ring-clojure/ring-websocket-middleware "0.2.1"]
+                 [ring/ring-defaults "0.6.0"]
                  [http-kit "2.3.0"]
                  [compojure "1.6.1"]]
 

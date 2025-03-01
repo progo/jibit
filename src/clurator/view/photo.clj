@@ -34,7 +34,6 @@
         (let [temp* (fs/temp-dir "jibit-upload-")
               temp (str temp* "/uploaded")]
           (fs/mkdir temp)
-          (debug "Temp dir" temp)
           (doseq [f files]
             (fs/copy (:tempfile f)
                      (str temp "/" (:filename f))))
