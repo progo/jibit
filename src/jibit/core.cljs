@@ -15,7 +15,6 @@
    [jibit.components.tag-edit]
    [jibit.components.tags]
    [jibit.components.filters]
-   ;; ["photoswipe" :as PhotoSwipe]
    [jibit.components.gear-editor :as gear-editor]
    [jibit.utils :as utils :refer [build-edn-request photo-ids]]))
 
@@ -514,7 +513,6 @@
 
 (def keybindings
   {"M-a" {:kw ::select-all :dispatch :select-all-photos}
-   ;; "M-l" {:kw ::deselect-all :dispatch :clear-selection}
    "M-c" {:kw ::deselect-all :dispatch :clear-selection}
    "M-u" {:kw ::select-untagged :dispatch :select-untagged-photos}
    "M-e" {:kw ::export-selected :dispatch :export-selected}
@@ -772,20 +770,6 @@
  (fn [db _]
    (-> db :show-filter-panel?)))
 
-(defn falsey?
-  "Python-like falsy check on values."
-  [x]
-  (case x
-    nil true
-    0 true
-    false true
-    "" true
-    {} true
-    [] true
-    () true
-    #{} true
-    false))
-
 (re-frame/reg-sub
  :active-filters
  (fn [db _]
@@ -801,7 +785,7 @@
                            :camera
                            :lens}]
      (some (fn [k]
-             (not (falsey? (filters k))))
+             (not (utils/falsey? (filters k))))
            values-to-check))))
 
 (re-frame/reg-sub

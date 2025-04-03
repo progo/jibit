@@ -9,6 +9,21 @@
    ))
 
 
+(defn falsey?
+  "Python-like falsy check on values."
+  [x]
+  (case x
+    nil true
+    0 true
+    false true
+    "" true
+    {} true
+    [] true
+    () true
+    #{} true
+    false))
+
+
 (defn dispatch-preventing-default-action
   [evt event]
   (. evt preventDefault)
