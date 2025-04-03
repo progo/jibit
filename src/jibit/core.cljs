@@ -460,6 +460,16 @@
      (update db :selected #(utils/toggle-set-membership focused %))
      db)))
 
+;; Replace current selection with untagged photos, within the page
+(defn filter-untagged [photos]
+  (filter #(empty? (:tagged/ids %))
+          photos))
+
+(re-frame/reg-event-db
+ :select-untagged-photos
+ (fn [db _]
+   (assoc db :selected (-> db :photos filter-untagged photo-ids set))))
+
 (re-frame/reg-event-db
  :select-all-photos
  (fn [db _]
@@ -506,6 +516,7 @@
   {"M-a" {:kw ::select-all :dispatch :select-all-photos}
    ;; "M-l" {:kw ::deselect-all :dispatch :clear-selection}
    "M-c" {:kw ::deselect-all :dispatch :clear-selection}
+   "M-u" {:kw ::select-untagged :dispatch :select-untagged-photos}
    "M-e" {:kw ::export-selected :dispatch :export-selected}
    "M-`" {:kw ::filter-around-selected :dispatch :filter-search-on-selected}
 
