@@ -220,7 +220,7 @@
 
 ;;;; Ajax end
 
-(def photoswipe-js)
+(def ^js/PhotoSwipe photoswipe-js)
 
 (re-frame/reg-fx
  ;; We take a photo and a coll of photos, we look up the index of the
