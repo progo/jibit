@@ -23,7 +23,10 @@
         "Actions:"
         "  import [DIR [DIR...]]   Import photos from specified DIR(s)"
         (str "                          (default: " clurator.settings/inbox-path ")")
-        "  server                  Launch the server to use Jibit in browser"]
+        "                          WARNING: destructive operation!"
+        "  server                  Launch the server to use Jibit in browser"
+        "  describe                If ollama is running, query a LLM for photo"
+        "                          descriptions in batches."]
        (string/join \newline)))
 
 (defn parse-arguments
@@ -37,7 +40,7 @@
       {:exit-message errors}
 
       (and (seq arguments)
-           (#{"import" "server"} (first arguments)))
+           (#{"import" "describe" "server"} (first arguments)))
       {:action (first arguments)
        :args (rest arguments)
        :options options}

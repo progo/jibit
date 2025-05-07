@@ -18,6 +18,9 @@
         (timbre/info "Running server at port" port)
         (server/run-server port))
 
+      (= action "describe")
+      (println args)
+
       (= action "import")
       (do
         (doseq [dir (or (seq args) [clurator.settings/inbox-path])]

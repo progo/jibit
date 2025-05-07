@@ -6,7 +6,12 @@
             common.settings
             clurator.settings))
 
-(defn format-output-file-name
+(defn format-output-file-name-as-uuid
+  ""
+  [photo]
+  (-> photo :uuid str))
+
+(defn format-output-file-name-as-date
   "Name the file by its taken timestamp, if present. Alternative is to
   take its processing ts which is our best bet at guessing when the
   file was last modified or processed."
@@ -46,15 +51,19 @@
   "Export selected photos as JPEGs, resize to certain size limit. With
   raw files we probably want to either run dcraw or extract the
   preview files if possible. Or just ignore for now. "
-  [scheme-key photos target-dir]
-  (fs/mkdir target-dir)
+  [& {:keys [scheme-key
+             photos
+             output-dir
+             output-namer-fn]}]
+  (fs/mkdir output-dir)
   (doseq [photo photos]
     (let [export-scheme (get common.settings/export-schemes scheme-key)
           export-method (:method export-scheme)
           source (str clurator.settings/storage-directory "/"
                       (:storage_filename photo))
+          output-name (output-namer-fn photo)
           target (find-first-nonconflicting-name
-                  (str target-dir "/" (format-output-file-name photo))
+                  (str output-dir "/" output-name)
                   ;; If we just copy, we want to keep the orig extension
                   (if (= export-method :passthrough)
                     (fs/extension source)

@@ -4,6 +4,17 @@
             [clurator.model.tag :as tag]
             [taoensso.timbre :as timbre :refer [spy debug]]))
 
+
+(defn get-llm-undescribed-photos
+  "Fetch `n` photos that don't have a LLM-description."
+  [n]
+  (db/query! {:select [:*]
+              :from [:photo]
+              :where [:= :llm_describe_date nil]
+              :order-by [:%random]
+              :limit n}))
+
+
 (defn update-photo
   "Update photo's attributes (map) by photo ID."
   [id attr-map]

@@ -22,7 +22,8 @@
         photos (clurator.model.photo/get-photos-by-id
                 (:photos parsed-edn))]
     (clurator.export/export-resize-photos
-     (:template parsed-edn)
-     photos
-     clurator.settings/outbox-path)
+     :scheme-key (:template parsed-edn)
+     :photos photos
+     :output-dir clurator.settings/outbox-path
+     :output-namer-fn clurator.export/format-output-file-name-as-date)
     {:resp true}))
