@@ -9,11 +9,17 @@
 (defn filter-panel []
   (let [get-photos #(re-frame/dispatch [:get-photos])
         show-panel? @(re-frame/subscribe [:show-filter-panel?])]
-    [:div#filter
-     {:class (when-not show-panel? "hidden")}
+    [:div
+     {:class (str
+              "w-full "
+              "rounded-lg "
+              "p-2 "
+              "border-2 border-dashed "
+              (if show-panel? "" "hidden"))}
      [:div.filter-row
       [:div.filter-column
        [:h1 "Filter options"]
+
        [:div
         [data-bound-input [:filter :camera]
          {:type :search
@@ -22,6 +28,7 @@
           :placeholder "Camera"}
          :on-enter get-photos
          :clearable? true]
+
         [data-bound-input [:filter :lens]
          {:type :search
           :list "lens-list"

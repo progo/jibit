@@ -20,7 +20,7 @@
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
-    [:header.w-full.h-14.sticky
+    [:div.w-full.h-14.sticky.top-0.bg-black.z-10
      [:div.flex.flex-row.text-4xl.items-end
       [:span "Jibit"]
 

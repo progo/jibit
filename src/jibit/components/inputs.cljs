@@ -97,10 +97,10 @@
                      :on-focus keybind/disable!
                      :on-blur keybind/enable!)]
     [:div
-     {:class (if clearable? "input-outer-clearable" "input-outer")}
+     {:class (if clearable? "" "input-outer")}
      [(if textarea? :textarea :input) props]
      (when clearable?
-       [:div.input-clear
+       [:div.clear-input-button
         {:title "Clear input"
          :on-click #(re-frame/dispatch [:change-input data-ids nil])}
         "X"])]))

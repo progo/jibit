@@ -907,10 +907,14 @@
    ;; Visible "zero-level" elements
    [:div.flex.flex-col
     [jibit.components.header/header]
-    [:div
-     [jibit.components.filters/filter-panel]
-     [jibit.components.tags/tags-view]]
-    [jibit.components.lighttable/lighttable]]
+    [:div.flex.flex-row
+     [:div
+      {:class "bg-teal-900 w-1/3"}
+      [jibit.components.filters/filter-panel]
+      [jibit.components.tags/tags-view]]
+     [:div.flex-1
+      [jibit.components.lighttable/lighttable]
+      ]]]
 
    [quick-label/quick-label-edit]
    [message-box]
