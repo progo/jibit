@@ -16,3 +16,6 @@ pom.xml
 *.swp
 *#*
 .lein-failures
+.shadow-cljs/
+node_modules/
+
