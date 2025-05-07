@@ -9,66 +9,73 @@
 (defn filter-button
   []
   (let [toggle-fn #(re-frame/dispatch [:toggle-show-filter-panel])
-        ;; panel-showing? (re-frame/subscribe [:show-filter-panel?])
         filters-in-place? (re-frame/subscribe [:active-filters])]
     (fn []
-      [:img {:src (if @filters-in-place?
-                    "/img/filter-color.svg"
-                    "/img/filter-bw.svg")
-             :on-click toggle-fn
-             }])))
+      [:img.w-12.inline-block.h-12
+       {:src (if @filters-in-place?
+               "/img/filter-color.svg"
+               "/img/filter-bw.svg")
+        :on-click toggle-fn}])))
 
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
-    [:h1#head "Jibit"
-     [page-navigator]
-     [filter-button]
-     (when (pos? sc)
-       [:span.selection-count "Selected " sc \space
-        [:a {:class "clear"
-             :on-click #(re-frame/dispatch [:clear-selection])
-             :href "javascript:void(0)"} "Clear"]])
+    [:header.w-full.h-14.sticky
+     [:div.flex.flex-row.text-4xl.items-end
+      [:span "Jibit"]
 
-     [:div#right-hand-side
-      [activity-indicator]
+      [page-navigator]
+      [filter-button]
 
-      [:div#menu
-       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
-            :title "Open gear data editor"
-            :href "javascript:void(0)"}
-        "Gear"]
-       \space
+      (when (pos? sc)
+        [:span
+         "Selected " sc \space
+         [:a {:class "clear"
+              :on-click #(re-frame/dispatch [:clear-selection])
+              :href "javascript:void(0)"}
+          "Clear"]])
 
-       [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
-            :title "Sync inbox"
-            :href "javascript:void(0)"}
-        "Inbox"]
-       \space
+      [:div.flex-1]
 
-       [:a {:on-click #(re-frame/dispatch [:show-file-import])
-            :title "Select or drop photos to import"
-            :href "javascript:void(0)"}
-        "Import"]
-       [:input#file-upload.hidden
-        {:name "upload"
-         :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
-         :type :file
-         :multiple true}]
-       \space
+      [:div
+       [activity-indicator]
 
-       [:span
-        [:a {:on-click #(re-frame/dispatch [:export-selected (utils/get-default-export-scheme-key)])
-             :title "Export selected photos"
+       [:div#menu
+        [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+             :title "Open gear data editor"
              :href "javascript:void(0)"}
-         "Export"]
-        [:span.submenu-indicator "▼"
-         [:ul.dropdown
-          (for [export-scheme (vals common.settings/export-schemes)]
-            ^{:key export-scheme}
-            [:li {:on-click #(re-frame/dispatch [:export-selected (:key export-scheme)])
-                  :href "javascript:void(0)"}
-             (:name export-scheme)]
-            )
-          ]]]
-       ]]]))
+         "Gear"]
+        \space
+
+        [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
+             :title "Sync inbox"
+             :href "javascript:void(0)"}
+         "Inbox"]
+        \space
+
+        [:a {:on-click #(re-frame/dispatch [:show-file-import])
+             :title "Select or drop photos to import"
+             :href "javascript:void(0)"}
+         "Import"]
+        [:input#file-upload.hidden
+         {:name "upload"
+          :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
+          :type :file
+          :multiple true}]
+        \space
+
+        [:span
+         [:a {:on-click #(re-frame/dispatch [:export-selected (utils/get-default-export-scheme-key)])
+              :title "Export selected photos"
+              :href "javascript:void(0)"}
+          "Export"]
+         [:span.submenu-indicator "▼"
+          [:ul.dropdown
+           (for [export-scheme (vals common.settings/export-schemes)]
+             ^{:key export-scheme}
+             [:li {:on-click #(re-frame/dispatch [:export-selected (:key export-scheme)])
+                   :href "javascript:void(0)"}
+              (:name export-scheme)]
+             )
+           ]]]
+        ]]]]))

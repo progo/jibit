@@ -902,13 +902,17 @@
      (str message)]))
 
 (defn user-interface []
-  [:div#main
+  [:div.w-full.h-full
+
    ;; Visible "zero-level" elements
-   [jibit.components.filters/filter-panel]
-   [jibit.components.tags/tags-view]
-   [jibit.components.lighttable/lighttable]
+   [:div.flex.flex-col
+    [jibit.components.header/header]
+    [:div
+     [jibit.components.filters/filter-panel]
+     [jibit.components.tags/tags-view]]
+    [jibit.components.lighttable/lighttable]]
+
    [quick-label/quick-label-edit]
-   [jibit.components.header/header]
    [message-box]
 
    ;; unrendered metadata for form inputs
