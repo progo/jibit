@@ -9,6 +9,11 @@
    ))
 
 
+
+(defn ok?
+  [status]
+  (= status :ok))
+
 (defn falsey?
   "Python-like falsy check on values."
   [x]
@@ -22,6 +27,15 @@
     () true
     #{} true
     false))
+
+
+(defn mapify-seq
+  "Given a seq of elts (maps) that have a unique key under id-key (for
+  example, :id or :photo/id), build a map of {id -> elt}"
+  [coll & {:keys [id-key] :or {id-key :id}}]
+  (->> coll
+       (map (juxt id-key identity))
+       (into {})))
 
 
 (defn dispatch-preventing-default-action

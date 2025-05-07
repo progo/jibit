@@ -16,7 +16,7 @@
    [jibit.components.tags]
    [jibit.components.filters]
    [jibit.components.gear-editor :as gear-editor]
-   [jibit.utils :as utils :refer [build-edn-request photo-ids]]))
+   [jibit.utils :as utils :refer [build-edn-request photo-ids ok? mapify-seq]]))
 
 (defn get-photoswipe-elt
   []
@@ -52,14 +52,6 @@
 ;;   because of ambiguous data or similar -- we want to ask the user
 ;;   about how to proceed.
 
-(defn mapify-seq
-  "Given a seq of elts (maps) that have a unique key under id-key (for
-  example, :id or :photo/id), build a map of {id -> elt}"
-  [coll & {:keys [id-key] :or {id-key :id}}]
-  (->> coll
-       (map (juxt id-key identity))
-       (into {})))
-
 ;; `coverage` = nil ==> count all
 ;; `coverage` = :just-selection ==> count just selected
 (defn get-selection
@@ -74,11 +66,6 @@
        (seq sel) sel
        (and all? focus) (list focus)
        :else ()))))
-
-
-(defn ok?
-  [status]
-  (= status :ok))
 
 (re-frame/reg-event-fx
  :import-photos
@@ -927,11 +914,6 @@
    ;; unrendered metadata for form inputs
    [gear-editor/gear-datalists "camera-list" :camera]
    [gear-editor/gear-datalists "lens-list"   :lens]
-
-   ;; Modal lightbox, let's playfully call it a projector
-   ;; [projector]
-   ;; NB we currently skip reactifying this and go with native DOM
-   ;; elements. index.html contains the elements.
 
    ;; Modal dialogs that go above level zero. Shown and hidden as
    ;; needed.
