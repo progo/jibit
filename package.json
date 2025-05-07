@@ -1,6 +1,8 @@
 {
     "scripts": {
-        "dev": "echo 1"
+        "postcss:watch": "cross-env TAILWIND_MODE=watch postcss ./public/css/style.css -o ./public/css/tailwound.css --verbose -w",
+        "shadowcljs:watch": "shadow-cljs watch app",
+        "dev": "run-p -l *:watch"
     },
     "dependencies": {
         "moment": "^2.30.1",
