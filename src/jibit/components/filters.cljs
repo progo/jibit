@@ -49,7 +49,9 @@
        [:h1 "Order options"]
        "Order by "
        [data-bound-select [:filter :order-by]
-        [{:name "Taken" :value "taken_ts"}
+        [{:name "Oldest" :value "oldest_1st"}
+         {:name "Newest" :value "newest_1st"}
+         {:name "Random" :value "random"}
          {:name "Rating" :value "rating"}]]]
 
       [:div.filter-column

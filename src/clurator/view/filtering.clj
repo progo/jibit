@@ -73,6 +73,8 @@
    (clean-edn* c :lens-id)
    {:order-by (case (get c "order-by")
                 "rating" [:rating :orig_rating]
-                "taken_ts" :taken_ts
+                "oldest_1st" :taken_ts
+                "newest_1st" [:taken_ts :desc]
+                "random" :%random
                 :taken_ts)}))
 
