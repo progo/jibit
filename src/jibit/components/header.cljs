@@ -19,7 +19,7 @@
 
 
 (defn header []
-  (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
+  (let [marked# @(re-frame/subscribe [:selected-photos# :just-selection])]
     [:div.w-full.h-14.max-h-14.sticky.top-0.bg-black.z-10
      [:div.flex.flex-row.text-4xl.items-end
       [:span "Jibit"]
@@ -27,10 +27,10 @@
       [page-navigator]
       [filter-button]
 
-      (when (pos? sc)
-        [:span
-         "Selected " sc \space
-         [:a {:class "clear"
+      (when (pos? marked#)
+        [:span.text-base
+         marked# " photo marked. "
+         [:a {:class "text-gray-300 border-1 p-1 pl-2 pr-2 bg-black rounded-md border-orange-200"
               :on-click #(re-frame/dispatch [:clear-selection])
               :href "javascript:void(0)"}
           "Clear"]])
