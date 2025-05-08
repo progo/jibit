@@ -10,7 +10,13 @@
   [keybind "2.2.0"]
 
   [com.taoensso/timbre "6.6.1"]
-  [org.clojure/tools.macro "0.1.2"]]
+  [org.clojure/tools.macro "0.1.2"]
+
+  [cider/cider-nrepl "0.55.7"]
+  [refactor-nrepl/refactor-nrepl "3.11.0"]]
+
+ :nrepl {:middleware [cider.nrepl/cider-middleware
+                      refactor-nrepl.middleware/wrap-refactor]}
 
  :builds
  {:app

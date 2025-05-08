@@ -902,19 +902,22 @@
      (str message)]))
 
 (defn user-interface []
-  [:div.w-full.h-full
-
+  [:div.w-full
    ;; Visible "zero-level" elements
-   [:div.flex.flex-col
+   [:div.flex.flex-col.flex-1.h-screen.min-h-screen
     [jibit.components.header/header]
-    [:div.flex.flex-row
+    [:div.flex.flex-row.overflow-y-hidden
+
+     ;; left hand side
      [:div
-      {:class "bg-teal-900 w-1/3"}
+      {:class "bg-teal-900 w-1/3 overflow-y-auto"}
       [jibit.components.filters/filter-panel]
       [jibit.components.tags/tags-view]]
-     [:div.flex-1
-      [jibit.components.lighttable/lighttable]
-      ]]]
+
+     ;; right hand side thing
+     [:div
+      {:class "flex-1 overflow-y-auto"}
+      [jibit.components.lighttable/lighttable]]]]
 
    [quick-label/quick-label-edit]
    [message-box]
