@@ -7,9 +7,8 @@
   "Nonmodal spinner with an in-progress message."
   []
   (let [activity-msg @(re-frame/subscribe [:activity])]
-    [:div.block.h-14
+    [:div.text-base.flex.flex-row.items-end
      {:class (when (nil? activity-msg) "hidden")}
      (str activity-msg)
-     \space
-     [:img.h-14 {:src "/img/film-spinner-sq-orange.gif"}]]))
+     [:img.ml-2.h-12 {:src "/img/film-spinner-sq-orange.gif"}]]))
 

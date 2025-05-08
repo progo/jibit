@@ -20,7 +20,7 @@
 
 (defn header []
   (let [sc @(re-frame/subscribe [:selected-photos# :just-selection])]
-    [:div.w-full.h-14.sticky.top-0.bg-black.z-10
+    [:div.w-full.h-14.max-h-14.sticky.top-0.bg-black.z-10
      [:div.flex.flex-row.text-4xl.items-end
       [:span "Jibit"]
 
@@ -37,45 +37,44 @@
 
       [:div.flex-1]
 
-      [:div
-       [activity-indicator]
+      [activity-indicator]
 
-       [:div#menu
-        [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
-             :title "Open gear data editor"
+      [:div#menu
+       [:a {:on-click #(re-frame/dispatch [:show-gear-dlg])
+            :title "Open gear data editor"
+            :href "javascript:void(0)"}
+        "Gear"]
+       \space
+
+       [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
+            :title "Sync inbox"
+            :href "javascript:void(0)"}
+        "Inbox"]
+       \space
+
+       [:a {:on-click #(re-frame/dispatch [:show-file-import])
+            :title "Select or drop photos to import"
+            :href "javascript:void(0)"}
+        "Import"]
+       [:input#file-upload.hidden
+        {:name "upload"
+         :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
+         :type :file
+         :multiple true}]
+       \space
+
+       [:span
+        [:a {:on-click #(re-frame/dispatch [:export-selected (utils/get-default-export-scheme-key)])
+             :title "Export selected photos"
              :href "javascript:void(0)"}
-         "Gear"]
-        \space
-
-        [:a {:on-click #(re-frame/dispatch [:do-sync-inbox])
-             :title "Sync inbox"
-             :href "javascript:void(0)"}
-         "Inbox"]
-        \space
-
-        [:a {:on-click #(re-frame/dispatch [:show-file-import])
-             :title "Select or drop photos to import"
-             :href "javascript:void(0)"}
-         "Import"]
-        [:input#file-upload.hidden
-         {:name "upload"
-          :on-change #(re-frame/dispatch [:import-photos (-> % .-target)])
-          :type :file
-          :multiple true}]
-        \space
-
-        [:span
-         [:a {:on-click #(re-frame/dispatch [:export-selected (utils/get-default-export-scheme-key)])
-              :title "Export selected photos"
-              :href "javascript:void(0)"}
-          "Export"]
-         [:span.submenu-indicator "▼"
-          [:ul.dropdown
-           (for [export-scheme (vals common.settings/export-schemes)]
-             ^{:key export-scheme}
-             [:li {:on-click #(re-frame/dispatch [:export-selected (:key export-scheme)])
-                   :href "javascript:void(0)"}
-              (:name export-scheme)]
-             )
-           ]]]
-        ]]]]))
+         "Export"]
+        [:span.submenu-indicator "▼"
+         [:ul.dropdown
+          (for [export-scheme (vals common.settings/export-schemes)]
+            ^{:key export-scheme}
+            [:li {:on-click #(re-frame/dispatch [:export-selected (:key export-scheme)])
+                  :href "javascript:void(0)"}
+             (:name export-scheme)]
+            )
+          ]]]
+       ]]]))
