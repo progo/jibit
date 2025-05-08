@@ -16,8 +16,8 @@
               "p-2 "
               "border-2 border-dashed "
               (if show-panel? "" "hidden"))}
-     [:div.filter-row
-      [:div.filter-column
+     [:div
+      [:div
        [:h1 "Filter options"]
 
        [:div
@@ -46,7 +46,6 @@
         [data-bound-fancydate [:filter :imported-ts]
                               {:style {:width "50%"}}]]
 
-       [:h1 "Order options"]
        "Order by "
        [data-bound-select [:filter :order-by]
         [{:name "Oldest" :value "oldest_1st"}
@@ -54,19 +53,15 @@
          {:name "Random" :value "random"}
          {:name "Rating" :value "rating"}]]]
 
-      [:div.filter-column
+      [:div
        [data-bound-toggle-button [:filter :show-only-untitled?] {}]
        " Only untitled"
-       [:br]
        [data-bound-toggle-button [:filter :show-only-untagged?] {}]
        " Only untagged"
-       [:br]
        [data-bound-toggle-button [:filter :show-only-unrated?] {}]
        " Only unrated"
-       [:br]
        [data-bound-toggle-button [:filter :show-only-uncooked?] {}]
        " Only developed"
-       [:br]
        [data-bound-toggle-button [:filter :tags-union?]
         {:label-on "ANY"
          :label-off "ALL"

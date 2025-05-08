@@ -910,7 +910,7 @@
 
      ;; left hand side
      [:div
-      {:class "bg-teal-900 w-1/3 overflow-y-auto"}
+      {:class "bg-stone-800 w-1/3 overflow-y-auto"}
       [jibit.components.filters/filter-panel]
       [jibit.components.tags/tags-view]]
 
