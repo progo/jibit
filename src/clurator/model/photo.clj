@@ -175,6 +175,7 @@
            (if-let [q (stringify-text-query text)]
              [:or
               [:like :photo.title q]
+              [:like :photo.notes q]
               [:like :photo.description q]
               [:like :photo.llm_description q]])
            (if camera-id

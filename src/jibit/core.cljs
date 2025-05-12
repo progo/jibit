@@ -9,9 +9,9 @@
    common.settings
    [cljs.pprint :refer [cl-format]]
    [keybind.core :as keybind]
-   [jibit.components.quick-label :as quick-label]
    [jibit.components.header]
    [jibit.components.lighttable]
+   [jibit.components.descriptions]
    [jibit.components.tag-edit]
    [jibit.components.tags]
    [jibit.components.filters]
@@ -61,7 +61,7 @@
   ([db coverage]
    (let [all? (nil? coverage)
          sel (-> db :selected)
-         focus (-> db :focused-photo)]
+         focus (-> db :db/focused-photo :id)]
      (cond
        (seq sel) sel
        (and all? focus) (list focus)
@@ -119,7 +119,6 @@
    (when (ok? status)
      (let [photo-ids-set (set (photo-ids photos))]
        (-> db
-           (update :focused-photo photo-ids-set)
            (assoc :photos-window metadata)
            (update :selected #(clojure.set/intersection photo-ids-set %))
            (assoc :photos photos))))))
@@ -242,21 +241,7 @@
  (fn [_]
    (.click (js/document.getElementById "file-upload"))))
 
-;; The popup label editor has to be positioned near where user
-;; clicked.
-(re-frame/reg-fx
- :position-quick-label-editor
- (fn [[x y]]
-   (let [cmp (js/document.getElementById "quick-label-editor")]
-     (set! (.. cmp -style -top) (str y "px"))
-     (set! (.. cmp -style -left) (str x "px")))))
 
-;; Focus the first input
-(re-frame/reg-fx
- :focus-quick-label-editor
- (fn [_]
-   (let [cmp (js/document.getElementById "quick-label-edit-title")]
-     (js/setTimeout #(.focus cmp) 0))))
 
 (re-frame/reg-fx
  :dispatch-after-delay
@@ -442,8 +427,8 @@
 (re-frame/reg-event-db
  :select-focused-photo
  (fn [db _]
-   (if-let [focused (-> db :focused-photo)]
-     (update db :selected #(utils/toggle-set-membership focused %))
+   (if-let [focused-photo-id (-> db :db/focused-photo :id)]
+     (update db :selected #(utils/toggle-set-membership focused-photo-id %))
      db)))
 
 ;; Replace current selection with untagged photos, within the page
@@ -669,23 +654,8 @@
      ;; Close projector
      (.close photoswipe-js)
      ;; Open projector
-     (when-let [currently-focused (-> db :focused-photo)]
-       (let [photo (get-photo-by-id currently-focused (-> db :photos))]
-         {:dispatch [:show-photo photo]})))))
-
-;; User clicks on a slide to edit the texts, we'll pop up
-;; a (semi)modal dialog to let them.
-(re-frame/reg-event-fx
- :show-quick-label-editor
- (fn [{db :db} [_ photo click-position]]
-   {:db (-> db
-            (assoc-in [:input :label-edit]
-                      {:photo photo
-                       :title (:title photo)
-                       :notes (:notes photo)})
-            (update :state conj :quick-label-edit))
-    :focus-quick-label-editor nil
-    :position-quick-label-editor click-position}))
+     (when-let [currently-focused-photo (-> db :db/focused-photo)]
+       {:dispatch [:show-photo currently-focused-photo]}))))
 
 (defn update-photo
   "Search linearly for photo in photos by ID and update the record."
@@ -819,9 +789,15 @@
 
 ;; Currently focused photo
 (re-frame/reg-sub
- :focused-photo?
+ :sub/focused-photo
+ (fn [db _]
+   (let [focused-photo (-> db :db/focused-photo)]
+     focused-photo)))
+
+(re-frame/reg-sub
+ :sub/focused-photo?
  (fn [db [_ photo-id]]
-   (= (-> db :focused-photo) photo-id)))
+   (= (-> db :db/focused-photo :id) photo-id)))
 
 (re-frame/reg-sub
  :input
@@ -912,6 +888,7 @@
      [:div
       {:class "bg-stone-800 w-1/3 overflow-y-auto"}
       [jibit.components.filters/filter-panel]
+      [jibit.components.descriptions/descriptions-panel]
       [jibit.components.tags/tags-view]]
 
      ;; right hand side thing
@@ -919,7 +896,6 @@
       {:class "flex-1 overflow-y-auto"}
       [jibit.components.lighttable/lighttable]]]]
 
-   [quick-label/quick-label-edit]
    [message-box]
 
    ;; unrendered metadata for form inputs

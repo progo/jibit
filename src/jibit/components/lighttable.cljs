@@ -13,7 +13,7 @@
 (defn slide [photo]
   (let [tags-map @(re-frame/subscribe [:tags-map])
         gear-db @(re-frame/subscribe [:gear-db])
-        focused? @(re-frame/subscribe [:focused-photo? (:id photo)])
+        focused? @(re-frame/subscribe [:sub/focused-photo? (:id photo)])
         selected? @(re-frame/subscribe [:selected-photo? (:id photo)])]
 
     [:div.slide-wrapper
@@ -21,7 +21,7 @@
       {:class (str (when selected? "selected-slide")
                    \space
                    (when focused? "focused-slide"))
-       :on-click #(re-frame/dispatch [:focus-photo (:id photo)])}
+       :on-click #(re-frame/dispatch [:ev/focus-photo photo])}
 
       ;; Offer 3 different selections. Work on one type.
       [:div.overlay-controls
@@ -36,17 +36,7 @@
        ;; [:img.selector.sel3
        ;;  {:src "/img/selection-3.png"
        ;;   :on-click #(debug "clicking on X3")}]
-
-       ;; Then offer other quick edit tools, such as RATING
-       [:span
-        {:style {:position :absolute :bottom 0}
-         :on-click (fn [e]
-                     (re-frame/dispatch [:show-quick-label-editor
-                                         photo
-                                         [(.-pageX e) (- (.-pageY e) 20)]]))}
-        (if (:title photo)
-          "Edit title"
-          "Add title")]]
+       ]
 
       [:div.img-wrapper
        [:div {:class (if selected? "encircled" "hidden")}]
@@ -65,20 +55,20 @@
        ;; [:li (-> photo :lens_id gear-db human/gear-label)]
        (when (seq (:title photo))
          [:li (:title photo)])
-       [:li.technical-details
-        ;; TODO color-code the crop factor a little bit, and put 35mm
-        ;; equivalent in a tooltip!
-        [:span.small-label "FL"]
-        (human/focal-length (:focal_length photo)) " mm"
-        [:span.small-label "ƒ/"]
-        (human/aperture (:aperture photo))
-        [:span.small-label "SS"]
-        (human/shutter-speed (:shutter_speed photo))
-        [:span.small-label "ISO"] (human/iso (:iso photo))
-        (when-not (zero? (:exposure_comp photo))
-          [:span
-           [:span.small-label "EC"]
-           (human/exp-comp (:exposure_comp photo)) " EV" ])]
+       ;; [:li.technical-details
+       ;;  ;; TODO color-code the crop factor a little bit, and put 35mm
+       ;;  ;; equivalent in a tooltip!
+       ;;  [:span.small-label "FL"]
+       ;;  (human/focal-length (:focal_length photo)) " mm"
+       ;;  [:span.small-label "ƒ/"]
+       ;;  (human/aperture (:aperture photo))
+       ;;  [:span.small-label "SS"]
+       ;;  (human/shutter-speed (:shutter_speed photo))
+       ;;  [:span.small-label "ISO"] (human/iso (:iso photo))
+       ;;  (when-not (zero? (:exposure_comp photo))
+       ;;    [:span
+       ;;     [:span.small-label "EC"]
+       ;;     (human/exp-comp (:exposure_comp photo)) " EV" ])]
 
        ;; Debug things...
        ;; [:li
@@ -137,19 +127,17 @@
        second))))
 
 (re-frame/reg-event-db
- :focus-photo
- (fn [db [_ pid]]
-   (assoc db :focused-photo pid)))
+ :ev/focus-photo
+ (fn [db [_ photo]]
+   (assoc db :db/focused-photo photo)))
 
 (re-frame/reg-event-db
  :focus-next-photo
  (fn [db _]
-   (let [photo-ids (-> db :photos photo-ids)]
-     (update db :focused-photo #(focus-by-step % photo-ids 1)))))
+   (update db :db/focused-photo #(focus-by-step % (:photos db) 1))))
 
 (re-frame/reg-event-db
  :focus-previous-photo
  (fn [db _]
-   (let [photo-ids (-> db :photos photo-ids)]
-     (update db :focused-photo #(focus-by-step % photo-ids -1)))))
+   (update db :db/focused-photo #(focus-by-step % (:photos db) -1))))
 

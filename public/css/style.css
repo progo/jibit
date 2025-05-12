@@ -306,23 +306,6 @@ input {
     font-family: 'Courier';
 }
 
-/**** Quick popup label editor **/
-
-#quick-label-editor {
-    z-index: 6;
-    width: 250px;
-    height: 200px;
-    position: absolute;
-    background-color: black;
-    border-radius: 5px;
-    border: 3px white solid;
-    padding: 19px;
-}
-
-#quick-label-editor input,textarea {
-    width: 230px;
-}
-
 /**** Button styling ***/
 
 .button {

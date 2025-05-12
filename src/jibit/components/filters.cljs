@@ -14,7 +14,6 @@
               "w-full "
               "rounded-lg "
               "p-2 "
-              "border-2 border-dashed "
               (if show-panel? "" "hidden"))}
      [:div
       [:div
