@@ -1,5 +1,7 @@
+#!/usr/bin/env python
 import argparse
 import os
+import json
 import time
 from pathlib import Path
 from openai import OpenAI
@@ -75,8 +77,8 @@ def query_photo(path):
     return resp
 
 
-def html_report(output_file, data: List[PhotoDescription]):
-    with open(output_file, 'w') as out:
+def html_report(outputdir, data: List[PhotoDescription]):
+    with open(os.path.join(outputdir, 'report.html'), 'w') as out:
         out.write(HTML_HEAD)
         for photo in data:
             out.write("<div class='photo'>")
@@ -85,18 +87,32 @@ def html_report(output_file, data: List[PhotoDescription]):
             out.write("</div>")
         out.write(HTML_FOOT)
 
+def json_report(outputdir, data: List[PhotoDescription]):
+    dumpy = [item.model_dump(mode='json') for item in data]
+
+    if outputdir:
+        with open(os.path.join(outputdir, 'report.json'), 'w') as out:
+            json.dump(dumpy, out)
+    else:
+        print(json.dumps(dumpy))
+
 
 def do_dir(directory):
     t0 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
     imagepath = Path(directory)
     descs = []
     for imagefile in os.listdir(imagepath):
+        if imagefile.endswith('json'):
+            continue
+        if imagefile.endswith('html'):
+            continue
         desc = query_photo(imagepath / imagefile)
-        print ( desc )
+        print(desc)
         descs.append(desc)
     t1 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
-    html_report('/tmp/day.html', descs)
-    print(f'*** Took {(t1 - t0) / 1e9}s for {len(descs)} photos.')
+    return descs
+    # reportfn(directory, descs)
+    # print(f'*** Took {(t1 - t0) / 1e9}s for {len(descs)} photos.')
 
 
 def main():
@@ -105,10 +121,19 @@ def main():
         description='Ask a LLM via running ollama for descriptions for photographs in a directory.'
     )
     pars.add_argument('directory')
-    pars.add_argument('--html', action='store_true', help='HTML report (human readable)')
-    pars.add_argument('--json', action='store_true', help='JSON report (machine readable)')
+    pars.add_argument('--html', action='store_true', help='Write HTML report (human readable)')
+    pars.add_argument('--json', action='store_true', help='Write JSON report (machine readable)')
+    pars.add_argument('--stdout', action='store_true', help='JSON output')
 
     args = pars.parse_args()
+    descriptions = do_dir(args.directory)
+
+    if args.stdout:
+        json_report(None, descriptions)
+    if args.json:
+        json_report(args.directory, descriptions)
+    if args.html:
+        html_report(args.directory, descriptions)
 
 
 if __name__ == '__main__':

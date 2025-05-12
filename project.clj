@@ -21,7 +21,7 @@
                  [thheller/shadow-cljs "2.28.22"]
 
                  ;; Clurator, file ops
-                 [clj-commons/fs "1.5.2"]
+                 [clj-commons/fs "1.6.311"]
                  [juxt/dirwatch "0.2.5"]
                  [popen "0.3.1"]
                  [metosin/jsonista "0.2.6"]
