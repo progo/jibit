@@ -72,7 +72,6 @@
                 (boolean bound)
                 bound)
         change-fn #(let [value (-> % .-target .-value)]
-                     (js/console.debug "change-fn" value)
                      (re-frame/dispatch [:change-input
                                          data-ids
                                          (if checkbox?

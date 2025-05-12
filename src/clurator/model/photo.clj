@@ -127,6 +127,12 @@
                            0 false
                            1 true)))
 
+(defn stringify-text-query
+  ""
+  [text]
+  (when-not (empty? text)
+    (str "%" text "%")))
+
 (defn build-photo-filter
   "Build a map of criteria to  query photos from db."
   [{:keys
@@ -138,6 +144,9 @@
      taken-end
      imported-begin
      imported-end
+
+     ;; string search titles, descs
+     text
 
      ;; string search gear
      camera
@@ -163,6 +172,11 @@
    :where [:and true
            (build-date-range-criteria :taken_ts taken-begin taken-end)
            (build-date-range-criteria :import_ts imported-begin imported-end)
+           (if-let [q (stringify-text-query text)]
+             [:or
+              [:like :photo.title q]
+              [:like :photo.description q]
+              [:like :photo.llm_description q]])
            (if camera-id
              [:= :photo.camera_id camera-id]
              (build-gear-criteria :camera camera))

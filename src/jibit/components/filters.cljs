@@ -18,7 +18,14 @@
               (if show-panel? "" "hidden"))}
      [:div
       [:div
-       [:h1 "Filter options"]
+       [:h1.bg-black.mt-0.p-1
+        "Filter options"]
+
+       [data-bound-input [:filter :text]
+        {:type :input
+         :placeholder "Keyword search"}
+        :on-enter get-photos
+        :clearable? true]
 
        [:div
         [data-bound-input [:filter :camera]

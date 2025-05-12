@@ -42,6 +42,7 @@
   ;; offset              num
   ;; camera              text
   ;; lens                text
+  ;; text                text
   ;; camera-id           num
   ;; lens-id             num
   ;; tags-union?         boolean
@@ -67,6 +68,7 @@
    (clean-input-as c :taken-end "taken-ts[end]")
    (clean-input-as c :imported-begin "imported-ts[begin]")
    (clean-input-as c :imported-end "imported-ts[end]")
+   (clean-input-as c :text "text")
    (clean-input-as c :camera "camera")
    (clean-input-as c :lens "lens")
    (clean-edn* c :camera-id)
