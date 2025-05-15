@@ -10,6 +10,9 @@
 (def cli-options
   [["-v" "--verbose"]
    ["-h" "--help"]
+   ["-b" "--batch N" "Describe N photos."
+    :default 10
+    :parse-fn #(Integer/parseInt %)]
    ["-p" "--port PORT" "Run the server on this port"
     :default 8088
     :parse-fn #(Integer/parseInt %)]])

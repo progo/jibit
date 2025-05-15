@@ -47,7 +47,7 @@ class PhotoDescription(BaseModel):
     Requested photo description.
     """
     description: str = Field(description="A short description of the photograph.")
-    dominant_color: str = Field(description="This picture in one color.")
+    # dominant_color: str = Field(description="This picture in one color.")
     image_path: SkipJsonSchema[Union[Path, None]] = None
 
 
@@ -102,17 +102,13 @@ def do_dir(directory):
     imagepath = Path(directory)
     descs = []
     for imagefile in os.listdir(imagepath):
-        if imagefile.endswith('json'):
-            continue
-        if imagefile.endswith('html'):
+        _, ext = os.path.splitext(imagefile)
+        if ext.lower() not in ['.jpg', '.jpeg', '.png']:
             continue
         desc = query_photo(imagepath / imagefile)
-        print(desc)
         descs.append(desc)
     t1 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
     return descs
-    # reportfn(directory, descs)
-    # print(f'*** Took {(t1 - t0) / 1e9}s for {len(descs)} photos.')
 
 
 def main():
@@ -121,19 +117,24 @@ def main():
         description='Ask a LLM via running ollama for descriptions for photographs in a directory.'
     )
     pars.add_argument('directory')
-    pars.add_argument('--html', action='store_true', help='Write HTML report (human readable)')
-    pars.add_argument('--json', action='store_true', help='Write JSON report (machine readable)')
-    pars.add_argument('--stdout', action='store_true', help='JSON output')
+    pars.add_argument('--html', action='store_true',
+                      help='Write HTML report (human readable)')
+    pars.add_argument('--json', action='store_true',
+                      help='Write JSON report (machine readable)')
+    pars.add_argument('--stdout', action='store_true',
+                      help='JSON output')
 
     args = pars.parse_args()
     descriptions = do_dir(args.directory)
 
     if args.stdout:
         json_report(None, descriptions)
-    if args.json:
-        json_report(args.directory, descriptions)
-    if args.html:
-        html_report(args.directory, descriptions)
+    # if we want to keep these, they'd better be taking
+    # their output filenames from the CLI args.
+    # if args.json:
+    #     json_report(args.directory, descriptions)
+    # if args.html:
+    #     html_report(args.directory, descriptions)
 
 
 if __name__ == '__main__':

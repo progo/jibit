@@ -1,9 +1,29 @@
 (ns clurator.model.photo
   "Photo model."
-  (:require [clurator.db :as db]
+  (:require [next.jdbc :as jdbc]
+            [clurator.db :as db]
             [clurator.model.tag :as tag]
+            [java-time :as time]
             [taoensso.timbre :as timbre :refer [spy debug]]))
 
+
+(defn update-photo-by-uuid
+  "Update photo's attributes (map) by photo UUID."
+  [id attr-map]
+  (db/query! {:update :photo
+              :set attr-map
+              :where [:= :uuid id]}))
+
+
+(defn fill-llm-descs-in-db
+  "Fill these descriptions (maps with kws :id, :description) in the database."
+  [descs]
+  (let [dt (time/local-date-time)]
+    (doseq [desc descs]
+      (update-photo-by-uuid
+       (:id desc)
+       {:llm_description (:description desc)
+        :llm_describe_date dt}))))
 
 (defn get-llm-undescribed-photos
   "Fetch `n` photos that don't have a LLM-description."
@@ -13,6 +33,7 @@
               :where [:= :llm_describe_date nil]
               :order-by [:%random]
               :limit n}))
+
 
 
 (defn update-photo

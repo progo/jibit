@@ -1,5 +1,6 @@
 (ns clurator.core
   (:require [clurator.cli :as cli]
+            [clurator.llm :as llm]
             [clurator.inbox :as inbox]
             [clurator.server :as server]
             [taoensso.timbre :as timbre :refer [debug spy]])
@@ -19,7 +20,9 @@
         (server/run-server port))
 
       (= action "describe")
-      (println args)
+      (let [batch-size (:batch options)]
+        (println (llm/describe-random-photos batch-size))
+        (shutdown-agents))
 
       (= action "import")
       (do
