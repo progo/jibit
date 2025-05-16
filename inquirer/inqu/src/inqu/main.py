@@ -97,17 +97,34 @@ def json_report(outputdir, data: List[PhotoDescription]):
         print(json.dumps(dumpy))
 
 
+def write_descfile(desc, output):
+    with open(output, 'w') as out:
+        pod = desc.model_dump(mode='json')
+        json.dump(pod, out)
+
+
 def do_dir(directory):
-    t0 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
+    """Go through the directory, skip files that are not JPEG or PNG.
+    Also skip files that have a descfile already.
+    """
+    # t0 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
     imagepath = Path(directory)
     descs = []
     for imagefile in os.listdir(imagepath):
-        _, ext = os.path.splitext(imagefile)
+        photo_id, ext = os.path.splitext(imagefile)
+
+        descfile = imagepath / f"{photo_id}.desc.json"
+        if descfile.exists():
+            continue
+
         if ext.lower() not in ['.jpg', '.jpeg', '.png']:
             continue
+
         desc = query_photo(imagepath / imagefile)
+        write_descfile(desc, descfile)
         descs.append(desc)
-    t1 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
+
+    # t1 = time.clock_gettime_ns(time.CLOCK_BOOTTIME)
     return descs
 
 
@@ -129,6 +146,7 @@ def main():
 
     if args.stdout:
         json_report(None, descriptions)
+
     # if we want to keep these, they'd better be taking
     # their output filenames from the CLI args.
     # if args.json:

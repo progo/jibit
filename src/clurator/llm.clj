@@ -67,10 +67,8 @@
               (photo/fill-llm-descs-in-db descs)
 
               (fs/delete-dir (str tmpdir))
-              descs
-              )))))))
+              descs)))))))
 
 
-(comment
 
-  )
+
