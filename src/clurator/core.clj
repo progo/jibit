@@ -21,7 +21,7 @@
 
       (= action "describe")
       (let [batch-size (:batch options)]
-        (println (llm/describe-random-photos batch-size))
+        (println (llm/describe-random-photos batch-size true))
         (shutdown-agents))
 
       (= action "import")

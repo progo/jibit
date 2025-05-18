@@ -117,6 +117,10 @@ def do_dir(directory):
         if descfile.exists():
             continue
 
+        processed_descfile = imagepath / f"{photo_id}.desc.json.proc"
+        if processed_descfile.exists():
+            continue
+
         if ext.lower() not in ['.jpg', '.jpeg', '.png']:
             continue
 
@@ -134,19 +138,32 @@ def main():
         description='Ask a LLM via running ollama for descriptions for photographs in a directory.'
     )
     pars.add_argument('directory')
-    pars.add_argument('--html', action='store_true',
-                      help='Write HTML report (human readable)')
-    pars.add_argument('--json', action='store_true',
-                      help='Write JSON report (machine readable)')
-    pars.add_argument('--stdout', action='store_true',
-                      help='JSON output')
+    # pars.add_argument('--html', action='store_true',
+    #                   help='Write HTML report (human readable)')
+    # pars.add_argument('--json', action='store_true',
+    #                   help='Write JSON report (machine readable)')
+    # pars.add_argument('--stdout', action='store_true',
+    #                   help='JSON output')
+    pars.add_argument('--onetime', action='store_true',
+                      help='Do not monitor the directory')
 
     args = pars.parse_args()
-    descriptions = do_dir(args.directory)
 
-    if args.stdout:
-        json_report(None, descriptions)
+    photos_described = 0
+    while True:
+        descriptions = do_dir(args.directory)
 
+        photos_described += len(descriptions)
+        if photos_described > 0 and not descriptions:
+            break
+
+        if args.onetime:
+            break
+
+        time.sleep(0.5)
+
+    # if args.stdout:
+    #     json_report(None, descriptions)
     # if we want to keep these, they'd better be taking
     # their output filenames from the CLI args.
     # if args.json:
@@ -154,6 +171,7 @@ def main():
     # if args.html:
     #     html_report(args.directory, descriptions)
 
+    print(photos_described)
 
 if __name__ == '__main__':
     main()
