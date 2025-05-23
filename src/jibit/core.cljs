@@ -657,39 +657,6 @@
      (when-let [currently-focused-photo (-> db :db/focused-photo)]
        {:dispatch [:show-photo currently-focused-photo]}))))
 
-(defn update-photo
-  "Search linearly for photo in photos by ID and update the record."
-  [photos photo]
-  ;; This is frustratingly bad code now, reflects on poor usage of
-  ;; data structures for `photos`.
-  (let [selection-fn #(= (:id %) (:id photo))
-        antiselect-fn (complement selection-fn)
-        head (take-while antiselect-fn photos)
-        tail (drop 1 (drop-while antiselect-fn photos))]
-    ;; now `photos` == `head` . [`photo`] . `tail`
-    (concat head [photo] tail)))
-
-;; User closes (and saves) the label editor. We'll want to update the
-;; labels instantly on local and then send a background query to the
-;; server to persist them there.
-(re-frame/reg-event-fx
- :save-close-label-popup
- (fn [{db :db} [_]]
-   (let [label (-> db :input :label-edit)
-         photo' (assoc (-> label :photo)
-                       :title (:title label)
-                       :notes (:notes label))]
-     {:db (-> db
-              (assoc :activity "Saving...")
-              (update :state pop)
-              (update :photos update-photo photo'))
-      :http-xhrio (build-edn-request :method :post
-                                     :uri "/title-photo"
-                                     :params {:id (:id photo')
-                                              :title (:title photo')
-                                              :notes (:notes photo')}
-                                     :response :on-background-save)})))
-
 ;;; queries from db
 
 (re-frame/reg-sub
