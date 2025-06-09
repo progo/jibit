@@ -9,6 +9,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/clojurescript "1.11.132"]
 
+                 [org.clojure/core.match "1.1.0"]
                  [com.taoensso/timbre "6.6.1"]
                  [org.clojure/tools.macro "0.1.2"]
 
@@ -56,6 +57,6 @@
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "jibit.test-runner"]}
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.18"]
-                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]
-                   }})
+                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]}
+             :repl {:plugins [[cider/cider-nrepl "0.55.7"]]}})
 

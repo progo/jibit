@@ -16,6 +16,7 @@
    [jibit.components.tags]
    [jibit.components.filters]
    [jibit.components.gear-editor :as gear-editor]
+   [jibit.datetime :refer [ymd->iso]]
    [jibit.utils :as utils :refer [build-edn-request photo-ids ok? mapify-seq]]))
 
 (defn get-photoswipe-elt
@@ -587,6 +588,15 @@
                                    :params []
                                    :response :on-sync-inbox)}))
 
+
+(defn reformat-ts-filters
+  [filters-map]
+  (-> filters-map
+      (update-in [:taken-ts :begin] ymd->iso)
+      (update-in [:taken-ts :end] ymd->iso)
+      (update-in [:imported-ts :begin] ymd->iso)
+      (update-in [:imported-ts :end] ymd->iso)))
+
 (re-frame/reg-event-fx
  :get-photos
  (fn [{db :db} _]
@@ -594,6 +604,8 @@
          filter-criteria (-> db
                              :input
                              :filter
+
+                             reformat-ts-filters
 
                              ;; add currently selected tags to the mix
                              (assoc :tags (:selected-tags db))

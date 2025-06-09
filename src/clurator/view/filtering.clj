@@ -22,7 +22,7 @@
 
 (defn clean-input-as
   [criteria kw input-key]
-  (if-let [value (get criteria input-key)]
+  (if-let [value (nilify (get criteria input-key))]
     {kw value}))
 
 (defn clean-edn*

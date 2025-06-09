@@ -736,3 +736,16 @@ ul.problem-list {
 .modal-dialog #gear-table input {
     color: #333 !important;
 }
+
+
+
+div .ymd {
+    /* border: solid thin orange; */
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    background-color: #333333;
+}
+
+.dtinput {
+    background-color: #393939;
+}

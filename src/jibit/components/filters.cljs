@@ -2,7 +2,7 @@
   (:require
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
-   [jibit.components.fancydate :refer [data-bound-fancydate]]
+   [jibit.components.fancydate :refer [data-bound-fancydate data-bound-fancydate2]]
    [jibit.components.inputs :refer [data-bound-toggle-button data-bound-input data-bound-select]]
    [jibit.utils :as utils]))
 
@@ -51,6 +51,13 @@
         "Imported "
         [data-bound-fancydate [:filter :imported-ts]
                               {:style {:width "50%"}}]]
+
+
+       [:div.bg-stone-700.p-2
+        "fd2 / taken"
+        [data-bound-fancydate2 [:filter :taken-ts]]
+        "fd2 / imported"
+        [data-bound-fancydate2 [:filter :imported-ts]]]
 
        "Order by "
        [data-bound-select [:filter :order-by]

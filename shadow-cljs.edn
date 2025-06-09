@@ -12,7 +12,9 @@
   [com.taoensso/timbre "6.6.1"]
   [org.clojure/tools.macro "0.1.2"]
 
-  [cider/cider-nrepl "0.55.7"]
+  [org.clojure/core.match "1.1.0"]
+
+  [cider/cider-nrepl "0.56.0"]
   [refactor-nrepl/refactor-nrepl "3.11.0"]]
 
  :nrepl {:middleware [cider.nrepl/cider-middleware
