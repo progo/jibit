@@ -60,14 +60,13 @@
   []
   (let [focused-photo @(re-frame/subscribe [:sub/focused-photo])]
     [:div
-     {:class (str "w-full "
-                  "bg-stone-600 "
-                  "rounded-lg "
+     {:class (str "border "
+                  "border-orange-400 "
+                  "rounded-xl "
                   "p-2 ")}
-
      [:input
       {:type :input
-       :class "text-md"
+       :class "text-md bg-black p-1"
        :placeholder "Title"
        :on-change (fn [evt]
                     (re-frame/dispatch

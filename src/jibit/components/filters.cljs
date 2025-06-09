@@ -20,6 +20,7 @@
        [:div.border.p-2.rounded-xl.border-orange-400
         [data-bound-input [:filter :text]
          {:type :input
+           :class "bg-black p-1"
           :placeholder "Keyword search"}
          :on-enter get-photos
          :clearable? true]
@@ -27,6 +28,7 @@
         [:div
          [data-bound-input [:filter :camera]
           {:type :search
+           :class "bg-black p-1"
            :list "camera-list"
            :title "Filter by camera make or model"
            :placeholder "Camera"}
@@ -36,6 +38,7 @@
          [data-bound-input [:filter :lens]
           {:type :search
            :list "lens-list"
+           :class "bg-black p-1"
            :title "Filter by lens make or model"
            :placeholder "Lens"}
           :on-enter get-photos
@@ -53,8 +56,10 @@
          [data-bound-fancydate2 [:filter :imported-ts]]]]
 
        [:div.border.p-2.rounded-xl.border-orange-400
-        "Order by "
-        [data-bound-select [:filter :order-by]
+        [:span.text-orange-200.pr-2
+         "Order by "]
+        [data-bound-select
+         [:filter :order-by]
          [{:name "Oldest" :value "oldest_1st"}
           {:name "Newest" :value "newest_1st"}
           {:name "Random" :value "random"}

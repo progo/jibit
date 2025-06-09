@@ -115,7 +115,8 @@
                                        data-ids
                                        (cljs.reader/read-string
                                         (-> % .-target .-value))])
-        props {:on-change change-fn
+        props {:class "bg-black p-1"
+               :on-change change-fn
                :value (or bound "")}]
     [:select props
      (doall

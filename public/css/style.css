@@ -730,9 +730,8 @@ ul.problem-list {
 
 
 div .ymd {
-    /* border: solid thin orange; */
     padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-right: 0rem;
     background-color: #333333;
 }
 
@@ -742,7 +741,7 @@ div .ymd {
 
 .fdclear {
     padding-left: 0.2rem;
-    padding-right: 0.2rem;
+    padding-right: 0.4rem;
 }
 .fdclear:hover {
     color: black;
