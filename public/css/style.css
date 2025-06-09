@@ -39,16 +39,6 @@ html {
     padding: 0;
 }
 
-button {
-    color: black;
-    background-color: #ffb000;
-    float: right;
-}
-
-input {
-    background-color: #000;
-}
-
 .page-navigator {
     border-radius: 8px;
     border: solid thin gold;
@@ -748,4 +738,13 @@ div .ymd {
 
 .dtinput {
     background-color: #393939;
+}
+
+.fdclear {
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+}
+.fdclear:hover {
+    color: black;
+    background-color: orange;
 }

@@ -17,72 +17,66 @@
               (if show-panel? "" "hidden"))}
      [:div
       [:div
-       [:h1.bg-black.mt-0.p-1
-        "Filter options"]
-
-       [data-bound-input [:filter :text]
-        {:type :input
-         :placeholder "Keyword search"}
-        :on-enter get-photos
-        :clearable? true]
-
-       [:div
-        [data-bound-input [:filter :camera]
-         {:type :search
-          :list "camera-list"
-          :title "Filter by camera make or model"
-          :placeholder "Camera"}
+       [:div.border.p-2.rounded-xl.border-orange-400
+        [data-bound-input [:filter :text]
+         {:type :input
+          :placeholder "Keyword search"}
          :on-enter get-photos
          :clearable? true]
 
-        [data-bound-input [:filter :lens]
-         {:type :search
-          :list "lens-list"
-          :title "Filter by lens make or model"
-          :placeholder "Lens"}
-         :on-enter get-photos
-         :clearable? true]]
+        [:div
+         [data-bound-input [:filter :camera]
+          {:type :search
+           :list "camera-list"
+           :title "Filter by camera make or model"
+           :placeholder "Camera"}
+          :on-enter get-photos
+          :clearable? true]
 
-       [:div
-        "Taken "
-        [data-bound-fancydate [:filter :taken-ts]
-                              {:style {:width "50%"}}]]
-       [:div
-        "Imported "
-        [data-bound-fancydate [:filter :imported-ts]
-                              {:style {:width "50%"}}]]
+         [data-bound-input [:filter :lens]
+          {:type :search
+           :list "lens-list"
+           :title "Filter by lens make or model"
+           :placeholder "Lens"}
+          :on-enter get-photos
+          :clearable? true]]]
 
+       [:div.border.p-2.rounded-xl.border-orange-400
+        [:div.flex.flex-row
+         [:span.text-orange-200.pr-2
+          "taken"]
+         [data-bound-fancydate2 [:filter :taken-ts]]]
 
-       [:div.bg-stone-700.p-2
-        "fd2 / taken"
-        [data-bound-fancydate2 [:filter :taken-ts]]
-        "fd2 / imported"
-        [data-bound-fancydate2 [:filter :imported-ts]]]
+        [:div.flex.flex-row
+         [:span.text-orange-200.pr-2
+          "imported"]
+         [data-bound-fancydate2 [:filter :imported-ts]]]]
 
-       "Order by "
-       [data-bound-select [:filter :order-by]
-        [{:name "Oldest" :value "oldest_1st"}
-         {:name "Newest" :value "newest_1st"}
-         {:name "Random" :value "random"}
-         {:name "Rating" :value "rating"}]]]
+       [:div.border.p-2.rounded-xl.border-orange-400
+        "Order by "
+        [data-bound-select [:filter :order-by]
+         [{:name "Oldest" :value "oldest_1st"}
+          {:name "Newest" :value "newest_1st"}
+          {:name "Random" :value "random"}
+          {:name "Rating" :value "rating"}]]]]
 
-      [:div
-       [data-bound-toggle-button [:filter :show-only-untitled?] {}]
-       " Only untitled"
-       [data-bound-toggle-button [:filter :show-only-untagged?] {}]
-       " Only untagged"
-       [data-bound-toggle-button [:filter :show-only-unrated?] {}]
-       " Only unrated"
-       [data-bound-toggle-button [:filter :show-only-uncooked?] {}]
-       " Only developed"
-       [data-bound-toggle-button [:filter :tags-union?]
-        {:label-on "ANY"
-         :label-off "ALL"
-         :class-on "btn-any-tag"
-         :class-off "btn-all-tags"}]
-       " Filter by selected tags"]]
+      [:div.border.p-2.rounded-xl.border-orange-400
+       [:div " Only untitled"
+        [data-bound-toggle-button [:filter :show-only-untitled?] {}]]
+       [:div " Only untagged"
+        [data-bound-toggle-button [:filter :show-only-untagged?] {}]]
+       [:div " Only unrated"
+        [data-bound-toggle-button [:filter :show-only-unrated?] {}]]
+       [:div " Only developed"
+        [data-bound-toggle-button [:filter :show-only-uncooked?] {}]]
+       [:div " Filter by selected tags"
+        [data-bound-toggle-button [:filter :tags-union?]
+         {:label-on "ANY"
+          :label-off "ALL"
+          :class-on "btn-any-tag"
+          :class-off "btn-all-tags"}]]]]
 
-     [:div.filter-row
+     [:div.filter-row.mt-1
       [:a#filter-btn.button
        {:on-click get-photos}
        "Filter"]]]))

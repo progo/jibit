@@ -71,15 +71,13 @@
 (defn ymd
   "Deals with YMDs instead of dates or ISO dates"
   [value on-change]
-  (debug "YMD inits" value)
   (let [[y m d] value
         valid-ymd (validate-ymd [y m d])
         change (fn [ymd]
-                 (debug "ymd changes:" ymd)
                  (on-change ymd))]
     [:div
      {:class (str
-              "ymd border "
+              "pr-0 ymd border "
               (if valid-ymd
                 "border-yellow-700"
                 "border-red-600"))}
@@ -99,7 +97,11 @@
       {:type :number
        :placeholder "DD"
        :value d
-       :on-change #(change [y m (-> % .-target .-value)])}]]))
+       :on-change #(change [y m (-> % .-target .-value)])}]
+     " "
+     [:button.fdclear
+      {:on-click #(change nil)}
+      "X"]]))
 
 
 ;; The data that fancydate and fancydate2 handle is basically a
@@ -107,7 +109,6 @@
 ;; DTS: an ISO-format date string
 (defn fancydate2
   [data on-change]
-  (debug "fancydate2 (re)init with" data)
   (let [changefn (fn [end ymd-value]
                    (on-change end ymd-value))]
     [:div.flex.flex-row
@@ -120,7 +121,6 @@
 (defn data-bound-fancydate2
   "Wraps around lower-level functional fancydate2."
   [data-ids options]
-  (debug "data-bound-fancydate2 init")
   (let [bound (re-frame/subscribe [:input data-ids])
         change-fn (fn [end new-end-value]
                     (let [value' (assoc @bound end new-end-value)]
