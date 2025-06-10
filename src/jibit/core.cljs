@@ -467,20 +467,17 @@
 ;; Inspect taken_ts times of selection and redo the search using the
 ;; date range so that we focus on those dates.
 (re-frame/reg-event-fx
- :filter-search-on-selected
+ :fx/filter-search-on-focused
  (fn [{db :db} _]
-   (when-let [photo-ids (seq (get-selection db))]
-     (let [all-photos (:photos db)
-           ;; TODO. Again slow application of `get-photo-by-id` here.
-           photos (map #(get-photo-by-id % all-photos) photo-ids)
-           taken-tss (map (comp utils/truncate-time-component :taken_ts) photos)
-           taken-min (apply min taken-tss)
-           taken-max (apply max taken-tss)]
-       ;; (println "Earliest" taken-min "latest" taken-max)
-       {:db (-> db
-                (assoc-in [:input :filter :taken-ts :begin] taken-min)
-                (assoc-in [:input :filter :taken-ts :end] taken-max))
-        :dispatch [:get-photos]}))))
+   (when-let [focused (-> db :db/focused-photo)]
+     (let [taken-ymd (-> focused
+                         :taken_ts
+                         jibit.datetime/->dt
+                         jibit.datetime/dt->ymd)]
+           {:db (-> db
+                    (assoc-in [:input :filter :taken-ts :begin] taken-ymd)
+                    (assoc-in [:input :filter :taken-ts :end] taken-ymd))
+            :dispatch [:get-photos]}))))
 
 ;; Key binds
 
@@ -489,7 +486,7 @@
    "M-c" {:kw ::deselect-all :dispatch :clear-selection}
    "M-u" {:kw ::select-untagged :dispatch :select-untagged-photos}
    "M-e" {:kw ::export-selected :dispatch :export-selected}
-   "M-`" {:kw ::filter-around-selected :dispatch :filter-search-on-selected}
+   "M-`" {:kw ::filter-around-selected :dispatch :fx/filter-search-on-focused}
 
    ;; quick tags and its context-specific bindings
    "M-q" {:kw ::show-quick-tags
