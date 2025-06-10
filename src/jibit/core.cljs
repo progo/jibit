@@ -35,7 +35,6 @@
   ;; All non-nil states are modal, for now.
   state)
 
-;; We could store context out of `db` to be perhaps less smelly
 (defn user-in-context?
   ([ctx]
    (user-in-context? @re-frame.db/app-db ctx))
@@ -456,13 +455,13 @@
  :show-quick-tags-popup
  (fn [db _]
    (let [sel? (boolean (seq (get-selection db)))
-         currently-shown? (boolean (user-in-context? db :quick-tags))
+         currently-shown? (boolean (user-in-context? db :ctx/quick-tags))
          show? (case [(boolean sel?) (boolean currently-shown?)]
                  [true true] false ; hide
                  [true false] true ; show
                  [false true] false ; hide
                  [false false] false)] ; don't show if no selection
-     (update db :contexts (if show? conj disj) :quick-tags))))
+     (update db :contexts (if show? conj disj) :ctx/quick-tags))))
 
 ;; Inspect taken_ts times of selection and redo the search using the
 ;; date range so that we focus on those dates.
@@ -492,7 +491,7 @@
    "M-q" {:kw ::show-quick-tags
           :dispatch :show-quick-tags-popup}
    "M-w" {:kw ::match-tags
-          :context :quick-tags
+          :context :ctx/quick-tags
           :dispatch :match-tags-on-selected}
 
    "left" {:kw ::focus-previous :dispatch :focus-previous-photo}
@@ -832,7 +831,7 @@
     [:div#modal-bg {:class (if enabled? "modal-shown" "")}]))
 
 (defn quick-tags-popup []
-  (let [show? @(re-frame/subscribe [:in-context? :quick-tags])
+  (let [show? @(re-frame/subscribe [:in-context? :ctx/quick-tags])
         sel# @(re-frame/subscribe [:selected-photos#])
         multiple-selected? (> sel# 1)
         ]
