@@ -5,7 +5,7 @@
             [re-frame.core :as re-frame]
             [reagent.core :as re]
             [jibit.components.inputs :refer [data-bound-input]]
-            [jibit.datetime :refer [->dt ymd->dt dt->ymd ymd->iso]]))
+            [jibit.datetime :refer [today ->dt ymd->dt dt->ymd ymd->iso]]))
 
 (def fancydate-presets
   ^{:doc "Ordered seq of maps with keys {:key :label :begin-dt
@@ -105,17 +105,23 @@
 
 
 ;; The data that fancydate and fancydate2 handle is basically a
-;; 2-tuple but we express it as a map: {:begin DTS :end DTS}, where
-;; DTS: an ISO-format date string
+;; 2-tuple but we express it as a map: {:begin YMD :end YMD}, where
+;; YMD: a triplet presenting a date Y/M/D
 (defn fancydate2
   [data on-change]
-  (let [changefn (fn [end ymd-value]
-                   (on-change end ymd-value))]
+  (let [today-fn (fn []
+                   (let [tday (-> (today) dt->ymd)]
+                     (on-change :both tday)))]
     [:div.flex.flex-row
-     "from"
-     [ymd (:begin data) #(changefn :begin %)]
-     " to "
-     [ymd (:end data) #(changefn :end %)]]))
+     [:button.px-1.border.rounded-lg
+      {:on-click today-fn}
+      "Today"]
+     [:span.px-1
+      "from"]
+     [ymd (:begin data) #(on-change :begin %)]
+     [:span.px-1
+      "to"]
+     [ymd (:end data) #(on-change :end %)]]))
 
 
 (defn data-bound-fancydate2
@@ -123,7 +129,13 @@
   [data-ids options]
   (let [bound (re-frame/subscribe [:input data-ids])
         change-fn (fn [end new-end-value]
-                    (let [value' (assoc @bound end new-end-value)]
+                    (let [value' (cond
+                                   (= end :both)
+                                   {:begin new-end-value
+                                    :end new-end-value}
+
+                                   :else
+                                   (assoc @bound end new-end-value))]
                       (re-frame/dispatch [:change-input data-ids value'])))
         props {}]
     (fn []
@@ -150,36 +162,6 @@
          " ⟶ "
          (jibit.datetime/org-format end))))
 
-(defn fancydate-custom-updater
-  "Make sure that when user selects a beginning, the end isn't before
-  it. We'll sniff from the end of `data-ids` if we are dealing
-  with :begin or :end here."
-  [db data-ids new-value]
-  (let [full-path (conj (seq data-ids) :input)
-        path-init (butlast full-path)
-        which-end (last full-path) ; :begin/:end
-        other-end (case which-end
-                    :end :begin
-                    :begin :end)
-        other-value (get (get-in db path-init) other-end)
-
-        ;; these dates happen to be in ISO so we can just string-compare
-        other-value* (cond
-                       ;; New begin goes after end.
-                       (and (= which-end :begin)
-                            (>= new-value other-value))
-                       new-value
-
-                       ;; New end goes before begin.
-                       (and (= which-end :end)
-                            (<= new-value other-value))
-                       new-value
-
-                       :else other-value)]
-    (-> db
-        (assoc-in full-path new-value)
-        (assoc-in (conj (vec path-init) other-end) other-value*))))
-
 
 ;; Fancydate can provide with presets, we'll update accordingly
 (re-frame/reg-event-db
@@ -196,36 +178,3 @@
                       (if end
                         [:end (jibit.datetime/iso-format end)])])))))
 
-(defn data-bound-fancydate
-  "Create a fancydate type dropdown/date range selector. Binds to a
-  chain `data-ids`. Property map `props` is fed to the outermost
-  element (a div)."
-  [data-ids props]
-  (let [{:keys [begin end]} @(re-frame/subscribe [:input data-ids])
-        not-selected? (and (empty? begin) (empty? end))
-        repr (format-date-range begin end)
-        props' (update props
-                       :class
-                       #(when not-selected?
-                          (str % " no-selection")))]
-    [:div.fancydate
-     props'
-     repr
-     [:ul.fd-dropdown
-      (for [{:keys [key label]} fancydate-presets]
-        ^{:key key}
-        [:li {:on-click #(re-frame/dispatch [:change-input-date-preset data-ids key])}
-         label])
-      [:li "Custom"
-       [:ul
-        [:li "Begin "
-         (data-bound-input
-          (conj data-ids :begin)
-          {:type :date}
-          :custom-eval-db-fn fancydate-custom-updater)]
-        [:li "End "
-         (data-bound-input
-          (conj data-ids :end)
-          {:type :date}
-          :custom-eval-db-fn fancydate-custom-updater)]]
-       ]]]))

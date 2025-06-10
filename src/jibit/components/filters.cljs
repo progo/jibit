@@ -2,7 +2,7 @@
   (:require
    [reagent.core :as reagent]
    [re-frame.core :as re-frame]
-   [jibit.components.fancydate :refer [data-bound-fancydate data-bound-fancydate2]]
+   [jibit.components.fancydate :refer [data-bound-fancydate2]]
    [jibit.components.inputs :refer [data-bound-toggle-button data-bound-input data-bound-select]]
    [jibit.utils :as utils]))
 
