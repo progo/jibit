@@ -233,6 +233,10 @@
                             js/PhotoSwipeUI_Default
                             (clj->js projected-photos)
                             #js {:index index}))
+       (set! (.. photoswipe-js -options -arrowKeys) false)
+       (.listen photoswipe-js
+                "close"
+                #(re-frame/dispatch [:fx/focus-lighttable]))
        (.init photoswipe-js)))))
 
 ;; activate input[type=file] to show a file selector
@@ -240,8 +244,6 @@
  :activate-file-upload
  (fn [_]
    (.click (js/document.getElementById "file-upload"))))
-
-
 
 (re-frame/reg-fx
  :dispatch-after-delay

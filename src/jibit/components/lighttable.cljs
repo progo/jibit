@@ -161,3 +161,8 @@
  (fn [db _]
    (update db :db/focused-photo #(focus-by-step % (:photos db) -1))))
 
+;; Bring focus to the lighttable
+(re-frame/reg-event-fx
+ :fx/focus-lighttable
+ (fn [_ _]
+   (.focus (js/document.getElementById "lighttable"))))
