@@ -478,9 +478,12 @@
                     (assoc-in [:input :filter :taken-ts :end] taken-ymd))
             :dispatch [:get-photos]}))))
 
-;; Key binds
+;;;; Key binds
+;; These are global keybindings, taking over all components. That is
+;; why we try to stick to M-modified binds to let individual
+;; components apply binds when in focus.
 
-(def keybindings
+(def global-keybindings
   {"M-a" {:kw ::select-all :dispatch :select-all-photos}
    "M-c" {:kw ::deselect-all :dispatch :clear-selection}
    "M-u" {:kw ::select-untagged :dispatch :select-untagged-photos}
@@ -494,14 +497,16 @@
           :context :ctx/quick-tags
           :dispatch :match-tags-on-selected}
 
-   "left" {:kw ::focus-previous :dispatch :focus-previous-photo}
-   "right" {:kw ::focus-next :dispatch :focus-next-photo}
+   ;; page navi
+   ;; "M-S-h" {}
+   ;; "M-S-l" {}
+   "M-h" {:kw ::focus-previous :dispatch :fx/focus-previous-photo}
+   "M-l" {:kw ::focus-next :dispatch :fx/focus-next-photo}
    "M-1" {:kw ::select-1 :dispatch :select-focused-photo}
-   "enter" {:kw ::show-focused :dispatch :show-focused-photo}})
-
+   })
 
 (defn init-keybindings! [m]
-  (doseq [[key {kw :kw context :context event :dispatch}] keybindings]
+  (doseq [[key {kw :kw context :context event :dispatch}] m]
     (let [handler (fn [e]
                     (when (user-in-context? context)
                       (utils/dispatch-preventing-default-action e [event])))]
@@ -509,7 +514,7 @@
 
 ;; Redo keybindings each load
 (keybind/unbind-all!)
-(init-keybindings! keybindings)
+(init-keybindings! global-keybindings)
 
 
 
@@ -656,7 +661,7 @@
      {:dispatch [:show-message "I can't show raw photos."]})))
 
 (re-frame/reg-event-fx
- :show-focused-photo
+ :fx/toggle-show-focused-photo
  (fn [{db :db} _]
    (if (projector-on?)
      ;; Close projector

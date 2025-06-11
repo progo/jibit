@@ -7,8 +7,26 @@
    [taoensso.timbre :as timbre :refer [debug spy]]
    jibit.components.tags
    [jibit.components.inputs :refer [data-bound-toggle-button data-bound-input data-bound-select]]
-   [jibit.utils :as utils :refer [photo-ids]]
-   ))
+   [jibit.utils :as utils :refer [photo-ids]]))
+
+
+;;; Handles lighttable key events, when focused
+(defn- handle-key-events [evt]
+  (case (.-key evt)
+    "ArrowLeft"
+    (do
+      (re-frame/dispatch [:fx/focus-previous-photo]))
+
+    "ArrowRight"
+    (do
+      (re-frame/dispatch [:fx/focus-next-photo]))
+
+    "Enter"
+    (do
+      (re-frame/dispatch [:fx/toggle-show-focused-photo]))
+
+    nil))
+
 
 (defn slide [photo]
   (let [tags-map @(re-frame/subscribe [:tags-map])
@@ -85,7 +103,9 @@
 (defn lighttable []
   (let [photos (re-frame/subscribe [:photos])]
     (fn []
-      [:div#lighttable
+      [:div#lighttable.outline-hidden
+       {:tab-index 0
+        :on-key-down handle-key-events}
        (for [photo @photos]
          ^{:key (:uuid photo)} [slide photo])])))
 
@@ -132,12 +152,12 @@
    (assoc db :db/focused-photo photo)))
 
 (re-frame/reg-event-db
- :focus-next-photo
+ :fx/focus-next-photo
  (fn [db _]
    (update db :db/focused-photo #(focus-by-step % (:photos db) 1))))
 
 (re-frame/reg-event-db
- :focus-previous-photo
+ :fx/focus-previous-photo
  (fn [db _]
    (update db :db/focused-photo #(focus-by-step % (:photos db) -1))))
 
