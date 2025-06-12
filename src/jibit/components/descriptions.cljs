@@ -60,41 +60,40 @@
   []
   (let [focused-photo @(re-frame/subscribe [:sub/focused-photo])]
     [:div
-     {:class (str "border "
-                  "border-orange-400 "
-                  "rounded-xl "
+     {:class (str "w-full "
                   "p-2 ")}
-     [:input
-      {:type :input
-       :class "text-md bg-black p-1"
-       :placeholder "Title"
-       :on-change (fn [evt]
-                    (re-frame/dispatch
-                     [:fx/update-photo
-                      focused-photo
-                      :title
-                      (changed-new-value evt)]))
-       :on-key-down keydown-handler-handle-ctrl-s
-       :value (or (-> focused-photo :title) "")}]
+     [:div.border.border-orange-400.rounded-xl.p-2
+      [:input
+       {:type :input
+        :class "text-md bg-black p-1"
+        :placeholder "Title"
+        :on-change (fn [evt]
+                     (re-frame/dispatch
+                      [:fx/update-photo
+                       focused-photo
+                       :title
+                       (changed-new-value evt)]))
+        :on-key-down keydown-handler-handle-ctrl-s
+        :value (or (-> focused-photo :title) "")}]
 
-     [:textarea
-      {:type :input
-       :class "text-sm w-full block"
-       :rows 3
-       :placeholder "Notes"
-       :on-change (fn [evt]
-                    (re-frame/dispatch
-                     [:fx/update-photo
-                      focused-photo
-                      :notes
-                      (changed-new-value evt)]))
-       :on-key-down keydown-handler-handle-ctrl-s
-       :value (or (-> focused-photo :notes) "")}]
+      [:textarea
+       {:type :input
+        :class "text-sm w-full block"
+        :rows 3
+        :placeholder "Notes"
+        :on-change (fn [evt]
+                     (re-frame/dispatch
+                      [:fx/update-photo
+                       focused-photo
+                       :notes
+                       (changed-new-value evt)]))
+        :on-key-down keydown-handler-handle-ctrl-s
+        :value (or (-> focused-photo :notes) "")}]
 
-     [:textarea
-      {:type :input
-       :class "text-sm w-full block"
-       :rows 3
-       :placeholder "Computer-generated description"
-       :read-only true
-       :value (or (-> focused-photo :llm_description) "")}]]))
+      [:textarea
+       {:type :input
+        :class "text-sm w-full block"
+        :rows 3
+        :placeholder "Computer-generated description"
+        :read-only true
+        :value (or (-> focused-photo :llm_description) "")}]]]))

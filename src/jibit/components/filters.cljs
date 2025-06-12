@@ -12,7 +12,6 @@
     [:div
      {:class (str
               "w-full "
-              "rounded-lg "
               "p-2 "
               (if show-panel? "" "hidden"))}
      [:div

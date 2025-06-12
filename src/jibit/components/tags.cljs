@@ -45,13 +45,15 @@
      (:name tag)]))
 
 (defn tags-view []
-  [:ul.tags-bar-big
-   (let [tags @(re-frame/subscribe [:tags])]
-     (if (seq tags)
-       (doall
-        (for [t tags]
-          (tag-view t)))
-       [:span#no-tags "Tags will appear here."]))
-   [:div#create-tag.button
-    {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
-    "+"]])
+  [:div.p-2.w-full
+   [:div.border.p-2.rounded-xl.border-orange-400
+    [:ul.tags-bar-big
+     (let [tags @(re-frame/subscribe [:tags])]
+       (if (seq tags)
+         (doall
+          (for [t tags]
+            (tag-view t)))
+         [:span#no-tags "Tags will appear here."]))
+     [:div#create-tag.button
+      {:on-click #(re-frame/dispatch [:show-create-tag-dlg])}
+      "+"]]]])
