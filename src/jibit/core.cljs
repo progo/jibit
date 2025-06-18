@@ -15,6 +15,7 @@
    [jibit.components.tag-edit]
    [jibit.components.tags]
    [jibit.components.filters]
+   [jibit.components.metadata]
    [jibit.components.gear-editor :as gear-editor]
    [jibit.datetime :refer [ymd->iso]]
    [jibit.utils :as utils :refer [build-edn-request photo-ids ok? mapify-seq]]))
@@ -871,6 +872,7 @@
       {:class "bg-stone-800 w-1/3 overflow-y-auto"}
       [jibit.components.filters/filter-panel]
       [jibit.components.descriptions/descriptions-panel]
+      [jibit.components.metadata/metadata-view]
       [jibit.components.tags/tags-view]]
 
      ;; right hand side thing
