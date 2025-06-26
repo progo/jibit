@@ -58,7 +58,7 @@
            {:class (when enabled? "modal-shown")}
            [:h1 "Gear"]
            [:div
-            [:table#gear-table]]
+            [:table#gear-table.h-96]]
            [:div.footer
             [:a.button {:on-click (fn []
                                     (let [current-data (-> @tabulator-instance

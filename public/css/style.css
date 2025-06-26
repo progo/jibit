@@ -1,7 +1,18 @@
 @import "tailwindcss";
 
-/** Fonts and stuff */
 
+@theme {
+    --color-primary-500: #ffab23;
+    --color-label: oklch(90.1% 0.076 70.697);
+
+    --color-highlight: oklch(90.1% 0.076 70.697);
+
+    /** All inputs */
+    --color-input: #000000;
+}
+
+
+/** Fonts and stuff */
 /* Heavy, all-caps font for not much */
 @font-face {
     font-family: 'Bebas Neue Regular';
@@ -718,17 +729,14 @@ ul.problem-list {
 
 /** Gear editor / Tabulator tables **/
 
-#gear-table {
-    height: 480px;
-}
-
 /** previous input styling (orange-on-black) overrides the white-bg editing */
-.modal-dialog #gear-table input {
-    color: #333 !important;
-}
+/* .modal-dialog #gear-table input { */
+/*     color: #333 !important; */
+/* } */
 
 
 
+/** YMD */
 div .ymd {
     padding-left: 0.5rem;
     padding-right: 0rem;

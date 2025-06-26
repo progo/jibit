@@ -19,7 +19,7 @@
        [:div.border.p-2.rounded-xl.border-orange-400
         [data-bound-input [:filter :text]
          {:type :input
-           :class "bg-black p-1"
+           :class "bg-input p-1"
           :placeholder "Keyword search"}
          :on-enter get-photos
          :clearable? true]
@@ -27,7 +27,7 @@
         [:div
          [data-bound-input [:filter :camera]
           {:type :search
-           :class "bg-black p-1"
+           :class "bg-input p-1"
            :list "camera-list"
            :title "Filter by camera make or model"
            :placeholder "Camera"}
@@ -37,7 +37,7 @@
          [data-bound-input [:filter :lens]
           {:type :search
            :list "lens-list"
-           :class "bg-black p-1"
+           :class "bg-input p-1"
            :title "Filter by lens make or model"
            :placeholder "Lens"}
           :on-enter get-photos
@@ -45,17 +45,17 @@
 
        [:div.border.p-2.rounded-xl.border-orange-400
         [:div.flex.flex-row
-         [:span.text-orange-200.pr-2
+         [:span.text-label.pr-2
           "taken"]
          [data-bound-fancydate2 [:filter :taken-ts]]]
 
         [:div.flex.flex-row
-         [:span.text-orange-200.pr-2
+         [:span.text-label.pr-2
           "imported"]
          [data-bound-fancydate2 [:filter :imported-ts]]]]
 
        [:div.border.p-2.rounded-xl.border-orange-400
-        [:span.text-orange-200.pr-2
+        [:span.text-label.pr-2
          "Order by "]
         [data-bound-select
          [:filter :order-by]
@@ -64,16 +64,16 @@
           {:name "Random" :value "random"}
           {:name "Rating" :value "rating"}]]]]
 
-      [:div.border.p-2.rounded-xl.border-orange-400
-       [:div " Only untitled"
+      [:div.border.p-2.rounded-xl.border-orange-400.text-label
+       [:div "Only untitled"
         [data-bound-toggle-button [:filter :show-only-untitled?] {}]]
-       [:div " Only untagged"
+       [:div "Only untagged"
         [data-bound-toggle-button [:filter :show-only-untagged?] {}]]
-       [:div " Only unrated"
+       [:div "Only unrated"
         [data-bound-toggle-button [:filter :show-only-unrated?] {}]]
-       [:div " Only developed"
+       [:div "Only developed"
         [data-bound-toggle-button [:filter :show-only-uncooked?] {}]]
-       [:div " Filter by selected tags"
+       [:div "Filter by selected tags"
         [data-bound-toggle-button [:filter :tags-union?]
          {:label-on "ANY"
           :label-off "ALL"
