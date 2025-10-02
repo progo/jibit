@@ -61,4 +61,4 @@
      (defn datestamp
        "Format a datetime as a date."
        [dt]
-       (jibit.datetime/format "MMM D YYYY" dt))))
+       (jibit.datetime/format "MMM D, YYYY" dt))))
