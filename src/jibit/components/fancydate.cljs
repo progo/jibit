@@ -17,7 +17,7 @@
       :begin-dt (constantly nil)
       :end-dt (constantly nil)}
      {:key :today
-      :label "Tooooday"
+      :label "Today"
       :begin-dt #(today)
       :end-dt #(today)}
      {:key :yesterday
@@ -75,7 +75,7 @@
         valid-ymd (validate-ymd [y m d])
         change (fn [ymd]
                  (on-change ymd))]
-    [:div
+    [:div.block.whitespace-nowrap
      {:class (str
               "pr-0 ymd border "
               (if valid-ymd
@@ -109,10 +109,15 @@
 ;; YMD: a triplet presenting a date Y/M/D
 (defn fancydate2
   [data on-change]
-  (let [today-fn (fn []
+  (let [clear-fn (fn []
+                   (on-change :both [nil nil nil]))
+        today-fn (fn []
                    (let [tday (-> (today) dt->ymd)]
                      (on-change :both tday)))]
     [:div.flex.flex-row
+     [:button.px-1.border.rounded-lg
+      {:on-click clear-fn}
+      "Clear"]
      [:button.px-1.border.rounded-lg
       {:on-click today-fn}
       "Today"]
