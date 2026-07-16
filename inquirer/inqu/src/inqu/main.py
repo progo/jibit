@@ -9,7 +9,8 @@ from pydantic import BaseModel, Field
 from pydantic.json_schema import SkipJsonSchema
 from typing import List, Union
 import instructor
-from instructor.multimodal import Image
+from instructor.processing.multimodal import Image
+
 
 HTML_HEAD = '''
 <html>
