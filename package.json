@@ -5,7 +5,7 @@
         "dev": "run-p -l *:watch"
     },
     "dependencies": {
-        "moment": "^2.30.1",
+        "moment": "^2.31.0",
         "npm": "^11.4.1",
         "photoswipe": "^5.4.4",
         "react": "^17.0.2",
